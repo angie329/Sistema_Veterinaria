@@ -12,6 +12,14 @@ export default defineConfig({
       base: "src/pages",
     }),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "src/pages/index.html"),
+        clients: resolve(__dirname, "src/pages/clients.html"),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
