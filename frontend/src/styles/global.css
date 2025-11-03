@@ -46,9 +46,20 @@ body {
 
 .content {
   margin-left: var(--sidebar-width);
-  padding: 0 var(--spacing-md);
+  padding: var(--spacing-md);
+  min-height: calc(100vh - var(--header-height));
 
   @media (max-width: 768px) {
     margin-left: 0;
+    padding: var(--spacing-md);
   }
+
+  @media (max-width: 640px) {
+    padding: var(--spacing-sm);
+  }
+}
+
+main {
+  max-width: 100%;
+  overflow-x: hidden;
 }

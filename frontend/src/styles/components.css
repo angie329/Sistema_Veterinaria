@@ -8,11 +8,38 @@
   border-right: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  z-index: 101;
   transition: transform 0.3s ease;
 
   @media (max-width: 768px) {
     transform: translateX(-100%);
+
+    &.sidebar-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+
+  @media (max-width: 768px) {
+    display: block;
+
+    &.overlay-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 }
 
@@ -46,6 +73,8 @@
   color: var(--gray-700);
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 44px;
+  touch-action: manipulation;
 
   &:hover {
     background-color: var(--gray-100);
@@ -56,6 +85,10 @@
     background-color: var(--primary-light);
     color: var(--primary);
     font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 }
 
@@ -74,10 +107,38 @@
   align-items: center;
   padding: 0 var(--spacing-md);
   margin-left: var(--sidebar-width);
+  gap: var(--spacing-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   @media (max-width: 768px) {
     margin-left: 0;
     padding: 0 var(--spacing-md);
+  }
+}
+
+.header-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-700);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+
+  &:hover {
+    background-color: var(--gray-100);
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
   }
 }
 
@@ -88,6 +149,7 @@
 
   @media (max-width: 768px) {
     max-width: 100%;
+    min-width: 0;
   }
 }
 
@@ -130,6 +192,17 @@
   color: var(--gray-700);
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+
+  &:hover {
+    background-color: var(--gray-100);
+  }
 }
 
 .header-badge {
@@ -155,6 +228,24 @@
   cursor: pointer;
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+
+  &:hover {
+    background-color: var(--gray-100);
+  }
+
+  @media (max-width: 640px) {
+    padding: var(--spacing-sm);
+
+    span {
+      display: none;
+    }
+
+    i {
+      display: none;
+    }
+  }
 }
 
 .header-avatar {
