@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes - VetSystem</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>VetSystem</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/" class="sidebar-nav-item" data-module="dashboard">
+          <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+          <span>Panel</span>
+        </a>
+
+        <a href="/clients" class="sidebar-nav-item" data-module="clients">
+          <i data-lucide="users" class="sidebar-nav-icon"></i>
+          <span>Clientes</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="veterinarians">
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="appointments">
+          <i data-lucide="calendar" class="sidebar-nav-icon"></i>
+          <span>Citas</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="inventory">
+          <i data-lucide="package" class="sidebar-nav-icon"></i>
+          <span>Inventario</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="billing">
+          <i data-lucide="receipt" class="sidebar-nav-icon"></i>
+          <span>Facturación</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="settings">
+          <i data-lucide="settings" class="sidebar-nav-icon"></i>
+          <span>Configuración</span>
+        </a>
+      </nav>
+    </aside>
+
+    <header class="header">
+      <button
+        class="header-menu-btn"
+        id="mobileMenuBtn"
+        aria-label="Toggle menu"
+      >
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="header-search">
+        <i data-lucide="search" class="header-search-icon"></i>
+        <input
+          type="text"
+          class="header-search-input"
+          placeholder="Buscar clientes, mascotas, medicamentos..."
+          id="globalSearch"
+        />
+      </div>
+
+      <div class="header-actions">
+        <button class="header-icon-btn" id="notificationsBtn">
+          <i data-lucide="bell"></i>
+          <span class="header-badge">3</span>
+        </button>
+
+        <div class="header-user-btn" id="userMenuBtn">
+          <div class="header-avatar">AD</div>
+          <span>Admin</span>
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <main id="mainContent">
+        <h1 class="clients-title">
+          Clientes con un icono extra <i data-lucide="plus-circle"></i>
+        </h1>
+      </main>
+    </div>
+
+    <script type="module" src="/src/js/clients.js"></script>
+  </body>
+</html>
