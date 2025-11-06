@@ -17,6 +17,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "src/pages/index.html"),
         clients: resolve(__dirname, "src/pages/clients.html"),
+        inventario: resolve(__dirname,"src/pages/inventario.html")
       },
     },
   },
