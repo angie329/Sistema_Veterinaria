@@ -21,6 +21,7 @@ export default defineConfig({
         datosPersonales: resolve(__dirname, "src/pages/datos-personales.html"),
         ubicaciones: resolve(__dirname, "src/pages/ubicaciones.html"),
         veterinarios: resolve(__dirname, "src/pages/veterinarios.html"),
+        inventario: resolve(__dirname,"src/pages/inventario.html")
       },
     },
   },
