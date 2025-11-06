@@ -94,11 +94,11 @@
 
     <div class="content">
         <div class="main-container">
-            
+
 
             <!-- Content Area -->
             <main id="mainContent">
-                
+
 
                 <!-- Tabs Navigation -->
                 <div class="tabs">
@@ -107,6 +107,17 @@
                             <path d="M2 2h12v12H2V2z" stroke="currentColor" stroke-width="2" fill="none" />
                         </svg>
                         Productos
+                    </button>
+                    <button class="tab-btn" data-tab="movimientos">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-arrow-left-right-icon lucide-arrow-left-right">
+                            <path d="M8 3 4 7l4 4" />
+                            <path d="M4 7h16" />
+                            <path d="m16 21 4-4-4-4" />
+                            <path d="M20 17H4" />
+                        </svg>
+                        Movimientos
                     </button>
                     <button class="tab-btn" data-tab="ingresos">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -122,17 +133,7 @@
                         </svg>
                         Salidas
                     </button>
-                    <button class="tab-btn" data-tab="movimientos">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-3"/>
-                            <path d="M12 12H8"/>
-                            <path d="M16 6h-4V2"/>
-                            <path d="m12 12 4-4"/>
-                            <path d="M16 16h-4v4"/>
-                            <path d="m12 16 4 4"/>
-                        </svg>
-                        Movimientos
-                    </button>
+
                 </div>
 
                 <!-- Tab Content: Productos -->
@@ -245,6 +246,13 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Historial de Movimientos</h3>
+                            <button class="btn btn-primary" id="addMovementBtn">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                                Registrar Movimiento
+                            </button>
                         </div>
                         <div class="card-body">
                             <div class="table-container">
