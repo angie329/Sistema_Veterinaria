@@ -122,6 +122,17 @@
                         </svg>
                         Salidas
                     </button>
+                    <button class="tab-btn" data-tab="movimientos">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-3"/>
+                            <path d="M12 12H8"/>
+                            <path d="M16 6h-4V2"/>
+                            <path d="m12 12 4-4"/>
+                            <path d="M16 16h-4v4"/>
+                            <path d="m12 16 4 4"/>
+                        </svg>
+                        Movimientos
+                    </button>
                 </div>
 
                 <!-- Tab Content: Productos -->
@@ -222,6 +233,33 @@
                                     </thead>
                                     <tbody id="outputTableBody">
                                         <!-- Output entries will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Movimientos -->
+                <div class="tab-content" id="movimientos">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Historial de Movimientos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Producto</th>
+                                            <th>Tipo</th>
+                                            <th>Cantidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="movementsTableBody">
+                                        <!-- Movement entries will be inserted here -->
                                     </tbody>
                                 </table>
                             </div>
