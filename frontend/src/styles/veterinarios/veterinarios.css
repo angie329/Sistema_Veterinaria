@@ -169,7 +169,7 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background-color: var(--background);
+  background-color: rgb(243, 242, 242);
 }
 
 .badge {

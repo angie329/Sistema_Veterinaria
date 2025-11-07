@@ -9,5 +9,5 @@ import {
 
 export const turnosRouter = express.Router();
 
-turnosRouter.get("/", obtenerTurnosPorVeterinario);
+turnosRouter.get("/:id", obtenerTurnosPorVeterinario);
 

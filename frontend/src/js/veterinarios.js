@@ -1,5 +1,6 @@
 import { createIcons, icons } from "lucide";
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/veterinarios`;
+const TURNOS_URL = `${import.meta.env.VITE_BACKEND_URL}/v1/turnos`;
 
 
 function highlightActive() {
@@ -74,18 +75,20 @@ document.addEventListener("DOMContentLoaded", initDashboard);
 
 
 
+
 /* DATOS DEL BACKEND */
 async function fetchVeterinarios() {
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error("Error al obtener los veterinarios");
     const data = await res.json();
+    
+    console.log("🩺 Veterinarios recibidos:", data);
     renderVeterinarios(data);
   } catch (error) {
     console.error(" Error:", error);
   }
 }
-
 
 
 function renderVeterinarios(veterinarios) {
@@ -110,7 +113,6 @@ function renderVeterinarios(veterinarios) {
       <td>${vet.Especialidad || "Sin especialidad"}</td>
       <td>${vet.Vet_Telefono || "—"}</td>
       <td>${vet.Vet_Correo || "—"}</td>
-    
       <td>
         <button class="btn-turnos" onclick="verTurnos(${vet.id_Veterinario}, '${vet.Vet_Nombres}')">
           Ver turnos
@@ -130,36 +132,39 @@ function renderVeterinarios(veterinarios) {
 
     tableBody.appendChild(row);
   });
-
-  createIcons(); 
 }
 
-//  Inicializar al cargar la página
+// Inicializar al cargar la página
 document.addEventListener("DOMContentLoaded", fetchVeterinarios);
 
 async function verTurnos(idVeterinario, nombreVet) {
   try {
-    const res = await fetch(`http://localhost:3000/api/turnos/${idVeterinario}`);
+    const res = await fetch(`${TURNOS_URL}/${idVeterinario}`);
     const turnos = await res.json();
-
-    // Crear contenido dinámico
+   
     const listaTurnos = turnos.map(t => `
       <tr>
-        <td>${t.Tur_Dia}</td>
-        <td>${t.Tur_HoraInicio}</td>
-        <td>${t.Tur_HoraFin}</td>
-        <td>${t.Tur_Tipo}</td>
+        <td>${t.Tur_Dia || "—"}</td>
+        <td>${t.Tur_HoraInicio || "—"}</td>
+        <td>${t.Tur_HoraFin || "—"}</td>
+        <td>${t.Tur_Tipo || "—"}</td>
       </tr>
     `).join("");
 
-    // Insertar en el modal
     document.getElementById("modalTitle").innerText = `Turnos de ${nombreVet}`;
     document.getElementById("modalBody").innerHTML = `
       <table class="tabla-turnos">
         <thead>
-          <tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Tipo</th></tr>
+          <tr>
+            <th>Día</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Tipo</th>
+          </tr>
         </thead>
-        <tbody>${listaTurnos || "<tr><td colspan='4'>Sin turnos registrados</td></tr>"}</tbody>
+        <tbody>
+          ${listaTurnos || "<tr><td colspan='6'>Sin turnos registrados</td></tr>"}
+        </tbody>
       </table>
     `;
 
@@ -170,3 +175,10 @@ async function verTurnos(idVeterinario, nombreVet) {
   }
 }
 
+function cerrarModal() {
+  document.getElementById("modalTurnos").style.display = "none";
+}
+
+// 🔹 Exportar al window (para onclick en HTML)
+window.verTurnos = verTurnos;
+window.cerrarModal = cerrarModal;
