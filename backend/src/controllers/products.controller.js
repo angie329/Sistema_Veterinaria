@@ -29,6 +29,7 @@ export const getProducts = async (req, res) => {
         t.Inv_Descripcion AS TipoArticulo,
         a.Inv_CantUnidadMedida,
         iva.Gen_porcentaje AS IVA, 
+        u.Gen_nombre AS UnidadMedida, 
         a.Inv_PrecioUnitario,
         a.Inv_StockActual,
         a.Inv_Categoria,
@@ -60,6 +61,63 @@ export const getProducts = async (req, res) => {
     }
 };
 
+export const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const sql = `
+            SELECT 
+                id_Inv_Articulo as id,
+                Inv_Nombre as name,
+                id_Inv_TipoArticuloFk as tipoArticulo,
+                id_Gen_UnidadMedidaFk as unidadMedida,
+                Inv_CantUnidadMedida as cantidad,
+                id_Gen_IVAFk as iva,
+                Inv_PrecioUnitario as precio,
+                Inv_StockActual as stock,
+                Inv_Categoria as categoria
+            FROM Inv_Articulo 
+            WHERE id_Inv_Articulo = ?`;
+
+        const products = await query(sql, [id]);
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.json(products[0]);
+
+    } catch (error) {
+        console.error(`Error fetching product with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al obtener el producto", error: error.message });
+    }
+};
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria } = req.body;
+
+        if (!name || !tipoArticulo || !unidadMedida || !iva || !precio) {
+            return res.status(400).json({ message: "Faltan campos obligatorios." });
+        }
+
+        const sql = `
+            UPDATE Inv_Articulo SET
+                Inv_Nombre = ?, id_Inv_TipoArticuloFk = ?, id_Gen_UnidadMedidaFk = ?, 
+                Inv_CantUnidadMedida = ?, id_Gen_IVAFk = ?, Inv_PrecioUnitario = ?, 
+                Inv_StockActual = ?, Inv_Categoria = ?
+            WHERE id_Inv_Articulo = ?
+        `;
+
+        await query(sql, [name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria, id]);
+
+        res.json({ message: "Producto actualizado exitosamente" });
+    } catch (error) {
+        console.error(`Error updating product with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al actualizar el producto", error: error.message });
+    }
+};
+
 export const createProduct = async (req, res) => {
     try {
         const {
@@ -70,7 +128,7 @@ export const createProduct = async (req, res) => {
             iva,
             precio,
             stock,
-            categoria
+            categoria,
         } = req.body;
 
         // Validación simple
@@ -80,11 +138,11 @@ export const createProduct = async (req, res) => {
 
         const sql = `
             INSERT INTO Inv_Articulo 
-            (Inv_Nombre, id_Inv_TipoArticuloFk, id_Gen_UnidadMedidaFk, Inv_CantUnidadMedida, id_Gen_IVAFk, Inv_PrecioUnitario, Inv_StockActual, Inv_Categoria, Gen_modulo_origenFK) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (Inv_Nombre, id_Inv_TipoArticuloFk, id_Gen_UnidadMedidaFk, Inv_CantUnidadMedida, id_Gen_IVAFk, Inv_PrecioUnitario, Inv_StockActual, Inv_Categoria, Gen_modulo_origenFk) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
-        const result = await query(sql, [name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria]);
+        const result = await query(sql, [name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria, 2]);
 
         res.status(201).json({
             message: "Producto creado exitosamente",
