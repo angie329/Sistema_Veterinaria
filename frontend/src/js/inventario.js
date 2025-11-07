@@ -63,17 +63,17 @@ function initMobileMenu() {
     });
 }
 
-/* Codigo especifico del modulo */
+// código específico del módulo
 
-// Variables de estado para la paginación
+// estado de la paginación
 let currentFilter = "";
 let currentPage = 1;
 let totalPages = 1;
 
-// Elementos estáticos del DOM
+// elementos del dom
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
-const paginacionIndexesContainer = document.getElementById("paginacion-indexes"); // This will hold dynamic numeric buttons
+const paginacionIndexesContainer = document.getElementById("paginacion-indexes"); // contenedor para los botones numéricos de página
 const prevButton = document.getElementById("previous");
 const nextButton = document.getElementById("next");
 const pageInput = document.getElementById("pageInput");
@@ -88,19 +88,18 @@ const cancelModalBtn = document.getElementById("cancelModalBtn");
 
 
 function setupEventListeners() {
-    // Tab Navigation
+    // navegación por pestañas
     tabButtons.forEach((button) => {
         console.log("added event listener");
         button.addEventListener("click", () => {
-            /* data-tab es un atributo que tiene el nombre de el boton (producto, ingresos, salidas)
-             *             coincidentemente tambien es el id de la tabla correspondiende */
+            // data-tab tiene el nombre de la pestaña y el id de su contenido
             const tabName = button.getAttribute("data-tab")
 
             switchTab(tabName)
         })
     })
 
-    // Modal Listeners
+    // listeners del modal
     addProductBtn.addEventListener('click', openProductModal);
     closeModalBtn.addEventListener('click', closeProductModal);
     cancelModalBtn.addEventListener('click', closeProductModal);
@@ -121,22 +120,28 @@ function setupEventListeners() {
         }
     });
 
-    // Event Delegation para botones de la tabla
+    // delegación de eventos para la tabla (editar/borrar)
     productsTableBody.addEventListener('click', (e) => {
         const editButton = e.target.closest('.btn-edit');
         if (editButton) {
             const productId = editButton.dataset.id;
             openProductModalForEdit(productId);
         }
-    })
+
+        const toggleButton = e.target.closest('.btn-toggle-status');
+        if (toggleButton) {
+            const productId = toggleButton.dataset.id;
+            toggleProductStatus(productId);
+        }
+    });
 }
 
 function switchTab(tabName) {
-    /* Esta funcion le quita el estilo activo (marcado de verde), y oculta todas las tablas */
+    // quita la clase 'active' de todas las pestañas y contenidos
     tabButtons.forEach((btn) => btn.classList.remove("active"))
     tabContents.forEach((content) => content.classList.remove("active"))
 
-    /* Buscar los botones que tienen el nombre pasado por event listener */
+    // activa la pestaña y el contenido seleccionados
     const activeButton = document.querySelector(`[data-tab="${tabName}"]`)
     const activeContent = document.getElementById(tabName)
 
@@ -145,7 +150,7 @@ function switchTab(tabName) {
 
 }
 
-// Attach event listeners to static pagination controls once
+// configura los listeners de la paginación una vez
 function setupPaginationControls() {
     if (prevButton) {
         prevButton.addEventListener('click', () => {
@@ -162,13 +167,13 @@ function setupPaginationControls() {
         });
     }
 
-    if (pageInput) { // pageInput is now a static element in HTML
-        // 1. Limpiar caracteres no numéricos mientras se escribe
+    if (pageInput) { // el input de página es un elemento estático
+        // 1. limpiar caracteres no numéricos mientras se escribe
         pageInput.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/\D/g, '');
         });
 
-        // 2. Navegar a la página al presionar "Enter"
+        // 2. navegar a la página al presionar "enter"
         pageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -185,17 +190,17 @@ function setupPaginationControls() {
 }
 
 async function renderProducts(filter = "", page = 1, limit = 10) {
-    // 1. Obtener productos desde el servidor
+    // 1. obtener productos desde el servidor
     const res = await fetch(`/v1/products?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
     const data = await res.json(); // { products, totalPages, currentPage }
     console.log("Products data:", data);
-    if (!data.products) return; // Salir si no hay productos
+    if (!data.products) return; // salir si no hay productos
 
-    // Actualizar el estado de paginación del módulo
+    // actualizar el estado de paginación del módulo
     totalPages = data.totalPages;
     currentPage = data.currentPage;
 
-    // 2. Renderizar resultados
+    // 2. renderizar resultados en la tabla
     let products = data.products;
     if (!productsTableBody) {
         console.error("Element with id 'productsTableBody' not found.");
@@ -207,42 +212,40 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
     }
     productsTableBody.innerHTML = data.products.map((product) => `
         <tr>
-        <td><strong>${product.id_Inv_Articulo}</strong></td>
-        <td>${product.Inv_Nombre}</td>
-        <td>${product.Inv_Categoria}</td>
-        <td>${product.UnidadMedida}</td>   
-        <td>${product.Inv_CantUnidadMedida}</td>
-        <td>${product.IVA}</td>
-        <td>$${product.Inv_PrecioUnitario}</td>
-        <td>
-        <span class="badge-status ${product.stock < 20 ? "badge-warning" : "badge-success"}">
-        ${product.Inv_StockActual}
-        </span>
-        </td>
-        <td>${product.Inv_Categoria}</td>
-        <td>
-        <div class="table-actions">
-        <button class="btn btn-sm btn-secondary btn-edit" data-id="${product.id_Inv_Articulo}">
-        ✏️
-        </button>
-        <button class="btn btn-sm btn-danger btn-delete" data-id="${product.id_Inv_Articulo}">
-        🗑️
-        </button>
-        </div>
-        </td>
+            <td><strong>${product.id_Inv_Articulo}</strong></td>
+            <td>${product.Inv_Nombre}</td>
+            <td>${product.TipoArticulo}</td>
+            <td>${product.UnidadMedida}</td>
+            <td>${product.Inv_CantUnidadMedida}</td>
+            <td>${product.IVA}</td>
+            <td>$${product.Inv_PrecioUnitario}</td>
+            <td>
+                <span class="badge-status ${product.Inv_StockActual < 20 ? "badge-warning" : "badge-success"}">
+                    ${product.Inv_StockActual}
+                </span>
+            </td>
+            <td>${product.Inv_Categoria}</td>
+            <td>
+                <div class="table-actions">
+                    <button class="btn btn-sm btn-secondary btn-edit" data-id="${product.id_Inv_Articulo}">✏️</button>
+                    <button class="btn btn-sm btn-danger btn-toggle-status" data-id="${product.id_Inv_Articulo}">
+                        🗑️
+                    </button>
+                </div>
+            </td>
         </tr>
         `).join("");
 
-    // 3. Actualizar la interfaz de usuario de la paginación
+    // 3. actualizar la interfaz de la paginación
     updatePaginationUI(data.totalPages, data.currentPage);
 }
 
 async function openProductModal() {
-    productForm.reset(); // Limpiar el formulario
-    productIdInput.value = ''; // Asegurarse que no hay ID de producto
+    productForm.reset(); // limpiar el formulario
+    productIdInput.value = ''; // asegurarse que no hay id de producto
     document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto';
 
-    // Cargar opciones para los <select>
+    // cargar opciones para los <select>
     await populateSelectOptions();
 
     productModalOverlay.style.display = 'flex';
@@ -254,7 +257,7 @@ async function openProductModalForEdit(productId) {
     productIdInput.value = productId;
 
     try {
-        // Cargar las opciones de los selects y los datos del producto en paralelo
+        // cargar las opciones y los datos del producto en paralelo
         const [_, productResponse] = await Promise.all([
             populateSelectOptions(),
             fetch(`/v1/products/${productId}`)
@@ -264,7 +267,7 @@ async function openProductModalForEdit(productId) {
 
         const product = await productResponse.json();
 
-        // Rellenar el formulario con los datos del producto
+        // rellenar el formulario con los datos del producto
         for (const key in product) {
             if (productForm.elements[key]) {
                 productForm.elements[key].value = product[key];
@@ -291,7 +294,7 @@ async function populateSelectOptions() {
         const unidadSelect = document.getElementById('productUnit');
         const ivaSelect = document.getElementById('productIva');
 
-        // Helper para poblar un select
+        // función auxiliar para poblar un select
         const populate = (select, items) => {
             select.innerHTML = '<option value="">Seleccione...</option>';
             items.forEach(item => {
@@ -332,12 +335,37 @@ async function saveProduct() {
 
         alert(`Producto ${isUpdating ? 'actualizado' : 'guardado'} exitosamente`);
         closeProductModal();
-        // Si estamos actualizando, nos quedamos en la misma página.
-        // Si estamos creando, podríamos ir a la última página para ver el nuevo producto,
-        // pero por simplicidad, recargamos la actual.
+        // recargar la tabla para mostrar los cambios
         renderProducts(currentFilter, currentPage);
     } catch (error) {
         console.error('Failed to save product:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+async function toggleProductStatus(productId) {
+    // Primero, obtenemos el estado actual del producto para personalizar el mensaje
+    const productRow = document.querySelector(`button[data-id='${productId}'].btn-toggle-status`);
+    const isActivating = productRow.classList.contains('btn-success'); // Si tiene btn-success, la acción es reactivar
+
+    const actionText = isActivating ? 'reactivar' : 'desactivar';
+    const confirmation = confirm(`¿Estás seguro de que deseas ${actionText} este producto?`);
+
+    if (!confirmation) return
+
+    try {
+        const response = await fetch(`/v1/products/${productId}/toggle-status`, {
+            method: 'PATCH',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error al ${actionText} el producto.`);
+        }
+        // Recargar la tabla para reflejar el cambio de estado
+        await renderProducts(currentFilter, currentPage);
+    } catch (error) {
+        console.error(`Failed to ${actionText} product:`, error);
         alert(`Error: ${error.message}`);
     }
 }
@@ -349,21 +377,21 @@ function updatePaginationUI(totalPages, currentPage) {
         return;
     }
 
-    // Clear existing numeric buttons
+    // limpiar botones numéricos existentes
     paginacionIndexesContainer.innerHTML = '';
 
-    // Helper to create and append a numeric button
+    // función auxiliar para crear y añadir un botón numérico
     const appendNumericButton = (pageNumber) => {
         const button = document.createElement('button');
         button.className = `paginacion-boton indice ${pageNumber === currentPage ? 'active' : ''}`;
         button.dataset.page = pageNumber;
         button.textContent = pageNumber;
-        // Adjuntar event listener aquí, ya que estos botones se recrean
+        // adjuntar listener aquí, ya que los botones se recrean
         button.addEventListener('click', () => renderProducts(currentFilter, pageNumber));
         paginacionIndexesContainer.appendChild(button);
     };
 
-    // Helper to append ellipsis
+    // función auxiliar para añadir puntos suspensivos
     const appendEllipsis = () => {
         const ellipsis = document.createElement('span');
         ellipsis.textContent = '...';
@@ -372,39 +400,39 @@ function updatePaginationUI(totalPages, currentPage) {
     };
 
     if (totalPages <= 0) {
-        // No hay páginas para mostrar
-    } else if (totalPages <= 3) { // If few pages, show all
+        // no hay páginas para mostrar
+    } else if (totalPages <= 3) { // si hay pocas páginas, mostrarlas todas
         for (let i = 1; i <= totalPages; i++) {
             appendNumericButton(i);
         }
-    } else { // Many pages, use ellipsis
-        const pagesToShowAroundCurrent = 1; // e.g., current-2, current-1, current, current+1, current+2
+    } else { // si hay muchas páginas, usar puntos suspensivos
+        const pagesToShowAroundCurrent = 1;
 
-        // Always show page 1
+        // mostrar siempre la página 1
         appendNumericButton(1);
 
-        // Show ellipsis if current page is far from 1
-        if (currentPage > pagesToShowAroundCurrent + 1) { // e.g., if current > 4
+        // mostrar '...' si la página actual está lejos del inicio
+        if (currentPage > pagesToShowAroundCurrent + 1) {
             appendEllipsis();
         }
 
-        // Show pages around current
+        // mostrar páginas alrededor de la actual
         for (let i = Math.max(2, currentPage - pagesToShowAroundCurrent);
             i <= Math.min(totalPages - 1, currentPage + pagesToShowAroundCurrent);
             i++) {
             appendNumericButton(i);
         }
 
-        // Show ellipsis if current page is far from totalPages
-        if (currentPage < totalPages - pagesToShowAroundCurrent - 1) { // e.g., if current < total-3
+        // mostrar '...' si la página actual está lejos del final
+        if (currentPage < totalPages - pagesToShowAroundCurrent - 1) {
             appendEllipsis();
         }
 
-        // Always show last page
+        // mostrar siempre la última página
         appendNumericButton(totalPages);
     }
 
-    // Update previous/next button states
+    // actualizar estado de los botones previo/siguiente
     prevButton.disabled = currentPage === 1;
     if (currentPage === 1) {
         prevButton.classList.add("disabled");
@@ -420,7 +448,7 @@ function updatePaginationUI(totalPages, currentPage) {
     }
     nextButton.disabled = currentPage === totalPages;
 
-    // Update page input value
+    // actualizar el valor del input de página
     pageInput.value = "...";
 }
 
@@ -429,8 +457,8 @@ function initDashboard() {
     highlightActive();
     initMobileMenu();
     setupEventListeners();
-    setupPaginationControls(); // Configurar los listeners de eventos de paginación estáticos una vez
-    renderProducts(); // Carga inicial.
+    setupPaginationControls(); // configurar listeners de paginación estáticos
+    renderProducts(); // carga inicial de productos
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
