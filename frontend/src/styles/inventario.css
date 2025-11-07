@@ -75,6 +75,11 @@ body {
     padding: var(--spacing-lg);
 }
 
+.card-footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--gray-200);
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -108,7 +113,6 @@ body {
 .table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* INDISPENSABLE para control de ancho */
 }
 
 .table thead {
@@ -136,16 +140,56 @@ body {
 }
 
 /* Productos - 10 Columnas */
-#productos .table th:nth-child(1) { width: 90px; }  /* ID Artículo */
-#productos .table th:nth-child(2) { width: 25%; }    /* Nombre */
-#productos .table th:nth-child(3) { width: 120px; }  /* Tipo de Artículo */
-#productos .table th:nth-child(4) { width: 100px; }  /* Unidad de Medida */
-#productos .table th:nth-child(5) { width: 120px; }  /* Cantidad por Unidad */
-#productos .table th:nth-child(6) { width: 60px; }   /* IVA */
-#productos .table th:nth-child(7) { width: 110px; }  /* Precio Unitario */
-#productos .table th:nth-child(8) { width: 100px; }  /* Stock Actual */
-#productos .table th:nth-child(9) { width: 15%; }    /* Categoría */
-#productos .table th:nth-child(10) { width: 150px; } /* Acciones */
+#productos .table th:nth-child(1) {
+    width: 90px;
+}
+
+/* ID Artículo */
+#productos .table th:nth-child(2) {
+    width: 25%;
+}
+
+/* Nombre */
+#productos .table th:nth-child(3) {
+    width: 120px;
+}
+
+/* Tipo de Artículo */
+#productos .table th:nth-child(4) {
+    width: 100px;
+}
+
+/* Unidad de Medida */
+#productos .table th:nth-child(5) {
+    width: 120px;
+}
+
+/* Cantidad por Unidad */
+#productos .table th:nth-child(6) {
+    width: 60px;
+}
+
+/* IVA */
+#productos .table th:nth-child(7) {
+    width: 110px;
+}
+
+/* Precio Unitario */
+#productos .table th:nth-child(8) {
+    width: 100px;
+}
+
+/* Stock Actual */
+#productos .table th:nth-child(9) {
+    width: 15%;
+}
+
+/* Categoría */
+#productos .table th:nth-child(10) {
+    width: 150px;
+}
+
+/* Acciones */
 
 /* Tabs */
 .tabs {
@@ -187,4 +231,116 @@ body {
 
 .tab-content.active {
     display: block;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--gray-300);
+    background-color: white;
+    color: var(--gray-600);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+    background-color: var(--gray-50);
+    border-color: var(--primary);
+}
+
+.pagination-btn.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+
+
+
+
+
+
+
+
+.paginacion {
+    display: flex;
+    /* justifu es en el principal, horizontal por defecto */
+    justify-content: center;
+    /* align items es en el eje secundario, transversal */
+    align-items: center;
+    /* espaciado entre items */
+    gap: var(--spacing-sm);
+}
+
+.paginacion-boton {
+    background-color: #ffffff;
+    /* width style color */
+    border: 1px solid var(--gray-300);
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border-radius: var(--radius-md);
+    /* Añadido para redondear las esquinas */
+    color: var(--gray-600);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.paginacion-boton.disabled {
+    cursor: not-allowed;
+    background-color: var(--gray-300);
+}
+
+/* transformamos el input en un boton parecido */
+input.paginacion-boton {
+    display: inline-block;
+    /* Sobrescribimos el display:flex para los inputs */
+    color: var(--gray-600);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.paginacion-boton:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.paginacion-boton.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.indice {
+    width: 32px;
+    height: 32px;
+}
+
+.paginacion-ellipsis {
+    padding: 0 var(--spacing-sm);
+    /* Ajusta según sea necesario */
+    color: var(--gray-600);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    /* Para que coincida con la altura de los botones */
 }

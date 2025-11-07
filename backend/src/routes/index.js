@@ -16,6 +16,7 @@ import { veterinariosRouter } from "./veterinarios.js";
 import { especialidadesRouter } from "./especialidades.js";
 import { turnosRouter } from "./turnos.js";
 import reporteRoutes from "./reportes.js";
+import { productsRouter } from './products.routes.js';
 
 export const router = express.Router();
 
@@ -36,3 +37,4 @@ router.use("/veterinarios", veterinariosRouter);
 router.use("/especialidades", especialidadesRouter);
 router.use("/turnos", turnosRouter);
 router.use("/reportes", reporteRoutes);
+router.use('/products', productsRouter);
