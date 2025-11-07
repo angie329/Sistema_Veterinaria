@@ -13,8 +13,8 @@ export const getProducts = async (req, res) => {
 
         // Query para contar el total de productos que coinciden con la búsqueda
         const countResult = await query(
-            "SELECT COUNT(*) as total FROM Inv_Articulo WHERE Inv_Nombre LIKE ?",
-            [searchPattern]
+            "SELECT COUNT(*) as total FROM Inv_Articulo WHERE Inv_Nombre LIKE ? AND Inv_EsActivo = 1",
+            [searchPattern, ]
         );
         const totalProducts = countResult[0].total;
         const totalPages = Math.ceil(totalProducts / limit);
@@ -41,6 +41,7 @@ export const getProducts = async (req, res) => {
         ON a.id_Gen_IVAFk = iva.Gen_id_iva
         LEFT JOIN Gen_UnidadMedida u
         ON a.id_Gen_UnidadMedidaFk = u.Gen_id_unidad_medida
+        WHERE a.Inv_Nombre LIKE ? AND a.Inv_EsActivo = 1
         ORDER BY a.id_Inv_Articulo ASC
         LIMIT ${limit} OFFSET ${offset};`,
             [searchPattern]
@@ -152,5 +153,32 @@ export const createProduct = async (req, res) => {
     } catch (error) {
         console.error("Error creating product:", error);
         res.status(500).json({ message: "Error al crear el producto", error: error.message });
+    }
+};
+
+export const toggleProductStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Obtener el estado actual del producto
+        const [product] = await query("SELECT Inv_EsActivo FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [id]);
+
+        if (!product) {
+            return res.status(404).json({ message: "Producto no encontrado." });
+        }
+
+        // 2. Calcular el nuevo estado (invertir el actual)
+        const newStatus = !product.Inv_EsActivo;
+
+        // 3. Actualizar la base de datos
+        const sql = "UPDATE Inv_Articulo SET Inv_EsActivo = ? WHERE id_Inv_Articulo = ?";
+        await query(sql, [newStatus, id]);
+
+        const action = newStatus ? "reactivado" : "desactivado";
+        res.json({ message: `Producto ${action} exitosamente.` });
+
+    } catch (error) {
+        console.error(`Error toggling status for product with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al cambiar el estado del producto", error: error.message });
     }
 };
