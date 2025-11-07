@@ -1,4 +1,4 @@
-/* Dashboard Styles */
+/*======= BILLING STYLES ========*/
 
 .billing {
   padding: var(--spacing-lg) 0;
@@ -29,41 +29,9 @@
   color: var(--gray-600);
   font-size: 0.875rem;
 }
-/*
-svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-&.icon-primary {
-  background-color: var(--primary-light);
-  color: var(--primary);
-}
-
-&.icon-secondary {
-  background-color: #dbeafe;
-  color: var(--secondary);
-}
-
-&.icon-warning {
-  background-color: #fef3c7;
-  color: var(--warning);
-}
-
-&.icon-error {
-  background-color: #fee2e2;
-  color: var(--error);
-}
-
-&.icon-success {
-  background-color: var(--primary-light);
-  color: var(--success);
-}
-*/
 
 
-/* Dashboard Sections Grid */
+/* Sections Grid */
 .billing-sections {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -95,7 +63,7 @@ svg {
 .section-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--gray-900);
+  color: #617a6b;
   margin: 0;
   display: flex;
   align-items: center;
@@ -127,6 +95,38 @@ svg {
 .btn:hover{
   background: #009966;
 }
+
+#btnGenBill{
+  width:60%;
+  margin-top:20px;
+  margin-left:100%;
+  transform: translateX(-50%);
+  font-size:1.1rem;
+}
+
+@media (max-width: 1024px) {
+    #btnGenBill{
+      margin-left:50%;
+    }
+  }
+
+#totalBill{
+  font-weight: 500;
+  font-size: 1.5em;
+
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left; }
 
 /* Empty State */
 .empty-state {

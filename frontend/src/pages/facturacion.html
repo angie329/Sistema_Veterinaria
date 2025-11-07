@@ -107,74 +107,93 @@
             <p class="billing-date" id="billingDate"></p>
           </div>
         </div>
+        
+        <form id="billingForm" name="billingForm" onsubmit="return sendBill()">
+          <div class="billing-sections">
+            <div class="billing-section">
+              <div class="section-header">
+                <h3 class="section-title">Datos del Cliente</h3>
+              </div>
+              <div class="row">
+                <input id="txtSearch" name="txtSearch" type="text" placeholder="Buscar cliente por nombre o cédula" />
+                <button id="btnSearch" name="btnSearch" class="btn" type="button">Buscar</button>
+              </div>
+              <div class="row">
+                <input type="text" id="TxtName" name="txtName" placeholder="Nombre del Cliente"/>
+              </div>
+              <div class="row">
+                <input type="text" id="txtID" name="txtID" placeholder="Cedula o RUC"/>
+                <input type="text" id="txtTlf" name="txtTlf" placeholder="Teléfono"/>
+              </div>
+          </div>
+          <div class="billing-section">
+            <div class="section-header">
+              <h3 class="section-title">Productos y Servicios</h3>
+            </div>
+            <div class="row">
+              <select id="selectItem" name="selectItem">
+                <option value="">Seleccionar servicio o producto</option>
+              </select>
+              <input type="number" id="cantidadItem" name="cantidadItem" placeholder="Cantidad" min="1" value="1" />
+              <button type="button" class="btn" id="btnItem" name="btnItem">Agregar</button>
+            </div>
 
-        <div class="billing-sections">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Subtotal</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="detalleFactura" name="detalleFactura">
+              </tbody>
+            </table>
+          </div>
 
           <div class="billing-section">
             <div class="section-header">
-              <h3 class="section-title">Datos del Cliente</h3>
+              <h3 class="section-title">Total</h3>
             </div>
             <div class="row">
-              <input type="text" placeholder="Buscar cliente por nombre o cédula" id="buscarCliente" />
-              <button class="btn">Buscar</button>
+              <span id="subTotalBill"> Subtotal a Pagar: $0.00</span>
             </div>
             <div class="row">
-              <input type="text" placeholder="Nombre del Cliente" id="nombreCliente" />
-              <input type="text" placeholder="Teléfono" id="telefonoCliente" />
+              <select id="iva" name="iva">
+                <option value="">Seleccione IVA</option>
+                <!-- gen_iva.Gen_id_iva -->
+                </select>
             </div>
-        </div>
-        <div class="billing-section">
-          <div class="section-header">
-            <h3 class="section-title">Productos y Servicios</h3>
+            <div class="row">
+              <span id="totalBill">Total a Pagar: $0.00</span>
+            </div>
           </div>
-          <div class="row">
-            <select id="selectArticulo">
-              <option value="">Seleccionar servicio o producto</option>
-            </select>
-            <input type="number" id="cantidadArticulo" placeholder="Cantidad" min="1" value="1" />
-            <button class="btn">Agregar</button>
+          <div class="billing-section">
+
+            <div class="section-header">
+              <h3 class="section-title">Método de Pago</h3>
+            </div>
+            <div class="row">
+              <select id="payment" name="payment">
+                <option value="">Seleccione método de pago</option>
+                <!-- gen_metodopago.Gen_id_metodo_pago -->
+              </select>
+              
+            </div>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="detalleFactura">
-            </tbody>
-          </table>
-        </div>
-
-        <div class="billing-section">
-          <div class="section-header">
-            <h3 class="section-title">Total</h3>
-          </div>
-          <div class="row">
-            <span id="totalPagar" style="font-size: 1.3rem; font-weight: bold;">Total a Pagar: $0.00</span>
-          </div>
-
-          <h3 class="section-title">Método de Pago e IVA</h3>
-          <div class="row">
-            <select id="metodoPago">
-              <option value="">Seleccione método de pago</option>
-              <!-- gen_metodopago.Gen_id_metodo_pago -->
-            </select>
-            
-          </div>
-        </div>
-
-          <button class="btn" style="width:100%; margin-top:20px; font-size:1.1rem;">Generar Factura</button>
+          <button type="submit" class="btn" id="btnGenBill" name="btnGenBill">Generar Factura</button>
 
         </div>
+      </form>
 
       </main>
     </div>
+    <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
+    <script src="../js/billing.js"></script>
+    
 
-    <script type="module" src="../js/billing.js"></script>
     </body>
 </html>

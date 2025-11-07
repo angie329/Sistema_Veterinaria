@@ -2,7 +2,7 @@ import { createIcons, icons } from "lucide";
 
 import { config } from "@/config/env.js";
 
-const iconConfig = {
+const createIcons = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
     Users: icons.Users,
@@ -28,6 +28,12 @@ const iconConfig = {
     XCircle: icons.XCircle,
   },
 };
+
+function initIcons() {
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}
 
 function highlightActive() {
   const currentPath = window.location.pathname;
@@ -72,3 +78,11 @@ function initMobileMenu() {
     }
   });
 }
+
+function initModule() {
+  highlightActive();
+  initMobileMenu();
+  initIcons();
+}
+
+document.addEventListener("DOMContentLoaded", initModule);
