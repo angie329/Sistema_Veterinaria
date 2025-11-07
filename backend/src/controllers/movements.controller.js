@@ -78,10 +78,11 @@ export const getMovementById = async (req, res) => {
         const movementSql = `
             SELECT 
                 id_Inv_Movimiento as id,
-                DATE_FORMAT(Inv_Fecha, '%Y-%m-%d') as fecha,
+                DATE_FORMAT(Inv_Fecha, '%Y-%m-%d %H:%i:%s') as fecha,
                 id_Inv_ArticuloFk as producto,
-                id_Inv_TipoMovimientoFk as tipo,
-                Inv_Cantidad as cantidad
+                Inv_TipoMovimiento as tipo,
+                Inv_Cantidad as cantidad,
+                Inv_EsActivo as esActivo
             FROM Inv_Movimiento 
             WHERE id_Inv_Movimiento = ?`;
         const [movement] = await query(movementSql, [id]);
@@ -90,9 +91,19 @@ export const getMovementById = async (req, res) => {
             return res.status(404).json({ message: "Movimiento no encontrado" });
         }
 
-        // Obtener listas de opciones (productos y tipos de movimiento)
-        const products = await query("SELECT id_Inv_Articulo as id, Inv_Nombre as name FROM Inv_Articulo WHERE Inv_EsActivo = 1 ORDER BY Inv_Nombre");
-        const movementTypes = await query("SELECT id_Inv_TipoMovimiento as id, Inv_TipoMovimiento as name FROM Inv_TipoMovimiento");
+        // Obtener lista de productos activos
+        const products = await query(
+            `SELECT id_Inv_Articulo as id, Inv_Nombre as name 
+             FROM Inv_Articulo 
+             WHERE Inv_EsActivo = 1 
+             ORDER BY Inv_Nombre`
+        );
+
+        // Lista de tipos de movimiento según ENUM definido en la tabla
+        const movementTypes = [
+            { id: 'Ingreso', name: 'Ingreso' },
+            { id: 'Salida', name: 'Salida' }
+        ];
 
         res.json({
             movement,
