@@ -515,6 +515,7 @@
   background: white;
   border-radius: var(--radius-md);
   overflow: hidden;
+  min-width: 600px;
 }
 
 .data-table th,
@@ -544,4 +545,34 @@
 .table-actions {
   display: flex;
   gap: var(--spacing-xs);
+}
+
+@media (max-width: 768px) { 
+  .data-table .table-actions button {
+    padding: var(--spacing-xs) var(--spacing-sm); 
+    font-size: 0.8rem; 
+    min-width: unset; 
+  }
+
+  .data-table .table-actions button i {
+    margin-right: var(--spacing-xxs);
+  }
+}
+
+@media (max-width: 500px) { 
+  .data-table .table-actions {
+    gap: 4px;
+  }
+  
+  .data-table .table-actions button {
+    padding: var(--spacing-xs); 
+    font-size: 0; 
+    width: auto; 
+    height: auto;
+  }
+
+  .data-table .table-actions button i {
+    margin: 0; 
+    font-size: 1rem; 
+  }
 }

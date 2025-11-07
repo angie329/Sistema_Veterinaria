@@ -105,3 +105,18 @@ dialog {
   margin-bottom: var(--spacing-lg);
 }
 
+@media (max-width: 600px) {
+  .section-header {
+    flex-direction: column; /* Apila el título (h2) y el botón verticalmente */
+    align-items: flex-start; /* Alinea los elementos a la izquierda al apilar */
+  }
+
+  .section-header h2 {
+    margin-bottom: var(--spacing-sm); /* Añade espacio debajo del título */
+  }
+  
+  /* Hace que el botón "Crear" ocupe todo el ancho en móvil */
+  .section-header .btn-primary { 
+    width: 100%;
+  }
+}

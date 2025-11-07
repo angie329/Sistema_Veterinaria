@@ -13,28 +13,47 @@ const fields = [
   { name: "Gen_id_estado_general", default: 1 },
 ];
 
+/**
+ * Obtiene los valores del body de la solicitud, aplicando defaults
+ * si el valor es undefined o una cadena vacía.
+ */
+const getValuesFromRequestBody = (body) => {
+  return fields.map((f) => {
+    const value = body[f.name];
+    if (value === undefined || value === "") {
+      return f.default !== undefined ? f.default : null;
+    }
+    return value;
+  });
+};
+
+/**
+ * Función genérica para manejar errores.
+ */
+const handleError = (res, operation, error) => {
+  console.error(`Error ${operation} ${tableName}:`, error);
+  const baseMessage = `Error al ${operation === 'fetching' ? 'obtener' : operation === 'creating' ? 'crear' : operation === 'updating' ? 'actualizar' : 'eliminar'} ${tableName}`;
+  res.status(500).json({ error: `${baseMessage}: ${error.message || ''}`.trim() });
+};
+
 ciudadRouter.get("/", async (req, res) => {
   try {
     const rows = await query(`SELECT * FROM ${tableName}`);
     res.json(rows);
   } catch (error) {
-    console.error(`Error fetching ${tableName}:`, error);
-    res.status(500).json({ error: `Error al obtener ${tableName}` });
+    handleError(res, "fetching", error);
   }
 });
 
 ciudadRouter.get("/:id", async (req, res) => {
   try {
-    const rows = await query(`SELECT * FROM ${tableName} WHERE ${idField} = ?`, [
-      req.params.id,
-    ]);
+    const rows = await query(`SELECT * FROM ${tableName} WHERE ${idField} = ?`, [req.params.id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: "No encontrado" });
     }
     res.json(rows[0]);
   } catch (error) {
-    console.error(`Error fetching ${tableName}:`, error);
-    res.status(500).json({ error: `Error al obtener ${tableName}` });
+    handleError(res, "fetching", error);
   }
 });
 
@@ -42,13 +61,7 @@ ciudadRouter.post("/", async (req, res) => {
   try {
     const fieldNames = fields.map((f) => f.name).join(", ");
     const placeholders = fields.map(() => "?").join(", ");
-    const values = fields.map((f) => {
-      const value = req.body[f.name];
-      if (value === undefined || value === "") {
-        return f.default !== undefined ? f.default : null;
-      }
-      return value;
-    });
+    const values = getValuesFromRequestBody(req.body);
 
     const connection = getPool();
     const [result] = await connection.execute(
@@ -57,8 +70,7 @@ ciudadRouter.post("/", async (req, res) => {
     );
     res.json({ [idField]: result.insertId, ...req.body });
   } catch (error) {
-    console.error(`Error creating ${tableName}:`, error);
-    res.status(500).json({ error: `Error al crear ${tableName}: ${error.message}` });
+    handleError(res, "creating", error);
   }
 });
 
@@ -66,21 +78,14 @@ ciudadRouter.put("/:id", async (req, res) => {
   try {
     const setClause = fields.map((f) => `${f.name} = ?`).join(", ");
     const values = [
-      ...fields.map((f) => {
-        const value = req.body[f.name];
-        if (value === undefined || value === "") {
-          return f.default !== undefined ? f.default : null;
-        }
-        return value;
-      }),
-      req.params.id,
+      ...getValuesFromRequestBody(req.body),
+      req.params.id, 
     ];
 
     await query(`UPDATE ${tableName} SET ${setClause} WHERE ${idField} = ?`, values);
     res.json({ [idField]: req.params.id, ...req.body });
   } catch (error) {
-    console.error(`Error updating ${tableName}:`, error);
-    res.status(500).json({ error: `Error al actualizar ${tableName}: ${error.message}` });
+    handleError(res, "updating", error);
   }
 });
 
@@ -89,8 +94,6 @@ ciudadRouter.delete("/:id", async (req, res) => {
     await query(`DELETE FROM ${tableName} WHERE ${idField} = ?`, [req.params.id]);
     res.json({ message: "Eliminado correctamente" });
   } catch (error) {
-    console.error(`Error deleting ${tableName}:`, error);
-    res.status(500).json({ error: `Error al eliminar ${tableName}` });
+    handleError(res, "deleting", error);
   }
 });
-
