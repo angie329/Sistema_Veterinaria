@@ -4,7 +4,7 @@ export const getProducts = async (req, res) => {
     // 1. Leer los parámetros de la URL
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) - 1 || 10;
         const searchTerm = req.query.search || "";
 
         // 2. Lógica para obtener los datos de la base de datos

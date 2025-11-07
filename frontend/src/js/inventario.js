@@ -67,12 +67,17 @@ function initMobileMenu() {
 
 // estado de la paginación
 let currentFilter = "";
-let currentPage = 1;
-let totalPages = 1;
+let productsCurrentPage = 1;
+let productsTotalPages = 1;
+
+let movementsCurrentPage = 1;
+let movementsTotalPages = 1;
 
 // elementos del dom
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
+
+// --- Elementos de Productos ---
 const paginacionIndexesContainer = document.getElementById("paginacion-indexes"); // contenedor para los botones numéricos de página
 const prevButton = document.getElementById("previous");
 const nextButton = document.getElementById("next");
@@ -85,6 +90,20 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const productIdInput = document.getElementById('productId');
 
 const cancelModalBtn = document.getElementById("cancelModalBtn");
+
+// --- Elementos de Movimientos ---
+const movementsTableBody = document.getElementById("movementsTableBody");
+const movementsPaginacionContainer = document.getElementById("movementsPaginacionIndexes");
+const movementsPrevBtn = document.getElementById("movementsPrev");
+const movementsNextBtn = document.getElementById("movementsNext");
+const movementsPageInput = document.getElementById("movementsPageInput");
+
+// --- Elementos del Modal de Movimientos ---
+const movementModalOverlay = document.getElementById("movementModalOverlay");
+const movementForm = document.getElementById("movementForm");
+const closeMovementModalBtn = document.getElementById("closeMovementModalBtn");
+const cancelMovementModalBtn = document.getElementById("cancelMovementModalBtn");
+const movementIdInput = document.getElementById('movementId');
 
 
 function setupEventListeners() {
@@ -134,6 +153,32 @@ function setupEventListeners() {
             toggleProductStatus(productId);
         }
     });
+
+    // Listeners para el modal de movimientos
+    if (closeMovementModalBtn) closeMovementModalBtn.addEventListener('click', closeMovementModal);
+    if (cancelMovementModalBtn) cancelMovementModalBtn.addEventListener('click', closeMovementModal);
+    if (movementModalOverlay) {
+        movementModalOverlay.addEventListener('click', (e) => {
+            if (e.target === movementModalOverlay) {
+                closeMovementModal();
+            }
+        });
+    }
+    if (movementForm) {
+        movementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveMovement();
+        });
+    }
+
+    // Delegación de eventos para la tabla de movimientos
+    movementsTableBody.addEventListener('click', (e) => {
+        const editButton = e.target.closest('.btn-edit-movement');
+        if (editButton) {
+            const movementId = editButton.dataset.id;
+            openMovementModalForEdit(movementId);
+        }
+    });
 }
 
 function switchTab(tabName) {
@@ -148,21 +193,26 @@ function switchTab(tabName) {
     if (activeButton) activeButton.classList.add("active");
     if (activeContent) activeContent.classList.add("active");
 
+    // Cargar datos de la pestaña si es la primera vez que se abre
+    if (tabName === 'movimientos' && movementsTableBody.childElementCount === 0) {
+        renderMovements();
+    }
+
 }
 
 // configura los listeners de la paginación una vez
 function setupPaginationControls() {
     if (prevButton) {
         prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                renderProducts(currentFilter, currentPage - 1, 10);
+            if (productsCurrentPage > 1) {
+                renderProducts(currentFilter, productsCurrentPage - 1, 10);
             }
         });
     }
     if (nextButton) {
         nextButton.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                renderProducts(currentFilter, currentPage + 1, 10);
+            if (productsCurrentPage < productsTotalPages) {
+                renderProducts(currentFilter, productsCurrentPage + 1, 10);
             }
         });
     }
@@ -178,11 +228,43 @@ function setupPaginationControls() {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const page = parseInt(e.target.value, 10);
-                if (!isNaN(page) && page > 0 && page <= totalPages) {
+                if (!isNaN(page) && page > 0 && page <= productsTotalPages) {
                     renderProducts(currentFilter, page, 10);
                 } else {
-                    console.warn(`Página inválida: ${e.target.value}`);
-                    alert(`Por favor, introduce un número de página válido entre 1 y ${totalPages}.`);
+                    console.warn(`Página de productos inválida: ${e.target.value}`);
+                    alert(`Por favor, introduce un número de página válido entre 1 y ${productsTotalPages}.`);
+                }
+            }
+        });
+    }
+
+    // Listeners para la paginación de movimientos
+    if (movementsPrevBtn) {
+        movementsPrevBtn.addEventListener('click', () => {
+            if (movementsCurrentPage > 1) {
+                renderMovements(currentFilter, movementsCurrentPage - 1, 10);
+            }
+        });
+    }
+    if (movementsNextBtn) {
+        movementsNextBtn.addEventListener('click', () => {
+            if (movementsCurrentPage < movementsTotalPages) {
+                renderMovements(currentFilter, movementsCurrentPage + 1, 10);
+            }
+        });
+    }
+    if (movementsPageInput) {
+        movementsPageInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+        movementsPageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const page = parseInt(e.target.value, 10);
+                if (!isNaN(page) && page > 0 && page <= movementsTotalPages) {
+                    renderMovements(currentFilter, page, 10);
+                } else {
+                    alert(`Por favor, introduce un número de página válido entre 1 y ${movementsTotalPages}.`);
                 }
             }
         });
@@ -197,8 +279,8 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
     if (!data.products) return; // salir si no hay productos
 
     // actualizar el estado de paginación del módulo
-    totalPages = data.totalPages;
-    currentPage = data.currentPage;
+    productsTotalPages = data.totalPages;
+    productsCurrentPage = data.currentPage;
 
     // 2. renderizar resultados en la tabla
     let products = data.products;
@@ -239,6 +321,53 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
     // 3. actualizar la interfaz de la paginación
     updatePaginationUI(data.totalPages, data.currentPage);
 }
+
+async function renderMovements(filter = "", page = 1, limit = 10) {
+    try {
+        const res = await fetch(`/v1/movements?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
+        const data = await res.json(); // { movements, totalPages, currentPage }
+
+        if (!data.movements) return;
+        console.log(data);
+
+
+        movementsCurrentPage = data.currentPage;
+        movementsTotalPages = data.totalPages;
+
+        if (data.movements.length === 0) {
+            movementsTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No se encontraron movimientos.</td></tr>`;
+            return;
+        }
+
+        movementsTableBody.innerHTML = data.movements.map(mov => `
+            <tr>
+                <td>${mov.Inv_Fecha}</td>
+                <td>${mov.ProductoNombre}</td>
+                <td>
+                    <span class="badge-status ${mov.Inv_TipoMovimiento === 'Ingreso' ? 'badge-success' : 'badge-warning'}">
+                        ${mov.Inv_TipoMovimiento}
+                    </span>
+                </td>
+                <td>${mov.Inv_Cantidad}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn btn-sm btn-secondary btn-edit-movement" data-id="${mov.id_Inv_Movimiento}">✏️</button>
+                        <button class="btn btn-sm btn-danger btn-delete-movement" data-id="${mov.id_Inv_Movimiento}">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+
+        updateMovementsPaginationUI(movementsTotalPages, movementsCurrentPage);
+
+    } catch (error) {
+        console.error("Error rendering movements:", error);
+        if (movementsTableBody) {
+            movementsTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Error al cargar los movimientos.</td></tr>`;
+        }
+    }
+}
+
 
 async function openProductModal() {
     productForm.reset(); // limpiar el formulario
@@ -284,6 +413,72 @@ function closeProductModal() {
     productModalOverlay.style.display = 'none';
 }
 
+async function openMovementModalForEdit(movementId) {
+    movementForm.reset();
+    movementIdInput.value = movementId;
+
+    try {
+        const response = await fetch(`/v1/movements/${movementId}`);
+        if (!response.ok) {
+            throw new Error('No se pudo cargar la información del movimiento.');
+        }
+        const { movement, options } = await response.json();
+
+        // Poblar los selects
+        populateSelect('movementProduct', options.products);
+        populateSelect('movementType', options.movementTypes);
+
+        // Rellenar el formulario
+        for (const key in movement) {
+            if (movementForm.elements[key]) {
+                movementForm.elements[key].value = movement[key];
+            }
+        }
+
+        movementModalOverlay.style.display = 'flex';
+
+    } catch (error) {
+        console.error('Error al abrir el modal de edición de movimiento:', error);
+        alert(error.message);
+    }
+}
+
+function closeMovementModal() {
+    if (movementModalOverlay) {
+        movementModalOverlay.style.display = 'none';
+    }
+}
+
+async function saveMovement() {
+    const formData = new FormData(movementForm);
+    const movementData = Object.fromEntries(formData.entries());
+    const movementId = movementIdInput.value;
+
+    if (!movementId) return;
+
+    try {
+        const response = await fetch(`/v1/movements/${movementId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(movementData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al actualizar el movimiento');
+        }
+
+        alert('Movimiento actualizado exitosamente');
+        closeMovementModal();
+        // Recargar la tabla para mostrar los cambios
+        renderMovements(currentFilter, movementsCurrentPage);
+    } catch (error) {
+        console.error('Failed to save movement:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+
 async function populateSelectOptions() {
     try {
         const res = await fetch('/v1/products/options');
@@ -294,22 +489,22 @@ async function populateSelectOptions() {
         const unidadSelect = document.getElementById('productUnit');
         const ivaSelect = document.getElementById('productIva');
 
-        // función auxiliar para poblar un select
-        const populate = (select, items) => {
-            select.innerHTML = '<option value="">Seleccione...</option>';
-            items.forEach(item => {
-                select.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-            });
-        };
-
-        populate(tipoSelect, options.tiposArticulo);
-        populate(unidadSelect, options.unidadesMedida);
-        populate(ivaSelect, options.ivas);
+        populateSelect('productType', options.tiposArticulo);
+        populateSelect('productUnit', options.unidadesMedida);
+        populateSelect('productIva', options.ivas);
 
     } catch (error) {
         console.error("Error populating select options:", error);
         alert("No se pudieron cargar las opciones para el formulario. Intente de nuevo.");
     }
+}
+
+function populateSelect(selectId, items) {
+    const select = document.getElementById(selectId);
+    select.innerHTML = '<option value="">Seleccione...</option>';
+    items.forEach(item => {
+        select.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+    });
 }
 
 async function saveProduct() {
@@ -336,7 +531,7 @@ async function saveProduct() {
         alert(`Producto ${isUpdating ? 'actualizado' : 'guardado'} exitosamente`);
         closeProductModal();
         // recargar la tabla para mostrar los cambios
-        renderProducts(currentFilter, currentPage);
+        renderProducts(currentFilter, productsCurrentPage);
     } catch (error) {
         console.error('Failed to save product:', error);
         alert(`Error: ${error.message}`);
@@ -363,7 +558,7 @@ async function toggleProductStatus(productId) {
             throw new Error(errorData.message || `Error al ${actionText} el producto.`);
         }
         // Recargar la tabla para reflejar el cambio de estado
-        await renderProducts(currentFilter, currentPage);
+        await renderProducts(currentFilter, productsCurrentPage);
     } catch (error) {
         console.error(`Failed to ${actionText} product:`, error);
         alert(`Error: ${error.message}`);
@@ -450,6 +645,72 @@ function updatePaginationUI(totalPages, currentPage) {
 
     // actualizar el valor del input de página
     pageInput.value = "...";
+}
+
+function updateMovementsPaginationUI(totalPages, currentPage) {
+    if (!movementsPaginacionContainer || !movementsPrevBtn || !movementsNextBtn || !movementsPageInput) {
+        console.error("Elementos de la UI de paginación de movimientos no encontrados.");
+        return;
+    }
+
+    movementsPaginacionContainer.innerHTML = '';
+
+    const appendNumericButton = (pageNumber) => {
+        const button = document.createElement('button');
+        button.className = `paginacion-boton indice ${pageNumber === currentPage ? 'active' : ''}`;
+        button.textContent = pageNumber;
+        button.addEventListener('click', () => renderMovements(currentFilter, pageNumber));
+        movementsPaginacionContainer.appendChild(button);
+    };
+
+    const appendEllipsis = () => {
+        const ellipsis = document.createElement('span');
+        ellipsis.textContent = '...';
+        ellipsis.className = 'paginacion-ellipsis';
+        movementsPaginacionContainer.appendChild(ellipsis);
+    };
+
+    if (totalPages <= 0) {
+        // No hay páginas
+    } else if (totalPages <= 3) {
+        for (let i = 1; i <= totalPages; i++) {
+            appendNumericButton(i);
+        }
+    } else {
+        const pagesToShowAroundCurrent = 1;
+
+        appendNumericButton(1);
+
+        if (currentPage > pagesToShowAroundCurrent + 1) {
+            appendEllipsis();
+        }
+
+        for (let i = Math.max(2, currentPage - pagesToShowAroundCurrent); i <= Math.min(totalPages - 1, currentPage + pagesToShowAroundCurrent); i++) {
+            appendNumericButton(i);
+        }
+
+        if (currentPage < totalPages - pagesToShowAroundCurrent - 1) {
+            appendEllipsis();
+        }
+
+        appendNumericButton(totalPages);
+    }
+
+    movementsPrevBtn.disabled = currentPage === 1;
+    if (currentPage === 1) {
+        movementsPrevBtn.classList.add("disabled");
+    } else {
+        movementsPrevBtn.classList.remove("disabled");
+    }
+
+    movementsNextBtn.disabled = currentPage === totalPages;
+    if (currentPage === totalPages) {
+        movementsNextBtn.classList.add("disabled");
+    } else {
+        movementsNextBtn.classList.remove("disabled");
+    }
+
+    movementsPageInput.value = "...";
 }
 
 

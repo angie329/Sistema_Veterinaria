@@ -5,7 +5,7 @@ import { getProductOptions } from "../controllers/options.controller.js";
 export const productsRouter = Router();
 
 
-// GET /v1/products 
+// v1/products 
 productsRouter.get('/', getProducts);
 productsRouter.get("/options", getProductOptions);
 productsRouter.get('/:id', getProductById);
