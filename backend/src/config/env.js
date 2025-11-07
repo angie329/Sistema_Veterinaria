@@ -6,5 +6,9 @@ export const config = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    // Añade esta opción para habilitar SSL.
+    // `rejectUnauthorized: true` es más seguro y recomendado para producción.
+    // Si usas certificados autofirmados en desarrollo, podrías necesitar cambiarlo a `false`.
+    ssl: { rejectUnauthorized: true },
   },
 };
