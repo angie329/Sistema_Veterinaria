@@ -82,6 +82,8 @@ const addProductBtn = document.getElementById("addProductBtn");
 const productModalOverlay = document.getElementById("productModalOverlay");
 const productForm = document.getElementById("productForm");
 const closeModalBtn = document.getElementById("closeModalBtn");
+const productIdInput = document.getElementById('productId');
+
 const cancelModalBtn = document.getElementById("cancelModalBtn");
 
 
@@ -116,6 +118,15 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && productModalOverlay.style.display !== 'none') {
             closeProductModal();
+        }
+    });
+
+    // Event Delegation para botones de la tabla
+    productsTableBody.addEventListener('click', (e) => {
+        const editButton = e.target.closest('.btn-edit');
+        if (editButton) {
+            const productId = editButton.dataset.id;
+            openProductModalForEdit(productId);
         }
     })
 }
@@ -179,7 +190,7 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
     const data = await res.json(); // { products, totalPages, currentPage }
     console.log("Products data:", data);
     if (!data.products) return; // Salir si no hay productos
-    
+
     // Actualizar el estado de paginación del módulo
     totalPages = data.totalPages;
     currentPage = data.currentPage;
@@ -199,7 +210,7 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
         <td><strong>${product.id_Inv_Articulo}</strong></td>
         <td>${product.Inv_Nombre}</td>
         <td>${product.Inv_Categoria}</td>
-        <td>${product.medidaTipoLLENARCONFK}</td>   
+        <td>${product.UnidadMedida}</td>   
         <td>${product.Inv_CantUnidadMedida}</td>
         <td>${product.IVA}</td>
         <td>$${product.Inv_PrecioUnitario}</td>
@@ -211,10 +222,10 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
         <td>${product.Inv_Categoria}</td>
         <td>
         <div class="table-actions">
-        <button class="btn btn-sm btn-secondary">
+        <button class="btn btn-sm btn-secondary btn-edit" data-id="${product.id_Inv_Articulo}">
         ✏️
         </button>
-        <button class="btn btn-sm btn-danger">
+        <button class="btn btn-sm btn-danger btn-delete" data-id="${product.id_Inv_Articulo}">
         🗑️
         </button>
         </div>
@@ -228,12 +239,42 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
 
 async function openProductModal() {
     productForm.reset(); // Limpiar el formulario
+    productIdInput.value = ''; // Asegurarse que no hay ID de producto
     document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto';
-    
+
     // Cargar opciones para los <select>
     await populateSelectOptions();
 
     productModalOverlay.style.display = 'flex';
+}
+
+async function openProductModalForEdit(productId) {
+    productForm.reset();
+    document.getElementById('modalTitle').textContent = 'Editar Producto';
+    productIdInput.value = productId;
+
+    try {
+        // Cargar las opciones de los selects y los datos del producto en paralelo
+        const [_, productResponse] = await Promise.all([
+            populateSelectOptions(),
+            fetch(`/v1/products/${productId}`)
+        ]);
+
+        if (!productResponse.ok) throw new Error('No se pudo cargar la información del producto.');
+
+        const product = await productResponse.json();
+
+        // Rellenar el formulario con los datos del producto
+        for (const key in product) {
+            if (productForm.elements[key]) {
+                productForm.elements[key].value = product[key];
+            }
+        }
+        productModalOverlay.style.display = 'flex';
+    } catch (error) {
+        console.error('Error al abrir el modal de edición:', error);
+        alert(error.message);
+    }
 }
 
 function closeProductModal() {
@@ -271,22 +312,30 @@ async function populateSelectOptions() {
 async function saveProduct() {
     const formData = new FormData(productForm);
     const productData = Object.fromEntries(formData.entries());
+    const productId = productIdInput.value;
+
+    const isUpdating = !!productId;
+    const url = isUpdating ? `/v1/products/${productId}` : '/v1/products';
+    const method = isUpdating ? 'PUT' : 'POST';
 
     try {
-        const response = await fetch('/v1/products', {
-            method: 'POST',
+        const response = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(productData)
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al guardar el producto');
+            throw new Error(errorData.message || `Error al ${isUpdating ? 'actualizar' : 'guardar'} el producto`);
         }
 
-        alert('Producto guardado exitosamente');
+        alert(`Producto ${isUpdating ? 'actualizado' : 'guardado'} exitosamente`);
         closeProductModal();
-        renderProducts(currentFilter, currentPage); // Recargar la tabla
+        // Si estamos actualizando, nos quedamos en la misma página.
+        // Si estamos creando, podríamos ir a la última página para ver el nuevo producto,
+        // pero por simplicidad, recargamos la actual.
+        renderProducts(currentFilter, currentPage);
     } catch (error) {
         console.error('Failed to save product:', error);
         alert(`Error: ${error.message}`);
@@ -366,8 +415,8 @@ function updatePaginationUI(totalPages, currentPage) {
         nextButton.classList.add("disabled");
     } else {
         nextButton.classList.remove("disabled");
-        
-        
+
+
     }
     nextButton.disabled = currentPage === totalPages;
 
