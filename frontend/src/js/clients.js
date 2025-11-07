@@ -27,6 +27,15 @@ createIcons({
     ChevronDown: icons.ChevronDown,
     PlusCircle: icons.PlusCircle,
     Menu: icons.Menu,
+    CheckCircle: icons.CheckCircle,
+    MapPin: icons.MapPin,
+    FileText: icons.FileText,
+    User: icons.User,
+    Phone: icons.Phone,
+    Percent: icons.Percent,
+    Ruler: icons.Ruler,
+    CreditCard: icons.CreditCard,
+    Building2: icons.Building2,
   },
 });
 

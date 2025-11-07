@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/src/styles/global.css" />
     <link rel="stylesheet" href="/src/styles/components.css" />
     <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="/src/styles/modals.css" />
     <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
   </head>
   <body>
@@ -35,32 +36,29 @@
           <span>Clientes</span>
         </a>
 
-        <a href="#" class="sidebar-nav-item" data-module="pets">
-          <i data-lucide="dog" class="sidebar-nav-icon"></i>
-          <span>Mascotas</span>
+        <a
+          href="/ubicaciones"
+          class="sidebar-nav-item"
+          data-module="ubicaciones"
+        >
+          <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
+          <span>Ubicaciones</span>
         </a>
 
-        <a href="#" class="sidebar-nav-item" data-module="veterinarians">
-          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
-          <span>Veterinarios</span>
+        <a
+          href="/datos-personales"
+          class="sidebar-nav-item"
+          data-module="datos-personales"
+        >
+          <i data-lucide="user" class="sidebar-nav-icon"></i>
+          <span>Datos Personales</span>
         </a>
 
-        <a href="#" class="sidebar-nav-item" data-module="appointments">
-          <i data-lucide="calendar" class="sidebar-nav-icon"></i>
-          <span>Citas</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="inventory">
-          <i data-lucide="package" class="sidebar-nav-icon"></i>
-          <span>Inventario</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="billing">
-          <i data-lucide="receipt" class="sidebar-nav-icon"></i>
-          <span>Facturación</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="settings">
+        <a
+          href="/configuracion"
+          class="sidebar-nav-item"
+          data-module="configuracion"
+        >
           <i data-lucide="settings" class="sidebar-nav-icon"></i>
           <span>Configuración</span>
         </a>
@@ -133,8 +131,76 @@
             <ul class="activity-list" id="activityList"></ul>
           </div>
         </div>
+
+        <div class="dashboard-section" style="margin-top: var(--spacing-xl)">
+          <div class="section-header">
+            <h2 class="section-title">
+              <i data-lucide="building-2"></i>
+              Proveedores
+            </h2>
+            <button class="btn btn-primary" onclick="openProveedorModal()">
+              <i data-lucide="plus"></i> Crear
+            </button>
+          </div>
+          <div id="table-proveedores"></div>
+        </div>
       </main>
     </div>
+
+    <!-- Modal Proveedores -->
+    <dialog id="modal-proveedores" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-proveedores">
+          Nuevo Proveedor
+        </h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form id="form-proveedores" onsubmit="handleProveedorSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="proveedor-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="proveedor-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-direccion">Dirección</label>
+            <input type="text" id="proveedor-direccion" name="Gen_direccion" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-telefono">Teléfono</label>
+            <input type="text" id="proveedor-telefono" name="Gen_telefono" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-email">Email</label>
+            <input type="email" id="proveedor-email" name="Gen_email" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-producto-servicio">Producto/Servicio</label>
+            <input
+              type="text"
+              id="proveedor-producto-servicio"
+              name="Gen_producto_servicio"
+            />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-proveedores" class="btn btn-primary">
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
 
     <script type="module" src="/src/js/index.js"></script>
   </body>

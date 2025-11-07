@@ -1,8 +1,30 @@
 import express from "express";
 
 import { dashboardRouter } from "./dashboard.js";
+import { estadoGeneralRouter } from "./estado-general.js";
+import { provinciaRouter } from "./provincia.js";
+import { ciudadRouter } from "./ciudad.js";
+import { tipoDocumentoRouter } from "./tipo-documento.js";
+import { generoSexoRouter } from "./genero-sexo.js";
+import { operadoraRouter } from "./operadora.js";
+import { estadoCivilRouter } from "./estado-civil.js";
+import { ivaRouter } from "./iva.js";
+import { unidadMedidaRouter } from "./unidad-medida.js";
+import { metodoPagoRouter } from "./metodo-pago.js";
+import { proveedoresRouter } from "./proveedores.js";
 
 export const router = express.Router();
 
 router.get("/health", (_, res) => res.send("OK"));
 router.use(dashboardRouter);
+router.use("/estado-general", estadoGeneralRouter);
+router.use("/provincia", provinciaRouter);
+router.use("/ciudad", ciudadRouter);
+router.use("/tipo-documento", tipoDocumentoRouter);
+router.use("/genero-sexo", generoSexoRouter);
+router.use("/operadora", operadoraRouter);
+router.use("/estado-civil", estadoCivilRouter);
+router.use("/iva", ivaRouter);
+router.use("/unidad-medida", unidadMedidaRouter);
+router.use("/metodo-pago", metodoPagoRouter);
+router.use("/proveedores", proveedoresRouter);

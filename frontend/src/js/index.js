@@ -26,6 +26,15 @@ const iconConfig = {
     AlertTriangle: icons.AlertTriangle,
     CheckCircle: icons.CheckCircle,
     XCircle: icons.XCircle,
+    MapPin: icons.MapPin,
+    FileText: icons.FileText,
+    User: icons.User,
+    Phone: icons.Phone,
+    Percent: icons.Percent,
+    Ruler: icons.Ruler,
+    CreditCard: icons.CreditCard,
+    Building2: icons.Building2,
+    Plus: icons.Plus,
   },
 };
 
@@ -296,10 +305,200 @@ async function loadDashboard() {
   }
 }
 
+// Proveedores CRUD
+let editingProveedorId = null;
+
+async function loadProveedores() {
+  const container = document.getElementById("table-proveedores");
+  if (!container) return;
+
+  container.innerHTML = "<div class='loading'>Cargando...</div>";
+
+  try {
+    const API_URL = `${config.BACKEND_URL}/v1/proveedores`;
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      container.innerHTML =
+        "<div class='empty-state'><p class='empty-state-message'>No hay proveedores</p></div>";
+      return;
+    }
+
+    const tableHTML = `
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data
+            .map(
+              (row) => `
+            <tr>
+              <td>${row.Gen_nombre || ""}</td>
+              <td>${row.Gen_telefono || ""}</td>
+              <td>${row.Gen_email || ""}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn btn-sm btn-primary" onclick="editProveedor('${
+                    row.Gen_id_proveedor
+                  }')">
+                    <i data-lucide="edit"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteProveedor('${
+                    row.Gen_id_proveedor
+                  }')">
+                    <i data-lucide="trash2"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `;
+    container.innerHTML = tableHTML;
+    createIcons(iconConfig);
+  } catch (error) {
+    console.error("Error loading proveedores:", error);
+    container.innerHTML = `<div class='empty-state'><p class='empty-state-message'>Error: ${error.message}</p></div>`;
+  }
+}
+
+function openProveedorModal() {
+  editingProveedorId = null;
+  const modal = document.getElementById("modal-proveedores");
+  const title = document.getElementById("modal-title-proveedores");
+  const form = document.getElementById("form-proveedores");
+
+  if (title) {
+    title.textContent = "Nuevo Proveedor";
+  }
+
+  if (form) {
+    form.reset();
+  }
+
+  if (modal) {
+    modal.showModal();
+    createIcons(iconConfig);
+  }
+}
+
+async function editProveedor(id) {
+  try {
+    const API_URL = `${config.BACKEND_URL}/v1/proveedores/${id}`;
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+
+    editingProveedorId = id;
+    const modal = document.getElementById("modal-proveedores");
+    const title = document.getElementById("modal-title-proveedores");
+    const form = document.getElementById("form-proveedores");
+
+    if (title) {
+      title.textContent = "Editar Proveedor";
+    }
+
+    if (form) {
+      Object.keys(data).forEach((key) => {
+        const input = form.querySelector(`[name="${key}"]`);
+        if (input) {
+          input.value = data[key] || "";
+        }
+      });
+    }
+
+    if (modal) {
+      modal.showModal();
+      createIcons(iconConfig);
+    }
+  } catch (error) {
+    console.error("Error loading proveedor:", error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
+async function deleteProveedor(id) {
+  if (!confirm("¿Está seguro de eliminar este proveedor?")) return;
+
+  try {
+    const API_URL = `${config.BACKEND_URL}/v1/proveedores/${id}`;
+    const response = await fetch(API_URL, { method: "DELETE" });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    loadProveedores();
+    alert("Eliminado correctamente");
+  } catch (error) {
+    console.error("Error deleting proveedor:", error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
+async function handleProveedorSubmit(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+  const data = {};
+
+  for (const [key, value] of formData.entries()) {
+    data[key] = value || null;
+  }
+
+  data.Gen_modulo_origen = 1;
+  data.Gen_id_estado_general = 1;
+  if (!data.Gen_producto_servicio) data.Gen_producto_servicio = "";
+
+  try {
+    const API_URL = `${config.BACKEND_URL}/v1/proveedores${
+      editingProveedorId ? `/${editingProveedorId}` : ""
+    }`;
+    const method = editingProveedorId ? "PUT" : "POST";
+
+    const response = await fetch(API_URL, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const wasEditing = !!editingProveedorId;
+    const modal = document.getElementById("modal-proveedores");
+    if (modal) {
+      modal.close();
+    }
+
+    editingProveedorId = null;
+    form.reset();
+    loadProveedores();
+    alert(wasEditing ? "Actualizado correctamente" : "Creado correctamente");
+  } catch (error) {
+    console.error("Error saving proveedor:", error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
+window.openProveedorModal = openProveedorModal;
+window.editProveedor = editProveedor;
+window.deleteProveedor = deleteProveedor;
+window.handleProveedorSubmit = handleProveedorSubmit;
+
 function initDashboard() {
   highlightActive();
   initMobileMenu();
   loadDashboard();
+  loadProveedores();
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
