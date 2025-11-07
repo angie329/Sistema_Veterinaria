@@ -5,6 +5,7 @@ import { veterinariosRouter } from "./veterinarios.routes.js";
 import { especialidadesRouter } from "./especialidades.routes.js";
 import { turnosRouter } from "./turnos.routes.js";
 import  reporteRoutes from "./reportes.routes.js";
+import { petsRouter } from "./pets.js";
 
 export const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use("/veterinarios", veterinariosRouter);
 router.use("/especialidades", especialidadesRouter);
 router.use("/turnos", turnosRouter);
 router.use("/reportes", reporteRoutes);
+router.use("/pets",petsRouter);
 
 console.log("Routes loaded successfully");
