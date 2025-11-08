@@ -98,6 +98,7 @@ const movementsPrevBtn = document.getElementById("movementsPrev");
 const movementsNextBtn = document.getElementById("movementsNext");
 const movementsPageInput = document.getElementById("movementsPageInput");
 
+const addMovementBtn = document.getElementById("addMovementBtn");
 // --- Elementos del Modal de Movimientos ---
 const movementModalOverlay = document.getElementById("movementModalOverlay");
 const movementForm = document.getElementById("movementForm");
@@ -119,23 +120,23 @@ function setupEventListeners() {
     })
 
     // listeners del modal
-    addProductBtn.addEventListener('click', openProductModal);
-    closeModalBtn.addEventListener('click', closeProductModal);
-    cancelModalBtn.addEventListener('click', closeProductModal);
+    addProductBtn.addEventListener('click', productOpenModal);
+    closeModalBtn.addEventListener('click', productCloseModal);
+    cancelModalBtn.addEventListener('click', productCloseModal);
     productModalOverlay.addEventListener('click', (e) => {
         if (e.target === productModalOverlay) {
-            closeProductModal();
+            productCloseModal();
         }
     });
 
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await saveProduct();
+        await productSave();
     });
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && productModalOverlay.style.display !== 'none') {
-            closeProductModal();
+            productCloseModal();
         }
     });
 
@@ -144,7 +145,7 @@ function setupEventListeners() {
         const editButton = e.target.closest('.btn-edit');
         if (editButton) {
             const productId = editButton.dataset.id;
-            openProductModalForEdit(productId);
+            productOpenModalForEdit(productId);
         }
 
         const toggleButton = e.target.closest('.btn-toggle-status');
@@ -155,6 +156,7 @@ function setupEventListeners() {
     });
 
     // Listeners para el modal de movimientos
+    if (addMovementBtn) addMovementBtn.addEventListener('click', movementOpenModalForCreate);
     if (closeMovementModalBtn) closeMovementModalBtn.addEventListener('click', closeMovementModal);
     if (cancelMovementModalBtn) cancelMovementModalBtn.addEventListener('click', closeMovementModal);
     if (movementModalOverlay) {
@@ -195,7 +197,7 @@ function switchTab(tabName) {
 
     // Cargar datos de la pestaña si es la primera vez que se abre
     if (tabName === 'movimientos' && movementsTableBody.childElementCount === 0) {
-        renderMovements();
+        movementsRender();
     }
 
 }
@@ -205,14 +207,14 @@ function setupPaginationControls() {
     if (prevButton) {
         prevButton.addEventListener('click', () => {
             if (productsCurrentPage > 1) {
-                renderProducts(currentFilter, productsCurrentPage - 1, 10);
+                productsRender(currentFilter, productsCurrentPage - 1, 10);
             }
         });
     }
     if (nextButton) {
         nextButton.addEventListener('click', () => {
             if (productsCurrentPage < productsTotalPages) {
-                renderProducts(currentFilter, productsCurrentPage + 1, 10);
+                productsRender(currentFilter, productsCurrentPage + 1, 10);
             }
         });
     }
@@ -229,7 +231,7 @@ function setupPaginationControls() {
                 e.preventDefault();
                 const page = parseInt(e.target.value, 10);
                 if (!isNaN(page) && page > 0 && page <= productsTotalPages) {
-                    renderProducts(currentFilter, page, 10);
+                    productsRender(currentFilter, page, 10);
                 } else {
                     console.warn(`Página de productos inválida: ${e.target.value}`);
                     alert(`Por favor, introduce un número de página válido entre 1 y ${productsTotalPages}.`);
@@ -242,14 +244,14 @@ function setupPaginationControls() {
     if (movementsPrevBtn) {
         movementsPrevBtn.addEventListener('click', () => {
             if (movementsCurrentPage > 1) {
-                renderMovements(currentFilter, movementsCurrentPage - 1, 10);
+                movementsRender(currentFilter, movementsCurrentPage - 1, 10);
             }
         });
     }
     if (movementsNextBtn) {
         movementsNextBtn.addEventListener('click', () => {
             if (movementsCurrentPage < movementsTotalPages) {
-                renderMovements(currentFilter, movementsCurrentPage + 1, 10);
+                movementsRender(currentFilter, movementsCurrentPage + 1, 10);
             }
         });
     }
@@ -262,7 +264,7 @@ function setupPaginationControls() {
                 e.preventDefault();
                 const page = parseInt(e.target.value, 10);
                 if (!isNaN(page) && page > 0 && page <= movementsTotalPages) {
-                    renderMovements(currentFilter, page, 10);
+                    movementsRender(currentFilter, page, 10);
                 } else {
                     alert(`Por favor, introduce un número de página válido entre 1 y ${movementsTotalPages}.`);
                 }
@@ -271,7 +273,7 @@ function setupPaginationControls() {
     }
 }
 
-async function renderProducts(filter = "", page = 1, limit = 10) {
+async function productsRender(filter = "", page = 1, limit = 10) {
     // 1. obtener productos desde el servidor
     const res = await fetch(`/v1/products?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
     const data = await res.json(); // { products, totalPages, currentPage }
@@ -319,10 +321,10 @@ async function renderProducts(filter = "", page = 1, limit = 10) {
         `).join("");
 
     // 3. actualizar la interfaz de la paginación
-    updatePaginationUI(data.totalPages, data.currentPage);
+    productsUpdatePaginationUI(data.totalPages, data.currentPage);
 }
 
-async function renderMovements(filter = "", page = 1, limit = 10) {
+async function movementsRender(filter = "", page = 1, limit = 10) {
     try {
         const res = await fetch(`/v1/movements?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
         const data = await res.json(); // { movements, totalPages, currentPage }
@@ -344,8 +346,8 @@ async function renderMovements(filter = "", page = 1, limit = 10) {
                 <td>${mov.Inv_Fecha}</td>
                 <td>${mov.ProductoNombre}</td>
                 <td>
-                    <span class="badge-status ${mov.Inv_TipoMovimiento === 'Ingreso' ? 'badge-success' : 'badge-warning'}">
-                        ${mov.Inv_TipoMovimiento}
+                    <span class="badge-status ${mov.TipoMovimiento === 'Ingreso' ? 'badge-success' : 'badge-warning'}">
+                        ${mov.TipoMovimiento}
                     </span>
                 </td>
                 <td>${mov.Inv_Cantidad}</td>
@@ -358,7 +360,7 @@ async function renderMovements(filter = "", page = 1, limit = 10) {
             </tr>
         `).join("");
 
-        updateMovementsPaginationUI(movementsTotalPages, movementsCurrentPage);
+        movementsUpdatePaginationUI(movementsTotalPages, movementsCurrentPage);
 
     } catch (error) {
         console.error("Error rendering movements:", error);
@@ -369,7 +371,7 @@ async function renderMovements(filter = "", page = 1, limit = 10) {
 }
 
 
-async function openProductModal() {
+async function productOpenModal() {
     productForm.reset(); // limpiar el formulario
     productIdInput.value = ''; // asegurarse que no hay id de producto
     document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto';
@@ -380,7 +382,7 @@ async function openProductModal() {
     productModalOverlay.style.display = 'flex';
 }
 
-async function openProductModalForEdit(productId) {
+async function productOpenModalForEdit(productId) {
     productForm.reset();
     document.getElementById('modalTitle').textContent = 'Editar Producto';
     productIdInput.value = productId;
@@ -409,8 +411,30 @@ async function openProductModalForEdit(productId) {
     }
 }
 
-function closeProductModal() {
+function productCloseModal() {
     productModalOverlay.style.display = 'none';
+}
+
+async function movementOpenModalForCreate() {
+    movementForm.reset();
+    movementIdInput.value = '';
+    document.getElementById('movementModalTitle').textContent = 'Registrar Nuevo Movimiento';
+
+    try {
+        const response = await fetch('/v1/movements/options');
+        if (!response.ok) {
+            throw new Error('No se pudieron cargar las opciones para el formulario.');
+        }
+        const options = await response.json();
+
+        populateSelect('movementProduct', options.products);
+        populateSelect('movementType', options.movementTypes);
+
+        movementModalOverlay.style.display = 'flex';
+    } catch (error) {
+        console.error('Error al abrir modal para crear movimiento:', error);
+        alert(error.message);
+    }
 }
 
 async function openMovementModalForEdit(movementId) {
@@ -423,6 +447,7 @@ async function openMovementModalForEdit(movementId) {
             throw new Error('No se pudo cargar la información del movimiento.');
         }
         const { movement, options } = await response.json();
+        document.getElementById('movementModalTitle').textContent = 'Editar Movimiento';
 
         // Poblar los selects
         populateSelect('movementProduct', options.products);
@@ -452,26 +477,30 @@ function closeMovementModal() {
 async function saveMovement() {
     const formData = new FormData(movementForm);
     const movementData = Object.fromEntries(formData.entries());
+    // El campo del formulario se llama 'movementId', pero en la data lo queremos como 'id'
+    delete movementData.movementId;
     const movementId = movementIdInput.value;
 
-    if (!movementId) return;
+    const isUpdating = !!movementId;
+    const url = isUpdating ? `/v1/movements/${movementId}` : '/v1/movements';
+    const method = isUpdating ? 'PUT' : 'POST';
 
     try {
-        const response = await fetch(`/v1/movements/${movementId}`, {
-            method: 'PUT',
+        const response = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(movementData)
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al actualizar el movimiento');
+            throw new Error(errorData.message || `Error al ${isUpdating ? 'actualizar' : 'crear'} el movimiento`);
         }
 
-        alert('Movimiento actualizado exitosamente');
+        alert(`Movimiento ${isUpdating ? 'actualizado' : 'creado'} exitosamente`);
         closeMovementModal();
         // Recargar la tabla para mostrar los cambios
-        renderMovements(currentFilter, movementsCurrentPage);
+        movementsRender(currentFilter, movementsCurrentPage);
     } catch (error) {
         console.error('Failed to save movement:', error);
         alert(`Error: ${error.message}`);
@@ -507,7 +536,7 @@ function populateSelect(selectId, items) {
     });
 }
 
-async function saveProduct() {
+async function productSave() {
     const formData = new FormData(productForm);
     const productData = Object.fromEntries(formData.entries());
     const productId = productIdInput.value;
@@ -529,9 +558,9 @@ async function saveProduct() {
         }
 
         alert(`Producto ${isUpdating ? 'actualizado' : 'guardado'} exitosamente`);
-        closeProductModal();
+        productCloseModal();
         // recargar la tabla para mostrar los cambios
-        renderProducts(currentFilter, productsCurrentPage);
+        productsRender(currentFilter, productsCurrentPage);
     } catch (error) {
         console.error('Failed to save product:', error);
         alert(`Error: ${error.message}`);
@@ -558,14 +587,14 @@ async function toggleProductStatus(productId) {
             throw new Error(errorData.message || `Error al ${actionText} el producto.`);
         }
         // Recargar la tabla para reflejar el cambio de estado
-        await renderProducts(currentFilter, productsCurrentPage);
+        await productsRender(currentFilter, productsCurrentPage);
     } catch (error) {
         console.error(`Failed to ${actionText} product:`, error);
         alert(`Error: ${error.message}`);
     }
 }
 
-function updatePaginationUI(totalPages, currentPage) {
+function productsUpdatePaginationUI(totalPages, currentPage) {
 
     if (!paginacionIndexesContainer || !prevButton || !nextButton || !pageInput) {
         console.error("Pagination UI elements not found for update.");
@@ -582,7 +611,7 @@ function updatePaginationUI(totalPages, currentPage) {
         button.dataset.page = pageNumber;
         button.textContent = pageNumber;
         // adjuntar listener aquí, ya que los botones se recrean
-        button.addEventListener('click', () => renderProducts(currentFilter, pageNumber));
+        button.addEventListener('click', () => productsRender(currentFilter, pageNumber));
         paginacionIndexesContainer.appendChild(button);
     };
 
@@ -647,7 +676,7 @@ function updatePaginationUI(totalPages, currentPage) {
     pageInput.value = "...";
 }
 
-function updateMovementsPaginationUI(totalPages, currentPage) {
+function movementsUpdatePaginationUI(totalPages, currentPage) {
     if (!movementsPaginacionContainer || !movementsPrevBtn || !movementsNextBtn || !movementsPageInput) {
         console.error("Elementos de la UI de paginación de movimientos no encontrados.");
         return;
@@ -659,7 +688,7 @@ function updateMovementsPaginationUI(totalPages, currentPage) {
         const button = document.createElement('button');
         button.className = `paginacion-boton indice ${pageNumber === currentPage ? 'active' : ''}`;
         button.textContent = pageNumber;
-        button.addEventListener('click', () => renderMovements(currentFilter, pageNumber));
+        button.addEventListener('click', () => movementsRender(currentFilter, pageNumber));
         movementsPaginacionContainer.appendChild(button);
     };
 
@@ -719,7 +748,7 @@ function initDashboard() {
     initMobileMenu();
     setupEventListeners();
     setupPaginationControls(); // configurar listeners de paginación estáticos
-    renderProducts(); // carga inicial de productos
+    productsRender(); // carga inicial de productos
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
