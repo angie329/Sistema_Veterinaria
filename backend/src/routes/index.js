@@ -18,7 +18,7 @@ import { turnosRouter } from "./turnos.js";
 import reporteRoutes from "./reportes.js";
 import { productsRouter } from './products.routes.js';
 import { movementsRouter } from './movements.routes.js';
-
+import { incomesRouter } from './incomes.routes.js';
 export const router = express.Router();
 
 router.get("/health", (_, res) => res.send("OK"));
@@ -40,3 +40,5 @@ router.use("/turnos", turnosRouter);
 router.use("/reportes", reporteRoutes);
 router.use('/products', productsRouter);
 router.use('/movements', movementsRouter);
+router.use('/incomes', incomesRouter);
+

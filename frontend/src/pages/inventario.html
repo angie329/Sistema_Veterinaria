@@ -218,11 +218,16 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <div class="paginacion" id="productsPagination">
+                            <div class="paginacion" id="incomesPagination">
                                 <!-- Los controles de paginación se insertarán aquí -->
-                                <button class="paginacion-boton"> Anterior </button>
-                                <button class="paginacion-boton"> 1 </button>
-                                <button class="paginacion-boton"> Siguiente </button>
+                                <button class="paginacion-boton" id="incomesPrev"> Anterior </button>
+                                <div id="incomesPaginacionIndexes" style="display: flex; gap: 1px;">
+                                    <!-- Insertar numeros aqui -->
+                                </div>
+                                <input type="text" inputmode="numeric" id="incomesPageInput"
+                                    class="paginacion-boton indice" placeholder="..."
+                                    style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="incomesNext"> Siguiente </button>
                             </div>
                         </div>
                     </div>
@@ -315,7 +320,7 @@
             </main>
         </div>
 
-        <script type="module" src="/src/js/inventario.js"></script>
+        <script type="module" src="/src/js/inventario/main.js"></script>
 
         <!-- Modal para Agregar/Editar Producto -->
         <div class="modal-overlay" id="productModalOverlay" style="display: none;">
@@ -412,6 +417,78 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal para Agregar/Editar ingreso -->
+
+        <div class="modal-overlay" id="incomeModalOverlay" style="display: none;">
+            <div class="modal" id="incomeModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="incomeModalTitle">Registrar Ingreso</h3>
+                    <button class="modal-close-btn" id="closeIncomeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="incomeForm" class="form-grid">
+                        <input type="hidden" id="incomeId" name="incomeId">
+
+                        <div class="form-group">
+                            <label for="incomeDate">Fecha</label>
+                            <input type="date" id="incomeDate" name="fecha" required>
+                        </div>
+
+                        <div class="form-group span-2">
+                            <label for="incomeProduct">Producto</label>
+                            <select id="incomeProduct" name="producto" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="incomeQuantity">Cantidad</label>
+                            <input type="number" id="incomeQuantity" name="cantidad" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelIncomeModalBtn">Cancelar</button>
+                    <button type="submit" form="incomeForm" class="btn btn-primary">Guardar Ingreso</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Agregar/Editar salida -->
+        <div class="modal-overlay" id="outputModalOverlay" style="display: none;">
+            <div class="modal" id="outputModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="outputModalTitle">Registrar Salida</h3>
+                    <button class="modal-close-btn" id="closeOutputModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="outputForm" class="form-grid">
+                        <input type="hidden" id="outputId" name="outputId">
+
+                        <div class="form-group">
+
+                            <label for="outputDate">Fecha</label>
+                            <input type="date" id="outputDate" name="fecha" required>
+                        </div>
+
+                        <div class="form-group span-2">
+                            <label for="outputProduct">Producto</label>
+                            <select id="outputProduct" name="producto" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="outputQuantity">Cantidad</label>
+                            <input type="number" id="outputQuantity" name="cantidad" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelOutputModalBtn">Cancelar</button>
+                    <button type="submit" form="outputForm" class="btn btn-primary">Guardar Salida</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
