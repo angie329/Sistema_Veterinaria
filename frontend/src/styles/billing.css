@@ -116,17 +116,67 @@
 
 }
 
+.result-list{
+  margin-top: 2px;
+  margin-bottom: 9px;
+  font-size: 0.8em;
+}
+
+.result-item{
+  margin: 3px 0;
+  background: #edf7f4;
+  cursor:pointer;
+  padding: 4px 15px;
+  border-radius: 6px;
+}
+
+.result-item:hover{
+  color:#00915c;
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
+  font-size: 0.8em;
 }
 
 table th, table td {
   border: 1px solid #ccc;
   padding: 10px;
   text-align: left; }
+
+  .btn-remove{
+    padding:6px;
+    width: 36px;
+    height: 24px;
+    margin-left:50%;
+    transform: translateX(-50%);
+  }
+  .btn-remove svg{
+    width: 12px;
+    height: 12px;
+    color: white;
+  }
+
+  .btn-remove:hover{
+    background: #fc382d;
+  }
+  
+  .btnCell{
+    align-items: center;
+  }
+
+#invoicesList{
+  margin: 4px 12px;
+  list-style-type: none;
+}
+
+#invoicesList li{
+  margin: 8px;
+  padding: 3px 6px;
+  border-left: 4px solid #0ac284;
+}
 
 /* Empty State */
 .empty-state {

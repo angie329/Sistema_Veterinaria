@@ -108,7 +108,7 @@
           </div>
         </div>
         
-        <form id="billingForm" name="billingForm" onsubmit="return sendBill()">
+        <form id="billingForm" name="billingForm">
           <div class="billing-sections">
             <div class="billing-section">
               <div class="section-header">
@@ -118,6 +118,7 @@
                 <input id="txtSearch" name="txtSearch" type="text" placeholder="Buscar cliente por nombre o cédula" />
                 <button id="btnSearch" name="btnSearch" class="btn" type="button">Buscar</button>
               </div>
+              <div id="resultadoClientes" class="result-list"></div>
               <div class="row">
                 <input type="text" id="TxtName" name="txtName" placeholder="Nombre del Cliente"/>
               </div>
@@ -188,11 +189,19 @@
 
         </div>
       </form>
+      <div class="billing-section" id="previousInvoices">
+        <div class="section-header">
+          <h3 class= "section-title">Facturas Anteriores</h3>
+        </div>
+
+        <ul id="invoicesList"></ul>
+
+      </div>
 
       </main>
     </div>
-    <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
-    <script src="../js/billing.js"></script>
+    <!-- <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script> -->
+    <script type="module" src="../js/billing.js"></script>
     
 
     </body>
