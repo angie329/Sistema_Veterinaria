@@ -28,7 +28,7 @@ export async function movementsRender(filter = "", page = 1, limit = 10) {
                     <td>
                         <div class="table-actions">
                             <button class="btn btn-sm btn-secondary btn-edit-movement" data-id="${mov.id_Inv_Movimiento}">✏️</button>
-                            <button class="btn btn-sm btn-danger btn-delete-movement" data-id="${mov.id_Inv_Movimiento}">🗑️</button>
+                            <button class="btn btn-sm btn-danger btn-toggle-status-movement" data-id="${mov.id_Inv_Movimiento}">🗑️</button>
                         </div>
                     </td>
                 </tr>
@@ -133,6 +133,24 @@ async function saveMovement() {
     }
 }
 
+async function toggleMovementStatus(movementId) {
+    const confirmation = confirm('¿Estás seguro de que deseas desactivar este movimiento?');
+    if (!confirmation) return;
+
+    try {
+        const response = await fetch(`/v1/movements/${movementId}/toggle-status`, { method: 'PATCH' });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al cambiar el estado del movimiento.');
+        }
+        alert('Estado del movimiento cambiado exitosamente.');
+        movementsRender(state.currentFilter, state.movements.currentPage);
+    } catch (error) {
+        console.error('Failed to toggle movement status:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
 export function setupMovementEventListeners() {
     if (DOM.addMovementBtn) DOM.addMovementBtn.addEventListener('click', openMovementModalForCreate);
     if (DOM.closeMovementModalBtn) DOM.closeMovementModalBtn.addEventListener('click', closeMovementModal);
@@ -148,5 +166,8 @@ export function setupMovementEventListeners() {
     DOM.movementsTableBody.addEventListener('click', (e) => {
         const editButton = e.target.closest('.btn-edit-movement');
         if (editButton) openMovementModalForEdit(editButton.dataset.id);
+
+        const toggleButton = e.target.closest('.btn-toggle-status-movement');
+        if (toggleButton) toggleMovementStatus(toggleButton.dataset.id);
     });
 }
