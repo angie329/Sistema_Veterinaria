@@ -18,45 +18,27 @@ export const getMovements = async (req, res) => {
              WHERE a.Inv_Nombre LIKE ?`,
             [searchPattern]
         );
-
         const totalMovements = countResult[0].total;
         const totalPages = Math.ceil(totalMovements / limit);
 
-        console.log("Limite");
-        console.log(limit);
-
-
-        // Obtener los movimientos con la información extendida
+        // Obtener los movimientos de la página actual
         const movements = await query(
             `SELECT 
-            m.id_Inv_Movimiento,
-            m.Inv_Fecha,
-            a.Inv_Nombre AS ProductoNombre,
-            t.Inv_Descripcion AS TipoArticulo,
-            u.Gen_nombre AS UnidadMedida,
-            u.Gen_codigo AS CodigoUnidad,
-            iva.Gen_porcentaje AS IVA,
-            m.Inv_TipoMovimiento,
-            m.Inv_Cantidad
-            FROM Inv_Movimiento m
-            JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
-            LEFT JOIN Inv_TipoArticulo t ON a.id_Inv_TipoArticuloFk = t.id_Inv_TipoArticulo
-            LEFT JOIN Gen_UnidadMedida u ON a.id_Gen_UnidadMedidaFk = u.Gen_id_unidad_medida
-            LEFT JOIN Gen_IVA iva ON a.id_Gen_IVAFk = iva.Gen_id_iva
-            WHERE a.Inv_Nombre LIKE ?
-            ORDER BY m.Inv_Fecha DESC
+                m.id_Inv_Movimiento,
+                DATE_FORMAT(m.Inv_Fecha, '%Y-%m-%d %H:%i:%s') as Inv_Fecha,
+                a.Inv_Nombre AS ProductoNombre,
+                m.Inv_TipoMovimiento AS TipoMovimiento,
+                m.Inv_Cantidad
+             FROM Inv_Movimiento m
+             JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
+             WHERE a.Inv_Nombre LIKE ?
+             ORDER BY m.Inv_Fecha DESC
             LIMIT ${limit} OFFSET ${offset}`,
             [searchPattern]
         );
 
-        // Formatear la fecha para presentación
-        const formattedMovements = movements.map((mov) => ({
-            ...mov,
-            Inv_Fecha: new Date(mov.Inv_Fecha).toLocaleDateString("es-ES"),
-        }));
-
         res.json({
-            movements: formattedMovements,
+            movements,
             totalPages,
             currentPage: page,
         });
@@ -99,7 +81,7 @@ export const getMovementById = async (req, res) => {
              ORDER BY Inv_Nombre`
         );
 
-        // Lista de tipos de movimiento según ENUM definido en la tabla
+        // Lista de tipos de movimiento según ENUM
         const movementTypes = [
             { id: 'Ingreso', name: 'Ingreso' },
             { id: 'Salida', name: 'Salida' }
@@ -119,10 +101,34 @@ export const getMovementById = async (req, res) => {
     }
 };
 
-// Actualiza un movimiento existente
-export const updateMovement = async (req, res) => {
+// Obtiene las opciones para los formularios de movimientos
+export const getMovementOptions = async (req, res) => {
     try {
-        const { id } = req.params;
+        const products = await query(
+            "SELECT id_Inv_Articulo as id, Inv_Nombre as name FROM Inv_Articulo WHERE Inv_EsActivo = 1 ORDER BY Inv_Nombre"
+        );
+
+        const movementTypes = [
+            { id: 'Ingreso', name: 'Ingreso' },
+            { id: 'Salida', name: 'Salida' }
+        ];
+
+        res.json({
+            products,
+            movementTypes
+        });
+    } catch (error) {
+        console.error("Error fetching movement options:", error);
+        res.status(500).json({
+            message: "Error al obtener las opciones para movimientos",
+            error: error.message,
+        });
+    }
+};
+
+// Crea un nuevo movimiento
+export const createMovement = async (req, res) => {
+    try {
         const { fecha, producto, tipo, cantidad } = req.body;
 
         if (!fecha || !producto || !tipo || !cantidad) {
@@ -130,14 +136,44 @@ export const updateMovement = async (req, res) => {
         }
 
         const sql = `
-            UPDATE Inv_Movimiento SET
-                Inv_Fecha = ?, 
-                id_Inv_ArticuloFk = ?, 
-                id_Inv_TipoMovimientoFk = ?, 
-                Inv_Cantidad = ?
-            WHERE id_Inv_Movimiento = ?
-        `;
-        await query(sql, [fecha, producto, tipo, cantidad, id]);
+            INSERT INTO Inv_Movimiento 
+            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk) 
+            VALUES (?, ?, ?, ?, 2)`;
+        const result = await query(sql, [fecha, producto, tipo, cantidad]);
+
+        res.status(201).json({
+            message: "Movimiento creado exitosamente",
+            movementId: result.insertId
+        });
+
+    } catch (error) {
+        console.error("Error creating movement:", error);
+        res.status(500).json({ message: "Error al crear el movimiento", error: error.message });
+    }
+};
+
+// Actualiza un movimiento existente
+export const updateMovement = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { fecha, producto, tipo, cantidad } = req.body;
+
+
+
+        if (!fecha || !producto || !tipo || !cantidad) {
+            return res.status(400).json({ message: "Faltan campos obligatorios." });
+        }
+
+        const sql = `
+                        UPDATE Inv_Movimiento SET
+                            Inv_Fecha = '${fecha}', 
+                            id_Inv_ArticuloFk = ${producto}, 
+                            Inv_TipoMovimiento = '${tipo}', 
+                            Inv_Cantidad = ${cantidad}
+                        WHERE id_Inv_Movimiento = ${id};
+                    `;
+        await query(sql);
+
 
         res.json({ message: "Movimiento actualizado exitosamente" });
     } catch (error) {
