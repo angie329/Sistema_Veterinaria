@@ -10,7 +10,11 @@ export const getIncomes = async (req, res) => {
         const searchPattern = `%${searchTerm}%`;
 
         const countResult = await query(
-            "SELECT COUNT(*) as total FROM Inv_Movimiento WHERE Inv_TipoMovimiento = 'Ingreso' ",
+            `SELECT COUNT(*) as total 
+             FROM Inv_Movimiento m
+             JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
+             WHERE m.Inv_TipoMovimiento = 'Ingreso' AND m.Inv_EsActivo = 1 AND a.Inv_Nombre LIKE ?
+            `,
             [searchPattern]
         );
         const totalIncomes = countResult[0].total;
@@ -24,7 +28,7 @@ export const getIncomes = async (req, res) => {
                 m.Inv_Cantidad as Cantidad
              FROM Inv_Movimiento m
              JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
-             WHERE m.Inv_TipoMovimiento = 'Ingreso' 
+             WHERE m.Inv_TipoMovimiento = 'Ingreso' AND m.Inv_EsActivo = 1 AND a.Inv_Nombre LIKE ?
              ORDER BY m.Inv_Fecha DESC            
              LIMIT ${limit} OFFSET ${offset}
             `,
@@ -111,8 +115,8 @@ export const createIncome = async (req, res) => {
 
         const sql = `
             INSERT INTO Inv_Movimiento 
-            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk) 
-            VALUES (?, ?, 'Ingreso', ?, 2)`;
+            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
+            VALUES (?, ?, 'Ingreso', ?, 2, 1)`;
         const result = await query(sql, [fecha, producto, cantidad]);
 
         res.status(201).json({
@@ -147,5 +151,29 @@ export const updateIncome = async (req, res) => {
     } catch (error) {
         console.error(`Error updating income with id ${req.params.id}:`, error);
         res.status(500).json({ message: "Error al actualizar el ingreso", error: error.message });
+    }
+};
+
+export const toggleIncomeStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [income] = await query("SELECT Inv_EsActivo FROM Inv_Movimiento WHERE id_Inv_Movimiento = ?", [id]);
+
+        if (!income) {
+            return res.status(404).json({ message: "Ingreso no encontrado." });
+        }
+
+        const newStatus = !income.Inv_EsActivo;
+
+        const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
+        await query(sql, [newStatus, id]);
+
+        const action = newStatus ? "reactivado" : "desactivado";
+        res.json({ message: `Ingreso ${action} exitosamente.` });
+
+    } catch (error) {
+        console.error(`Error toggling status for income with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al cambiar el estado del ingreso", error: error.message });
     }
 };

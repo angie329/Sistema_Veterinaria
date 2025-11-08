@@ -125,27 +125,22 @@ async function saveIncome() {
     }
 }
 
-async function deleteIncome(incomeId) {
-    const confirmation = confirm('¿Estás seguro de que deseas eliminar este ingreso? Esta acción no se puede deshacer.');
+async function toggleIncomeStatus(incomeId) {
+    const confirmation = confirm('¿Estás seguro de que deseas desactivar este ingreso?');
     if (!confirmation) return;
 
-    alert('Funcionalidad de borrado no implementada en el backend.');
-
-    // Una vez implementado el endpoint en el backend, el código sería así:
-    /*
     try {
-        const response = await fetch(`/v1/incomes/${incomeId}`, { method: 'DELETE' });
+        const response = await fetch(`/v1/incomes/${incomeId}/toggle-status`, { method: 'PATCH' });
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al eliminar el ingreso.');
+            throw new Error(errorData.message || 'Error al cambiar el estado del ingreso.');
         }
-        alert('Ingreso eliminado exitosamente.');
+        alert('Estado del ingreso cambiado exitosamente.');
         incomesRender(state.currentFilter, state.incomes.currentPage);
     } catch (error) {
-        console.error('Failed to delete income:', error);
+        console.error('Failed to toggle income status:', error);
         alert(`Error: ${error.message}`);
     }
-    */
 }
 
 export function setupIncomeEventListeners() {
@@ -165,6 +160,6 @@ export function setupIncomeEventListeners() {
         if (editButton) openIncomeModalForEdit(editButton.dataset.id);
 
         const deleteButton = e.target.closest('.btn-delete-income');
-        if (deleteButton) deleteIncome(deleteButton.dataset.id);
+        if (deleteButton) toggleIncomeStatus(deleteButton.dataset.id);
     });
 }
