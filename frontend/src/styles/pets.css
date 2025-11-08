@@ -362,6 +362,32 @@
   background: #bbb;
 }
 
+/* Input con botón (+) */
+.input-with-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.input-with-btn select {
+  flex: 1;
+}
+
+.btn-agregar-opcion {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn-agregar-opcion:hover {
+  background-color: var(--primary);
+}
+
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {

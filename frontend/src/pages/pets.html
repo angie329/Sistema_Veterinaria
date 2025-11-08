@@ -104,24 +104,24 @@
       <!-- MÉTRICAS GENERALES -->
       <section class="pets-metrics">
         <div class="metric-card">
-          <i data-lucide="activity"></i>
+          <i data-lucide="heart"></i>
           <div class="metric-info">
             <span class="metric-label">Última mascota agregada</span>
-            <span class="metric-value">5</span>
+            <span id="lastPet" class="metric-value"></span>
           </div>
         </div>
         <div class="metric-card">
           <i data-lucide="activity"></i>
           <div class="metric-info">
             <span class="metric-label">En tratamiento</span>
-            <span class="metric-value">5</span>
+            <span id="totalTreatmentPets" class="metric-value"></span>
           </div>
         </div>
         <div class="metric-card">
           <i data-lucide="paw-print"></i>
           <div class="metric-info">
             <span class="metric-label">Total mascotas</span>
-            <span class="metric-value">24</span>
+            <span id="totalPets" class="metric-value"></span>
           </div>
         </div>
       </section>
@@ -143,44 +143,13 @@
               <th>Nombre</th>
               <th>Especie</th>
               <th>Raza</th>
+              <th>Género</th>
               <th>Edad</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Max</td>
-              <td>Perro</td>
-              <td>Labrador</td>
-              <td>4</td>
-              <td>Activo</td>
-              <td class="table-actions">
-                <button class="btn-edit">
-                  <i data-lucide="edit"></i>
-                </button>
-                <button class="btn-delete">
-                  <i data-lucide="trash-2"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Misu</td>
-              <td>Gato</td>
-              <td>Persa</td>
-              <td>2</td>
-              <td>En tratamiento</td>
-              <td class="table-actions">
-                <button class="btn-edit">
-                  <i data-lucide="edit"></i>
-                </button>
-                <button class="btn-delete">
-                  <i data-lucide="trash-2"></i>
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
       </section>
@@ -208,13 +177,41 @@
             </div>
 
             <div class="form-group">
+              <label for="DuenoMascota">Nombre del Dueño:</label>
+              <input type="text" id="DuenoMascota" name="DuenoMascota" placeholder="Ej. Karla" required>
+            </div>
+
+            <div class="form-group">
+              <label for="generoMascota">Género:</label>
+              <div class="select-group">
+                <select id="generoMascota" name="generoMascota" required>
+                  <option value="" disabled selected>Seleccionar género</option>
+                </select>
+              </div>
+            </div>
+
+
+            <div class="form-group">
+              <label for="clasificacionAnimal">Clasificacion Animal:</label>
+              <div class="select-group">
+                <select id="clasificacionAnimal" name="clasificacionAnimal" required>
+                  <option value="" disabled selected>Seleccionar tipo</option>
+                  <option value="Mamífero">Mamífero</option>
+                  <option value="Ave">Ave</option>
+                  <option value="Reptil">Reptil</option>
+                </select>
+                <button type="button" class="btn-add-option" title="Agregar nueva clasificacion">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
               <label for="tipoMascota">Tipo de mascota:</label>
               <div class="select-group">
                 <select id="tipoMascota" name="tipoMascota" required>
                   <option value="" disabled selected>Seleccionar tipo</option>
                   <option value="Perro">Perro</option>
                   <option value="Gato">Gato</option>
-                  <option value="Ave">Ave</option>
+                  <option value="Loro">Loro</option>
                 </select>
                 <button type="button" class="btn-add-option" title="Agregar nuevo tipo">+</button>
               </div>
@@ -251,6 +248,29 @@
           </footer>
         </form>
       </dialog>
+
+      <!-- Mini modal genérico para agregar opciones -->
+      <dialog id="modalAgregarOpcion" class="modal">
+        <form method="dialog" id="formAgregarOpcion" class="form-mascota">
+          <header class="modal-header">
+            <h2 id="tituloModalOpcion">Agregar nueva opción</h2>
+            <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
+          </header>
+
+          <div class="form-body">
+            <div class="form-group">
+              <label for="nombreOpcion">Nombre:</label>
+              <input type="text" id="nombreOpcion" name="nombreOpcion" placeholder="Ej. Reptil, Canario..." required />
+            </div>
+          </div>
+
+          <footer class="form-actions">
+            <button type="submit" class="btn-guardar">Guardar</button>
+            <button type="button" class="btn-cancelar">Cancelar</button>
+          </footer>
+        </form>
+      </dialog>
+
 
     </main>
   </div>

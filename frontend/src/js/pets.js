@@ -77,28 +77,85 @@ function initModalMascota() {
   const btnAgregar = document.getElementById("btnAgregarMascota");
   const btnCancelar = modal?.querySelector(".btn-cancelar");
   const btnCerrar = modal?.querySelector(".modal-close");
+  const form = document.getElementById("formMascota");
 
   if (!modal || !btnAgregar) return;
 
-  // Abrir modal
   btnAgregar.addEventListener("click", () => {
     modal.showModal();
+    inicializarSelectoresDinamicos();
+    inicializarBotonesAgregar();
   });
 
-  // Cerrar modal (botón cancelar)
-  btnCancelar?.addEventListener("click", () => {
-    modal.close();
-  });
+  btnCancelar?.addEventListener("click", () => modal.close());
+  btnCerrar?.addEventListener("click", () => modal.close());
 
-  // Cerrar modal (botón ×)
-  btnCerrar?.addEventListener("click", () => {
-    modal.close();
+  // ✅ Envío del formulario
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombreMascota").value.trim();
+    const fechaNacimiento = document.getElementById("fechaNacimiento").value;
+    const razaId = document.getElementById("razaMascota").value;
+    const tipoId = document.getElementById("tipoMascota").value;
+    const generoId = document.getElementById("generoMascota").value;
+    const observaciones = document.getElementById("observacionesMascota").value.trim();
+
+    // ✅ Validación en frontend
+    if (!nombre || !fechaNacimiento || !razaId || !tipoId || !generoId) {
+      alert("Por favor, completa todos los campos requeridos.");
+      return;
+    }
+
+    const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
+    if (regexSQL.test(nombre) || regexSQL.test(observaciones)) {
+      alert("Entrada inválida detectada. No uses palabras reservadas SQL.");
+      return;
+    }
+
+    const payload = {
+      nombre,
+      fecha_nacimiento: fechaNacimiento,
+      raza_id: parseInt(razaId),
+      tipo_id: parseInt(tipoId),
+      genero_id: parseInt(generoId),
+      observaciones: observaciones || null,
+    };
+
+    try {
+      const response = await fetch(`${config.BACKEND_URL}/v1/pets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        alert(result.error || "Error al registrar la mascota.");
+        return;
+      }
+
+      alert("🐾 Mascota registrada correctamente.");
+      modal.close();
+      form.reset();
+
+      // Opcional: recargar la tabla de mascotas
+      if (typeof cargarMascotas === "function") cargarMascotas();
+    } catch (error) {
+      console.error("Error al registrar mascota:", error);
+      alert("Ocurrió un error al enviar los datos.");
+    }
   });
 }
 
+
 async function cargarMascotas() {
   const tablaBody = document.querySelector(".pets-table tbody");
-  if (!tablaBody) return;
+  const totalPets = document.querySelector(".metric-card .metric-info #totalPets");
+  const lastPet = document.querySelector(".metric-card .metric-info #lastPet");
+  const totalTreatmentPets = document.querySelector(".metric-card .metric-info #totalTreatmentPets");
+  if (!tablaBody || !totalPets || !lastPet || !totalTreatmentPets) return;
 
   try {
     const response = await fetch(`${config.BACKEND_URL}/v1/pets`);
@@ -126,6 +183,7 @@ async function cargarMascotas() {
         <td>${pet.nombre_mascota}</td>
         <td>${pet.tipo_mascota}</td>
         <td>${pet.raza || "-"}</td>
+        <td>${pet.genero}</td>
         <td>${calcularEdad(pet.mas_fecha_nacimiento)}</td>
         <td>${pet.mas_estado === "A" ? "Activo" : "Inactivo"}</td>
         <td class="table-actions">
@@ -140,6 +198,9 @@ async function cargarMascotas() {
       )
       .join("");
 
+    lastPet.textContent = result.data[result.data.length - 1].nombre_mascota;
+    totalPets.textContent = result.data.length;
+    totalTreatmentPets.textContent = result.data.filter(pet => { return pet.mas_estado == "T" }).length;
 
     // Regenerar los íconos
     createIcons(iconos);
@@ -240,6 +301,171 @@ function manejarEliminarMascota(event) {
   // TODO: implementar lógica de eliminación
 }
 
+/* ==========================================================
+   🔧 CARGA DE SELECTORES Y OPCIONES DINÁMICAS
+========================================================== */
+async function fetchData(endpoint) {
+  try {
+    const res = await fetch(`${config.BACKEND_URL}/v1/pets/${endpoint}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const result = await res.json();
+    return result.success ? result.data : [];
+  } catch (err) {
+    console.error(`Error al obtener ${endpoint}:`, err);
+    return [];
+  }
+}
+
+async function recargarSelector(select, selector, idRelacion = null, idSeleccionar = null) {
+  const {endpoint, word} = selector
+  const url = idRelacion ? `${endpoint}/${idRelacion}` : endpoint;
+  const data = await fetchData(url);
+
+  select.innerHTML = `<option value="" disabled selected>Seleccionar ${word}</option>`;
+  data.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = item.nombre;
+    option.dataset.id = item.id;
+    select.appendChild(option);
+  });
+
+  if (idSeleccionar) select.value = idSeleccionar;
+  return data;
+}
+
+/* ==========================================================
+   🔧 INICIALIZACIÓN DE SELECTORES EN EL MODAL
+========================================================== */
+function inicializarSelectoresDinamicos() {
+  const selectGenero = document.getElementById("generoMascota");
+  const selectClasificacion = document.getElementById("clasificacionAnimal");
+  const selectTipo = document.getElementById("tipoMascota");
+  const selectRaza = document.getElementById("razaMascota");
+
+  selectTipo.closest(".form-group").style.display = "none";
+  selectRaza.closest(".form-group").style.display = "none";
+
+  // Cargar género y clasificación
+  recargarSelector(selectGenero, {endpoint: "genders", word:"género"});
+  fetchData("types").then((data) => {
+    selectClasificacion.innerHTML = `<option value="" disabled selected>Seleccionar clasificación</option>`;
+    data.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.nombre;
+      opt.dataset.id = c.id;
+      selectClasificacion.appendChild(opt);
+    });
+
+    // Al cambiar clasificación → carga tipos
+    selectClasificacion.addEventListener("change", async () => {
+      const id = selectClasificacion.value;
+      await recargarSelector(selectTipo, {endpoint: "types", word: "tipo"}, id);
+      selectTipo.closest(".form-group").style.display = "block";
+      selectRaza.closest(".form-group").style.display = "none";
+    });
+
+    // Al cambiar tipo → carga razas
+    selectTipo.addEventListener("change", async () => {
+      const id = selectTipo.value;
+      await recargarSelector(selectRaza, {endpoint: "breeds", word: "raza"}, id);
+      selectRaza.closest(".form-group").style.display = "block";
+    });
+  });
+}
+
+/* ==========================================================
+   🔧 MODAL DE AGREGAR NUEVA OPCIÓN
+========================================================== */
+function inicializarBotonesAgregar() {
+  const modal = document.getElementById("modalAgregarOpcion");
+  const form = document.getElementById("formAgregarOpcion");
+  const titulo = document.getElementById("tituloModalOpcion");
+  const input = document.getElementById("nombreOpcion");
+  const btnCerrar = modal.querySelector(".modal-close");
+  const btnCancelar = modal.querySelector(".btn-cancelar");
+
+  const selects = {
+    clasificacion: document.getElementById("clasificacionAnimal"),
+    tipo: document.getElementById("tipoMascota"),
+    raza: document.getElementById("razaMascota"),
+  };
+
+  let tipoActual = null;
+
+  document.querySelectorAll(".btn-add-option").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const label = btn.parentElement.previousElementSibling.textContent;
+      tipoActual = label.includes("Clasificacion")
+        ? "clasificacion"
+        : label.includes("Tipo")
+        ? "tipo"
+        : "raza";
+
+      titulo.textContent = `Agregar nueva ${tipoActual}`;
+      input.value = "";
+      modal.showModal();
+    });
+  });
+
+  [btnCerrar, btnCancelar].forEach((b) => b.addEventListener("click", () => modal.close()));
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = input.value.trim();
+    if (!nombre) return;
+
+    let body = { nombre };
+    let endpoint = "";
+
+    if (tipoActual === "clasificacion") {
+      endpoint = "classifications";
+    } else if (tipoActual === "tipo") {
+      const clasificacionId = selects.clasificacion.value;
+      if (!clasificacionId) return alert("Selecciona una clasificación primero.");
+      endpoint = "types";
+      body.clasificacion_id = clasificacionId;
+    } else {
+      const tipoId = selects.tipo.value;
+      if (!tipoId) return alert("Selecciona un tipo primero.");
+      endpoint = "breeds";
+      body.tipo_id = tipoId;
+    }
+
+    const result = await agregarElemento(endpoint, body);
+    if (result?.success) {
+      alert(`🐾 ${tipoActual.charAt(0).toUpperCase() + tipoActual.slice(1)} agregada correctamente.`);
+      if (tipoActual === "clasificacion")
+        await recargarSelector(selects.clasificacion, {endpoint: "types", word: "tipo"}, null, result.id);
+      if (tipoActual === "tipo")
+        await recargarSelector(selects.tipo, {endpoint: "types", word: "tipo"}, body.clasificacion_id, result.id);
+      if (tipoActual === "raza")
+        await recargarSelector(selects.raza, {endpoint: "breeds", word: "raza"}, body.tipo_id, result.id);
+      modal.close();
+    } else {
+      alert("Error al agregar.");
+    }
+  });
+}
+
+/* ==========================================================
+   🔧 FUNCIÓN ÚNICA PARA POSTEAR CLASIFICACIÓN / TIPO / RAZA
+========================================================== */
+async function agregarElemento(endpoint, data) {
+  try {
+    const res = await fetch(`${config.BACKEND_URL}/v1/pets/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error(`Error al agregar en ${endpoint}:`, err);
+    return { success: false };
+  }
+}
+
 
 
 function initDashboard() {
@@ -250,3 +476,4 @@ function initDashboard() {
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
+
