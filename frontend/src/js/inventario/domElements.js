@@ -47,3 +47,20 @@ export const incomeIdInput = document.getElementById('incomeId');
 export const incomesPrevBtn = document.getElementById("incomesPrev");
 export const incomesNextBtn = document.getElementById("incomesNext");
 export const incomesPageInput = document.getElementById("incomesPageInput");
+
+// --- Elementos de Salidas ---
+export const outputTableBody = document.getElementById("outputTableBody");
+export const addOutputBtn = document.getElementById("addOutputBtn");
+
+// Modal de Salidas
+export const outputModalOverlay = document.getElementById("outputModalOverlay");
+export const outputForm = document.getElementById("outputForm");
+export const closeOutputModalBtn = document.getElementById("closeOutputModalBtn");
+export const cancelOutputModalBtn = document.getElementById("cancelOutputModalBtn");
+export const outputIdInput = document.getElementById('outputId');
+
+// Paginacion de Salidas
+export const outputsPrevBtn = document.getElementById("outputsPrev");
+export const outputsNextBtn = document.getElementById("outputsNext");
+export const outputsPageInput = document.getElementById("outputsPageInput");
+

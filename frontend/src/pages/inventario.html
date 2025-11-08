@@ -262,13 +262,16 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="paginacion" id="productsPagination">
-                                    <!-- Los controles de paginación se insertarán aquí -->
-                                    <button class="paginacion-boton"> Anterior </button>
-                                    <button class="paginacion-boton"> 1 </button>
-                                    <button class="paginacion-boton"> Siguiente </button>
-                                </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="paginacion" id="outputsPagination">
+                                <!-- Los controles de paginación se insertarán aquí -->
+                                <button class="paginacion-boton" id="outputsPrev"> Anterior </button>
+                                <div id="outputsPaginacionIndexes" style="display: flex; gap: 1px;"></div>
+                                <input type="text" inputmode="numeric" id="outputsPageInput"
+                                    class="paginacion-boton indice" placeholder="..."
+                                    style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="outputsNext"> Siguiente </button>
                             </div>
                         </div>
                     </div>

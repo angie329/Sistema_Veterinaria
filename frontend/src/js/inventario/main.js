@@ -2,6 +2,7 @@ import { createIcons, icons } from "lucide";
 import { productsRender, setupProductEventListeners } from './products.js';
 import { setupMovementEventListeners } from './movements.js';
 import { setupIncomeEventListeners } from './ingresos.js';
+import { setupSalidaEventListeners } from './salidas.js';
 import { setupTabNavigation, setupPaginationControls } from './ui.js';
 
 function highlightActive() {
@@ -86,7 +87,17 @@ export const state = {
     {
         currentPage: 1,
         totalPages: 1,
-    }
+    },
+    salidas:
+    {
+        currentPage: 1,
+        totalPages: 1,
+    },
+    salidas:
+    {
+        currentPage: 1,
+        totalPages: 1,
+    },
 
 };
 
@@ -101,6 +112,7 @@ function initInventoryModule() {
     setupProductEventListeners();
     setupMovementEventListeners();
     setupIncomeEventListeners();
+    setupSalidaEventListeners();
     setupPaginationControls();
 
     // 3. Carga inicial de datos (la pestaña de productos es la activa por defecto)

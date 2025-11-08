@@ -3,6 +3,7 @@ import { state } from './main.js';
 import { productsRender } from './products.js';
 import { movementsRender } from './movements.js';
 import { incomesRender } from './ingresos.js';
+import { salidasRender } from './salidas.js';
 
 
 // configura los listeners para la navegacion por pestañas.
@@ -37,6 +38,14 @@ function switchTab(tabName) {
     // si se cambia a la pestaña 'movimientos' y su tabla esta vacia, carga los datos.
     if (tabName === 'movimientos' && DOM.movementsTableBody.childElementCount === 0) {
         movementsRender();
+    }
+
+    if (tabName === 'salidas' && DOM.outputTableBody.childElementCount === 0) {
+        salidasRender();
+    }
+
+    if (tabName === 'salidas' && DOM.outputTableBody.childElementCount === 0) {
+        salidasRender();
     }
 
     if (tabName === 'ingresos' && DOM.incomeTableBody.childElementCount === 0) {
@@ -107,6 +116,42 @@ export function setupPaginationControls() {
                 incomesRender(state.currentFilter, page);
             } else {
                 alert(`Por favor, introduce un número de página válido entre 1 y ${state.incomes.totalPages}.`);
+            }
+        }
+    });
+
+    // Paginacion de Salidas
+    DOM.outputsPrevBtn?.addEventListener('click', () => {
+        if (state.salidas.currentPage > 1) salidasRender(state.currentFilter, state.salidas.currentPage - 1);
+    });
+    DOM.outputsNextBtn?.addEventListener('click', () => {
+        if (state.salidas.currentPage < state.salidas.totalPages) salidasRender(state.currentFilter, state.salidas.currentPage + 1);
+    });
+    DOM.outputsPageInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const page = parseInt(e.target.value, 10);
+            if (!isNaN(page) && page > 0 && page <= state.salidas.totalPages) {
+                salidasRender(state.currentFilter, page);
+            } else {
+                alert(`Por favor, introduce un número de página válido entre 1 y ${state.salidas.totalPages}.`);
+            }
+        }
+    });
+
+    // Paginacion de Salidas
+    DOM.outputsPrevBtn?.addEventListener('click', () => {
+        if (state.salidas.currentPage > 1) salidasRender(state.currentFilter, state.salidas.currentPage - 1);
+    });
+    DOM.outputsNextBtn?.addEventListener('click', () => {
+        if (state.salidas.currentPage < state.salidas.totalPages) salidasRender(state.currentFilter, state.salidas.currentPage + 1);
+    });
+    DOM.outputsPageInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const page = parseInt(e.target.value, 10);
+            if (!isNaN(page) && page > 0 && page <= state.salidas.totalPages) {
+                salidasRender(state.currentFilter, page);
+            } else {
+                alert(`Por favor, introduce un número de página válido entre 1 y ${state.salidas.totalPages}.`);
             }
         }
     });
@@ -230,3 +275,22 @@ export function incomesUpdatePaginationUI(totalPages, currentPage) {
         incomesRender
     );
 }
+
+// funcion especifica para actualizar la paginacion de salidas.
+export function salidasUpdatePaginationUI(totalPages, currentPage) {
+    const salidasPaginacionContainer = document.getElementById("outputsPaginacionIndexes");
+    const salidasPrevBtn = document.getElementById("outputsPrev");
+    const salidasNextBtn = document.getElementById("outputsNext");
+    const salidasPageInput = document.getElementById("outputsPageInput");
+
+    updatePaginationUI(
+        salidasPaginacionContainer,
+        salidasPrevBtn,
+        salidasNextBtn,
+        salidasPageInput,
+        totalPages,
+        currentPage,
+        salidasRender
+    );
+}
+

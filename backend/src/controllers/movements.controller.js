@@ -15,7 +15,7 @@ export const getMovements = async (req, res) => {
             `SELECT COUNT(*) as total 
              FROM Inv_Movimiento m
              JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
-             WHERE a.Inv_Nombre LIKE ?`,
+             WHERE a.Inv_Nombre LIKE ? AND m.Inv_EsActivo = 1`,
             [searchPattern]
         );
         const totalMovements = countResult[0].total;
@@ -31,7 +31,7 @@ export const getMovements = async (req, res) => {
                 m.Inv_Cantidad
              FROM Inv_Movimiento m
              JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
-             WHERE a.Inv_Nombre LIKE ?
+             WHERE a.Inv_Nombre LIKE ? AND m.Inv_EsActivo = 1
              ORDER BY m.Inv_Fecha DESC
             LIMIT ${limit} OFFSET ${offset}`,
             [searchPattern]
@@ -137,8 +137,8 @@ export const createMovement = async (req, res) => {
 
         const sql = `
             INSERT INTO Inv_Movimiento 
-            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk) 
-            VALUES (?, ?, ?, ?, 2)`;
+            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
+            VALUES (?, ?, ?, ?, 2, 1)`;
         const result = await query(sql, [fecha, producto, tipo, cantidad]);
 
         res.status(201).json({
@@ -179,5 +179,30 @@ export const updateMovement = async (req, res) => {
     } catch (error) {
         console.error(`Error updating movement with id ${req.params.id}:`, error);
         res.status(500).json({ message: "Error al actualizar el movimiento", error: error.message });
+    }
+};
+
+// Cambia el estado de un movimiento (activo/inactivo)
+export const toggleMovementStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [movement] = await query("SELECT Inv_EsActivo FROM Inv_Movimiento WHERE id_Inv_Movimiento = ?", [id]);
+
+        if (!movement) {
+            return res.status(404).json({ message: "Movimiento no encontrado." });
+        }
+
+        const newStatus = !movement.Inv_EsActivo;
+
+        const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
+        await query(sql, [newStatus, id]);
+
+        const action = newStatus ? "reactivado" : "desactivado";
+        res.json({ message: `Movimiento ${action} exitosamente.` });
+
+    } catch (error) {
+        console.error(`Error toggling status for movement with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al cambiar el estado del movimiento", error: error.message });
     }
 };
