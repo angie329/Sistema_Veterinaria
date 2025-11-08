@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getIncomes, getIncomeOptions, getIncomeById, createIncome, updateIncome } from '../controllers/incomes.controller.js';
+import { getIncomes, getIncomeOptions, getIncomeById, createIncome, updateIncome, toggleIncomeStatus } from '../controllers/incomes.controller.js';
 
 export const incomesRouter = Router();
 
@@ -10,4 +10,4 @@ incomesRouter.get('/options', getIncomeOptions);
 incomesRouter.get('/:id', getIncomeById);
 incomesRouter.post('/', createIncome);
 incomesRouter.put('/:id', updateIncome);
-
+incomesRouter.patch('/:id/toggle-status', toggleIncomeStatus);
