@@ -1,5 +1,7 @@
-import { Activity, AlertTriangle, createIcons, Heart, icons, PawPrint } from "lucide";
+import { Activity, AlertTriangle, createIcons, FileText, Heart, icons, PawPrint } from "lucide";
 import { config } from "@/config/env.js"; // Importa la configuración del entorno con la URL base del backend
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 /* ==========================================================
    FUNCIONES DE INTERFAZ GENERAL (MENÚ, ICONOS, ESTILOS)
@@ -40,6 +42,7 @@ const iconos = {
     Activity: icons.Activity,
     Heart: icons.Heart,
     AlertTriangle: icons.AlertTriangle,
+    FileText: icons.FileText
   },
 };
 createIcons(iconos);
@@ -665,6 +668,77 @@ function crearModalEliminar() {
   btnCancelar.addEventListener("click", () => modal.close());
 }
 
+// Genera un reporte PDF con la información de las mascotas obtenidas desde el backend
+async function generarReportePDF() {
+  try {
+    const response = await fetch(`${config.BACKEND_URL}/v1/pets`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+
+    // Verifica si existen datos para generar el reporte
+    if (!result.success || !result.data.length) {
+      alert("No hay mascotas para generar el reporte.");
+      return;
+    }
+
+    const doc = new jsPDF();
+    const fechaActual = new Date().toLocaleString();
+
+    // Encabezado del reporte
+    doc.setFontSize(16);
+    doc.text("Reporte de Mascotas", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Generado: ${fechaActual}`, 14, 26);
+
+    const columnas = [
+      "ID", "Nombre", "Tipo", "Raza", "Género", "Estado", "Nacimiento", "Observaciones"
+    ];
+
+    // Construcción de filas a partir de los datos obtenidos
+    const filas = result.data.map((m) => [
+      m.id_mascota,
+      m.nombre_mascota,
+      m.tipo_mascota,
+      m.raza || "-",
+      m.genero,
+      m.mas_estado === "A"
+        ? "Activo"
+        : m.mas_estado === "I"
+        ? "Inactivo"
+        : "Tratamiento",
+      new Date(m.mas_fecha_nacimiento).toLocaleDateString(),
+      m.mas_observaciones || "—",
+    ]);
+
+    // Generación de la tabla con los datos de mascotas
+    autoTable(doc, {
+      startY: 35,
+      head: [columnas],
+      body: filas,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [23, 107, 135], textColor: 255, halign: "center" },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+    });
+
+    // Pie de página con el total de registros
+    const totalMascotas = result.data.length;
+    doc.text(`Total de mascotas: ${totalMascotas}`, 14, doc.lastAutoTable.finalY + 10);
+
+    // Descarga del archivo PDF
+    doc.save("reporte_mascotas.pdf");
+
+  } catch (err) {
+    console.error("Error generando PDF:", err);
+    alert("Ocurrió un error al generar el reporte PDF.");
+  }
+}
+
+// Inicializa el botón para generar el reporte en PDF
+function initBtnReporte() {
+  const btnPDF = document.getElementById("btnGenerarPDF");
+  if (btnPDF) btnPDF.addEventListener("click", generarReportePDF);
+}
+
 /* ==========================================================
    FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
    Configura los elementos y funcionalidades iniciales
@@ -676,6 +750,7 @@ function initPets() {
   initModalMascota();
   crearModalEliminar();
   cargarMascotas();
+  initBtnReporte();
 }
 
 // Inicializa todas las funciones y componentes de la sección de mascotas una vez que el documento esté completamente cargado
