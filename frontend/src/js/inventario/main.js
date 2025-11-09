@@ -70,8 +70,8 @@ function initMobileMenu() {
 
 
 /**
- * Estado de la aplicación para el módulo de inventario.
- * Usamos un objeto para mantener el estado agrupado y evitar variables globales sueltas.
+ * Estado de la aplicación para el módulo de inventario
+ * Usamos un objeto para mantener el estado agrupado y evitar variables globales sueltas
  */
 export const state = {
     currentFilter: "",
