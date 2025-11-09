@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VetSystem</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+  <link rel="stylesheet" href="/src/styles/components.css" />
+  <link rel="stylesheet" href="/src/styles/index.css" />
+  <link rel="stylesheet" href="/src/styles/veterinarios.css" />
+  <link rel="stylesheet" href="/src/styles/turnos.css" />
+  <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+</head>
+
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path
+            d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+            fill="currentColor" />
+        </svg>
+        <span>VetSystem</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="sidebar-nav-item" data-module="dashboard">
+        <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+        <span>Panel</span>
+      </a>
+
+      <a href="/clients" class="sidebar-nav-item" data-module="clients">
+        <i data-lucide="users" class="sidebar-nav-icon"></i>
+        <span>Clientes</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-item" data-module="pets">
+        <i data-lucide="dog" class="sidebar-nav-icon"></i>
+        <span>Mascotas</span>
+      </a>
+
+      <a href="/veterinarios" class="sidebar-nav-item" data-module="veterinarians">
+        <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+        <span>Veterinarios</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-item" data-module="appointments">
+        <i data-lucide="calendar" class="sidebar-nav-icon"></i>
+        <span>Citas</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-item" data-module="inventory">
+        <i data-lucide="package" class="sidebar-nav-icon"></i>
+        <span>Inventario</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-item" data-module="billing">
+        <i data-lucide="receipt" class="sidebar-nav-icon"></i>
+        <span>Facturación</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-item" data-module="settings">
+        <i data-lucide="settings" class="sidebar-nav-icon"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+  </aside>
+
+  <header class="header">
+    <button class="header-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+      <i data-lucide="menu"></i>
+    </button>
+    <div class="header-search">
+      <i data-lucide="search" class="header-search-icon"></i>
+      <input type="text" class="header-search-input" placeholder="Buscar clientes, mascotas, medicamentos..."
+        id="globalSearch" />
+    </div>
+
+    <div class="header-actions">
+      <button class="header-icon-btn" id="notificationsBtn">
+        <i data-lucide="bell"></i>
+        <span class="header-badge">3</span>
+      </button>
+
+      <div class="header-user-btn" id="userMenuBtn">
+        <div class="header-avatar">AD</div>
+        <span>Admin</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  </div>
+
+
+  <div class="content">
+    <main class="main-content">
+
+
+      <div class="content-header">
+        <h1 class="content-title">
+          Veterinarios
+          <button class="add-button" onclick="addVeterinarian()">+</button>
+        </h1>
+      </div>
+      <!-- Modal Agregar Veterinario -->
+      <div id="modalAgregar" class="modal">
+        <div class="modal-content">
+          <span id="closeAddModal" class="close">&times;</span>
+          <h2>Agregar Veterinario</h2>
+
+          <form id="addVetForm">
+            <div class="form-group">
+              <label>Nombres</label>
+              <input type="text" id="addNombre" required />
+            </div>
+
+            <div class="form-group">
+              <label>Apellidos</label>
+              <input type="text" id="addApellido" required />
+            </div>
+
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="text" id="addTelefono" />
+            </div>
+
+            <div class="form-group">
+              <label>Correo</label>
+              <input type="email" id="addCorreo" />
+            </div>
+
+            <div class="form-group">
+              <label>Especialidad</label>
+              <select id="addEspecialidad" required></select>
+            </div>
+
+            <button type="submit" class="save-btn">Guardar</button>
+            <button type="button" id="cancelAdd" class="cancel-btn">Cancelar</button>
+          </form>
+        </div>
+      </div>
+
+      </section>
+      <div class="report-actions">
+        <button id="btnDownloadCSV" class="btn-report"><i data-lucide="file-text"></i> CSV</button>
+        <button id="btnDownloadJSON" class="btn-report"><i data-lucide="braces"></i> JSON</button>
+        <button id="btnDownloadPDF" class="btn-report"><i data-lucide="file"></i> PDF</button>
+        <button id="btnDownloadXLSX" class="btn-report"><i data-lucide="file-spreadsheet"></i> Excel</button>
+      </div>
+
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombres</th>
+              <th>Especialidad</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Turno</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="veterinariansTable">
+
+          </tbody>
+        </table>
+      </div>
+
+      <div id="modalTurnos" class="modal">
+        <div class="modal-content">
+          <span id="closeModal" class="close" onclick="cerrarModalTurnos()">
+            <i data-lucide="x"></i>
+          </span>
+          </span>
+          <h2 id="modalTitle"></h2>
+          <div id="modalBody"></div>
+        </div>
+      </div>
+
+      <div id="modalEditar" class="modal">
+        <div class="modal-content">
+          <span id="closeEditModal" class="close"><i data-lucide="x"></i></span>
+          <h2>Editar Veterinario</h2>
+          <form id="editVetForm">
+            <input type="hidden" id="editIdVet" />
+
+            <label>Nombres</label>
+            <input type="text" id="editNombre" required />
+
+            <label>Apellidos</label>
+            <input type="text" id="editApellido" required />
+
+            <label>Teléfono</label>
+            <input type="text" id="editTelefono" />
+
+            <label>Correo</label>
+            <input type="email" id="editCorreo" />
+
+            <label>Especialidad</label>
+            <select id="editEspecialidad" required></select>
+
+            <div class="modal-buttons">
+              <button type="button" id="cancelEdit" class="cancelEdit">Cancelar</button>
+              <button type="submit" class="btn-guardar">Guardar cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module" src="/src/js/veterinarios.js"></script>
+
+
+</body>
+
+</html>

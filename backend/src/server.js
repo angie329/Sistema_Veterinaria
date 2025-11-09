@@ -1,7 +1,10 @@
+
 import express from "express";
 
 import { config } from "./config/env.js";
 import { router } from "./routes/index.js";
+
+
 
 const app = express();
 
@@ -25,4 +28,11 @@ app.use((err, req, res, next) => {
 
 app.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "API del Sistema Veterinaria funcionando correctamente",
+  });
 });
