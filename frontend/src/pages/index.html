@@ -45,6 +45,20 @@
           <span>Ubicaciones</span>
         </a>
 
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
         <a
           href="/datos-personales"
           class="sidebar-nav-item"
@@ -113,22 +127,10 @@
             <div class="section-header">
               <h2 class="section-title">
                 <i data-lucide="calendar-clock"></i>
-                Próximas Citas
+                Citas de Hoy
               </h2>
-              <a href="#" class="section-link">Ver todas</a>
             </div>
             <ul class="appointments-list" id="appointmentsList"></ul>
-          </div>
-
-          <div class="dashboard-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <i data-lucide="activity"></i>
-                Actividad Reciente
-              </h2>
-              <a href="#" class="section-link">Ver todo</a>
-            </div>
-            <ul class="activity-list" id="activityList"></ul>
           </div>
         </div>
 
@@ -138,9 +140,41 @@
               <i data-lucide="building-2"></i>
               Proveedores
             </h2>
-            <button class="btn btn-primary" onclick="openProveedorModal()">
-              <i data-lucide="plus"></i> Crear
-            </button>
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  id="btnExportProveedoresCSV"
+                  title="Exportar CSV"
+                >
+                  <i data-lucide="file-text"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  id="btnExportProveedoresJSON"
+                  title="Exportar JSON"
+                >
+                  <i data-lucide="braces"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  id="btnExportProveedoresPDF"
+                  title="Exportar PDF"
+                >
+                  <i data-lucide="file"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  id="btnExportProveedoresXLSX"
+                  title="Exportar Excel"
+                >
+                  <i data-lucide="file-spreadsheet"></i>
+                </button>
+              </div>
+              <button class="btn btn-primary" onclick="openProveedorModal()">
+                <i data-lucide="plus"></i> Crear
+              </button>
+            </div>
           </div>
           <div id="table-proveedores"></div>
         </div>

@@ -45,6 +45,20 @@
           <span>Ubicaciones</span>
         </a>
 
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
         <a
           href="/datos-personales"
           class="sidebar-nav-item"
@@ -118,12 +132,44 @@
           <div class="tab-content active" data-content="genero-sexo">
             <div class="section-header">
               <h2>Género/Sexo</h2>
-              <button
-                class="btn btn-primary"
-                onclick="openModal('genero-sexo')"
-              >
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('genero-sexo')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-genero-sexo"></div>
           </div>
@@ -131,12 +177,44 @@
           <div class="tab-content" data-content="estado-civil">
             <div class="section-header">
               <h2>Estado Civil</h2>
-              <button
-                class="btn btn-primary"
-                onclick="openModal('estado-civil')"
-              >
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('estado-civil')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-estado-civil"></div>
           </div>
@@ -144,12 +222,44 @@
           <div class="tab-content" data-content="tipo-documento">
             <div class="section-header">
               <h2>Tipo Documento</h2>
-              <button
-                class="btn btn-primary"
-                onclick="openModal('tipo-documento')"
-              >
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('tipo-documento')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-tipo-documento"></div>
           </div>

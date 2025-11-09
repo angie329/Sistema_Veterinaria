@@ -36,17 +36,43 @@
           <span>Clientes</span>
         </a>
 
-        <a href="/ubicaciones" class="sidebar-nav-item" data-module="ubicaciones">
+        <a
+          href="/ubicaciones"
+          class="sidebar-nav-item"
+          data-module="ubicaciones"
+        >
           <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
           <span>Ubicaciones</span>
         </a>
 
-        <a href="/datos-personales" class="sidebar-nav-item" data-module="datos-personales">
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
+        <a
+          href="/datos-personales"
+          class="sidebar-nav-item"
+          data-module="datos-personales"
+        >
           <i data-lucide="user" class="sidebar-nav-icon"></i>
           <span>Datos Personales</span>
         </a>
 
-        <a href="/configuracion" class="sidebar-nav-item" data-module="configuracion">
+        <a
+          href="/configuracion"
+          class="sidebar-nav-item"
+          data-module="configuracion"
+        >
           <i data-lucide="settings" class="sidebar-nav-icon"></i>
           <span>Configuración</span>
         </a>
@@ -107,9 +133,41 @@
           <div class="tab-content active" data-content="iva">
             <div class="section-header">
               <h2>IVA</h2>
-              <button class="btn btn-primary" onclick="openModal('iva')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportIVACSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportIVAJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportIVAPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportIVAXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('iva')">
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-iva"></div>
           </div>
@@ -117,9 +175,44 @@
           <div class="tab-content" data-content="unidad-medida">
             <div class="section-header">
               <h2>Unidad Medida</h2>
-              <button class="btn btn-primary" onclick="openModal('unidad-medida')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportUnidadMedidaCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportUnidadMedidaJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportUnidadMedidaPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportUnidadMedidaXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('unidad-medida')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-unidad-medida"></div>
           </div>
@@ -127,9 +220,44 @@
           <div class="tab-content" data-content="metodo-pago">
             <div class="section-header">
               <h2>Método Pago</h2>
-              <button class="btn btn-primary" onclick="openModal('metodo-pago')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportMetodoPagoCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportMetodoPagoJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportMetodoPagoPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportMetodoPagoXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('metodo-pago')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-metodo-pago"></div>
           </div>
@@ -137,9 +265,44 @@
           <div class="tab-content" data-content="operadora">
             <div class="section-header">
               <h2>Operadora</h2>
-              <button class="btn btn-primary" onclick="openModal('operadora')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportOperadoraCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportOperadoraJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportOperadoraPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportOperadoraXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('operadora')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-operadora"></div>
           </div>
@@ -165,15 +328,29 @@
           </div>
           <div class="form-group">
             <label for="iva-porcentaje">Porcentaje *</label>
-            <input type="number" id="iva-porcentaje" name="Gen_porcentaje" step="0.01" required />
+            <input
+              type="number"
+              id="iva-porcentaje"
+              name="Gen_porcentaje"
+              step="0.01"
+              required
+            />
           </div>
           <div class="form-group">
             <label for="iva-fecha-inicio">Fecha Inicio Vigencia</label>
-            <input type="date" id="iva-fecha-inicio" name="Gen_fecha_vigencia_inicio" />
+            <input
+              type="date"
+              id="iva-fecha-inicio"
+              name="Gen_fecha_vigencia_inicio"
+            />
           </div>
           <div class="form-group">
             <label for="iva-fecha-fin">Fecha Fin Vigencia</label>
-            <input type="date" id="iva-fecha-fin" name="Gen_fecha_vigencia_fin" />
+            <input
+              type="date"
+              id="iva-fecha-fin"
+              name="Gen_fecha_vigencia_fin"
+            />
           </div>
         </div>
       </form>
@@ -189,14 +366,19 @@
 
     <dialog id="modal-unidad-medida" closedBy="any">
       <div class="modal-header">
-        <h3 class="modal-title" id="modal-title-unidad-medida">Nueva Unidad Medida</h3>
+        <h3 class="modal-title" id="modal-title-unidad-medida">
+          Nueva Unidad Medida
+        </h3>
         <form method="dialog">
           <button class="modal-close" type="submit">
             <i data-lucide="x"></i>
           </button>
         </form>
       </div>
-      <form id="form-unidad-medida" onsubmit="handleSubmit(event, 'unidad-medida')">
+      <form
+        id="form-unidad-medida"
+        onsubmit="handleSubmit(event, 'unidad-medida')"
+      >
         <div class="modal-body">
           <div class="form-group">
             <label for="unidad-medida-codigo">Código</label>
@@ -204,7 +386,12 @@
           </div>
           <div class="form-group">
             <label for="unidad-medida-nombre">Nombre *</label>
-            <input type="text" id="unidad-medida-nombre" name="Gen_nombre" required />
+            <input
+              type="text"
+              id="unidad-medida-nombre"
+              name="Gen_nombre"
+              required
+            />
           </div>
           <div class="form-group">
             <label for="unidad-medida-tipo">Tipo Unidad</label>
@@ -224,7 +411,9 @@
 
     <dialog id="modal-metodo-pago" closedBy="any">
       <div class="modal-header">
-        <h3 class="modal-title" id="modal-title-metodo-pago">Nuevo Método Pago</h3>
+        <h3 class="modal-title" id="modal-title-metodo-pago">
+          Nuevo Método Pago
+        </h3>
         <form method="dialog">
           <button class="modal-close" type="submit">
             <i data-lucide="x"></i>
@@ -235,11 +424,20 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="metodo-pago-nombre">Nombre *</label>
-            <input type="text" id="metodo-pago-nombre" name="Gen_nombre" required />
+            <input
+              type="text"
+              id="metodo-pago-nombre"
+              name="Gen_nombre"
+              required
+            />
           </div>
           <div class="form-group">
             <label for="metodo-pago-descripcion">Descripción</label>
-            <textarea id="metodo-pago-descripcion" name="Gen_descripcion" rows="3"></textarea>
+            <textarea
+              id="metodo-pago-descripcion"
+              name="Gen_descripcion"
+              rows="3"
+            ></textarea>
           </div>
         </div>
       </form>
@@ -266,7 +464,12 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="operadora-nombre">Nombre *</label>
-            <input type="text" id="operadora-nombre" name="Gen_nombre" required />
+            <input
+              type="text"
+              id="operadora-nombre"
+              name="Gen_nombre"
+              required
+            />
           </div>
         </div>
       </form>
@@ -283,4 +486,3 @@
     <script type="module" src="/src/js/configuracion.js"></script>
   </body>
 </html>
-

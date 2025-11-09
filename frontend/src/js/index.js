@@ -1,3 +1,6 @@
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { createIcons, icons } from "lucide";
 
 import { config } from "@/config/env.js";
@@ -35,6 +38,16 @@ const iconConfig = {
     CreditCard: icons.CreditCard,
     Building2: icons.Building2,
     Plus: icons.Plus,
+    PlusCircle: icons.PlusCircle,
+    Pencil: icons.Pencil,
+    Trash: icons.Trash,
+    FileSpreadsheet: icons.FileSpreadsheet,
+    FileCode: icons.FileCode,
+    Braces: icons.Braces,
+    File: icons.File,
+    Save: icons.Save,
+    Edit: icons.Edit,
+    Trash2: icons.Trash2,
   },
 };
 
@@ -93,28 +106,6 @@ function formatDate() {
   return today.toLocaleDateString("es-ES", options);
 }
 
-function formatCurrency(amount) {
-  return new Intl.NumberFormat("es-EC", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-}
-
-function formatTime(timestamp) {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) {
-    return "Hace unos minutos";
-  } else if (diffInHours < 24) {
-    return `Hace ${diffInHours} hora${diffInHours > 1 ? "s" : ""}`;
-  } else {
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `Hace ${diffInDays} día${diffInDays > 1 ? "s" : ""}`;
-  }
-}
-
 function renderMetrics(data) {
   const metricsGrid = document.getElementById("metricsGrid");
   if (!metricsGrid) return;
@@ -133,40 +124,16 @@ function renderMetrics(data) {
       iconClass: "icon-secondary",
     },
     {
-      title: "Citas Hoy",
-      value: data.metrics.todayAppointments,
-      icon: "calendar",
-      iconClass: "icon-success",
-    },
-    {
-      title: "Citas Pendientes",
-      value: data.metrics.pendingAppointments,
-      icon: "clock",
-      iconClass: "icon-warning",
-    },
-    {
-      title: "Ingresos del Mes",
-      value: formatCurrency(data.metrics.monthlyRevenue),
-      icon: "dollar-sign",
-      iconClass: "icon-success",
-    },
-    {
       title: "Veterinarios Activos",
       value: data.metrics.activeVeterinarians,
       icon: "stethoscope",
       iconClass: "icon-primary",
     },
     {
-      title: "Alertas de Inventario",
-      value: data.metrics.lowStockAlerts,
-      icon: "package",
-      iconClass: "icon-error",
-    },
-    {
-      title: "Citas Completadas",
-      value: data.metrics.completedAppointments,
-      icon: "check-circle",
-      iconClass: "icon-success",
+      title: "Citas Pendientes",
+      value: data.metrics.pendingAppointments,
+      icon: "clock",
+      iconClass: "icon-warning",
     },
   ];
 
@@ -191,15 +158,16 @@ function renderAppointments(data) {
   const appointmentsList = document.getElementById("appointmentsList");
   if (!appointmentsList) return;
 
-  if (data.upcomingAppointments.length === 0) {
+  if (!data.upcomingAppointments || data.upcomingAppointments.length === 0) {
     appointmentsList.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">
           <i data-lucide="calendar-x"></i>
         </div>
-        <p class="empty-state-message">No hay citas programadas</p>
+        <p class="empty-state-message">No hay citas programadas para hoy</p>
       </div>
     `;
+    createIcons(iconConfig);
     return;
   }
 
@@ -207,56 +175,17 @@ function renderAppointments(data) {
     .map(
       (appointment) => `
     <li class="appointment-item">
-      <div class="appointment-time">${appointment.time}</div>
+      <div class="appointment-time">${appointment.time || "—"}</div>
       <div class="appointment-details">
-        <div class="appointment-pet">${appointment.petName} - ${
-        appointment.petType
-      }</div>
-        <div class="appointment-client">${appointment.clientName}</div>
-        <div class="appointment-reason">${appointment.reason} • ${
-        appointment.veterinarian
-      }</div>
-      </div>
-      <span class="appointment-status status-${appointment.status}">${
-        appointment.status === "confirmed" ? "Confirmada" : "Pendiente"
-      }</span>
-    </li>
-  `
-    )
-    .join("");
-}
-
-function renderActivity(data) {
-  const activityList = document.getElementById("activityList");
-  if (!activityList) return;
-
-  if (data.recentActivity.length === 0) {
-    activityList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">
-          <i data-lucide="activity"></i>
-        </div>
-        <p class="empty-state-message">No hay actividad reciente</p>
-      </div>
-    `;
-    return;
-  }
-
-  activityList.innerHTML = data.recentActivity
-    .map(
-      (activity) => `
-    <li class="activity-item">
-      <div class="activity-icon">
-        <i data-lucide="${activity.icon}"></i>
-      </div>
-      <div class="activity-content">
-        <div class="activity-message">${activity.message}</div>
-        <div class="activity-timestamp">${formatTime(activity.timestamp)}</div>
+        <div class="appointment-reason">${
+          appointment.reason || "Sin motivo"
+        }</div>
       </div>
     </li>
   `
     )
     .join("");
+  createIcons(iconConfig);
 }
 
 async function loadDashboard() {
@@ -283,12 +212,6 @@ async function loadDashboard() {
       renderAppointments(data);
     } catch (error) {
       console.error("Error rendering appointments:", error);
-    }
-
-    try {
-      renderActivity(data);
-    } catch (error) {
-      console.error("Error rendering activity:", error);
     }
 
     createIcons(iconConfig);
@@ -489,6 +412,200 @@ async function handleProveedorSubmit(event) {
   }
 }
 
+/* ========== FUNCIONES DE EXPORTACIÓN ========== */
+function downloadFile(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function convertToCSV(records) {
+  if (!records || records.length === 0) return "";
+  const headers = Object.keys(records[0]);
+  const rows = records.map((obj) =>
+    headers
+      .map((header) => {
+        const value = obj[header];
+        if (value === null || value === undefined) return "";
+        const stringValue = String(value).replace(/"/g, '""');
+        return stringValue.includes(",") || stringValue.includes('"')
+          ? `"${stringValue}"`
+          : stringValue;
+      })
+      .join(",")
+  );
+  return [headers.join(","), ...rows].join("\n");
+}
+
+function formatDateExport(dateString) {
+  if (!dateString) return "";
+  try {
+    return new Date(dateString).toLocaleString("es-EC");
+  } catch {
+    return String(dateString);
+  }
+}
+
+async function exportData(apiUrl, entityName, type, options = {}) {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    const records = data.data || data;
+
+    if (!Array.isArray(records) || records.length === 0) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+
+    const fileName = `reporte_${entityName}`;
+
+    switch (type) {
+      case "json": {
+        downloadFile(
+          new Blob([JSON.stringify(records, null, 2)], {
+            type: "application/json",
+          }),
+          `${fileName}.json`
+        );
+        break;
+      }
+
+      case "csv": {
+        const csv = convertToCSV(records);
+        downloadFile(
+          new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+          `${fileName}.csv`
+        );
+        break;
+      }
+
+      case "xlsx": {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(records);
+        XLSX.utils.book_append_sheet(
+          wb,
+          ws,
+          entityName.charAt(0).toUpperCase() + entityName.slice(1)
+        );
+        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        break;
+      }
+
+      case "pdf": {
+        const doc = new jsPDF();
+        doc.text(
+          `Reporte de ${
+            entityName.charAt(0).toUpperCase() + entityName.slice(1)
+          }`,
+          14,
+          15
+        );
+
+        const headers = options.pdfHeaders || Object.keys(records[0]);
+        const body = records.map((record) => {
+          if (options.pdfRowMapper) {
+            return options.pdfRowMapper(record);
+          }
+          return headers.map((header) => {
+            const value = record[header];
+            if (value === null || value === undefined) return "";
+            if (typeof value === "object") return JSON.stringify(value);
+            if (
+              typeof value === "string" &&
+              value.includes("T") &&
+              value.includes("Z")
+            ) {
+              return formatDateExport(value);
+            }
+            return String(value);
+          });
+        });
+
+        autoTable(doc, {
+          startY: 20,
+          head: [headers],
+          body: body,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [66, 139, 202] },
+        });
+
+        doc.save(`${fileName}.pdf`);
+        break;
+      }
+
+      default:
+        throw new Error(`Tipo de exportación no soportado: ${type}`);
+    }
+  } catch (error) {
+    console.error("Error al exportar:", error);
+    alert("Error al generar el reporte.");
+  }
+}
+
+// Función genérica para inicializar exportación de entidades
+function initEntityExport(entityName, apiUrl, pdfOptions = null) {
+  const btnCSV = document.getElementById(`btnExport${entityName}CSV`);
+  const btnJSON = document.getElementById(`btnExport${entityName}JSON`);
+  const btnPDF = document.getElementById(`btnExport${entityName}PDF`);
+  const btnXLSX = document.getElementById(`btnExport${entityName}XLSX`);
+
+  if (btnCSV) {
+    btnCSV.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "csv", pdfOptions);
+    });
+  }
+
+  if (btnJSON) {
+    btnJSON.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "json");
+    });
+  }
+
+  if (btnPDF) {
+    btnPDF.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "pdf", pdfOptions);
+    });
+  }
+
+  if (btnXLSX) {
+    btnXLSX.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "xlsx");
+    });
+  }
+}
+
+// Exportación de Proveedores
+function initProveedoresExport() {
+  const API_URL = `${config.BACKEND_URL}/v1/proveedores`;
+  const pdfOptions = {
+    pdfHeaders: [
+      "ID",
+      "Nombre",
+      "Dirección",
+      "Teléfono",
+      "Email",
+      "Producto/Servicio",
+    ],
+    pdfRowMapper: (row) => [
+      row.Gen_id_proveedor,
+      row.Gen_nombre || "",
+      row.Gen_direccion || "",
+      row.Gen_telefono || "",
+      row.Gen_email || "",
+      row.Gen_producto_servicio || "",
+    ],
+  };
+
+  initEntityExport("Proveedores", API_URL, pdfOptions);
+}
+
 window.openProveedorModal = openProveedorModal;
 window.editProveedor = editProveedor;
 window.deleteProveedor = deleteProveedor;
@@ -499,6 +616,7 @@ function initDashboard() {
   initMobileMenu();
   loadDashboard();
   loadProveedores();
+  initProveedoresExport();
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);

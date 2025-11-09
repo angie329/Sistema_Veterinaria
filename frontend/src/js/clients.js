@@ -1,18 +1,6 @@
 import { createIcons, icons } from "lucide";
 
-function highlightActive() {
-  const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
-    const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath ||
-        (currentPath === "/clients.html" && href === "/clients")
-    );
-  });
-}
-
-createIcons({
+const iconConfig = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
     Users: icons.Users,
@@ -37,7 +25,19 @@ createIcons({
     CreditCard: icons.CreditCard,
     Building2: icons.Building2,
   },
-});
+};
+
+function highlightActive() {
+  const currentPath = window.location.pathname;
+  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
+    const href = a.getAttribute("href");
+    a.classList.toggle(
+      "sidebar-nav-item-active",
+      href === currentPath ||
+        (currentPath === "/clients.html" && href === "/clients")
+    );
+  });
+}
 
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
@@ -75,6 +75,7 @@ function initMobileMenu() {
 function initDashboard() {
   highlightActive();
   initMobileMenu();
+  createIcons(iconConfig);
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);

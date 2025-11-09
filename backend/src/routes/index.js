@@ -12,6 +12,10 @@ import { ivaRouter } from "./iva.js";
 import { unidadMedidaRouter } from "./unidad-medida.js";
 import { metodoPagoRouter } from "./metodo-pago.js";
 import { proveedoresRouter } from "./proveedores.js";
+import { veterinariosRouter } from "./veterinarios.js";
+import { especialidadesRouter } from "./especialidades.js";
+import { turnosRouter } from "./turnos.js";
+import reporteRoutes from "./reportes.js";
 
 export const router = express.Router();
 
@@ -28,3 +32,7 @@ router.use("/iva", ivaRouter);
 router.use("/unidad-medida", unidadMedidaRouter);
 router.use("/metodo-pago", metodoPagoRouter);
 router.use("/proveedores", proveedoresRouter);
+router.use("/veterinarios", veterinariosRouter);
+router.use("/especialidades", especialidadesRouter);
+router.use("/turnos", turnosRouter);
+router.use("/reportes", reporteRoutes);

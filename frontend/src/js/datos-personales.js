@@ -1,3 +1,6 @@
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { createIcons, icons } from "lucide";
 
 import { config as envConfig } from "@/config/env.js";
@@ -6,6 +9,8 @@ const iconConfig = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
     Users: icons.Users,
+    Dog: icons.Dog,
+    Stethoscope: icons.Stethoscope,
     Search: icons.Search,
     Bell: icons.Bell,
     ChevronDown: icons.ChevronDown,
@@ -18,6 +23,10 @@ const iconConfig = {
     User: icons.User,
     Settings: icons.Settings,
     Plus: icons.Plus,
+    FileText: icons.FileText,
+    Braces: icons.Braces,
+    File: icons.File,
+    FileSpreadsheet: icons.FileSpreadsheet,
   },
 };
 
@@ -38,7 +47,13 @@ const tableConfigs = {
     tableName: "tipo-documento",
     idField: "Gen_id_tipo_documento",
     mainFields: ["Gen_codigo", "Gen_nombre"],
-    allFields: ["Gen_modulo_origen", "Gen_codigo", "Gen_nombre", "Gen_descripcion", "Gen_id_estado_general"],
+    allFields: [
+      "Gen_modulo_origen",
+      "Gen_codigo",
+      "Gen_nombre",
+      "Gen_descripcion",
+      "Gen_id_estado_general",
+    ],
   },
 };
 
@@ -104,7 +119,9 @@ function initTabs() {
       tabContents.forEach((tc) => tc.classList.remove("active"));
 
       tab.classList.add("active");
-      document.querySelector(`[data-content="${targetTab}"]`).classList.add("active");
+      document
+        .querySelector(`[data-content="${targetTab}"]`)
+        .classList.add("active");
 
       loadTableData(targetTab);
     });
@@ -330,18 +347,215 @@ async function handleSubmit(event, tableKey) {
   }
 }
 
+/* ========== FUNCIONES DE EXPORTACIÓN ========== */
+function downloadFile(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function convertToCSV(records) {
+  if (!records || records.length === 0) return "";
+  const headers = Object.keys(records[0]);
+  const rows = records.map((obj) =>
+    headers
+      .map((header) => {
+        const value = obj[header];
+        if (value === null || value === undefined) return "";
+        const stringValue = String(value).replace(/"/g, '""');
+        return stringValue.includes(",") || stringValue.includes('"')
+          ? `"${stringValue}"`
+          : stringValue;
+      })
+      .join(",")
+  );
+  return [headers.join(","), ...rows].join("\n");
+}
+
+function formatDateExport(dateString) {
+  if (!dateString) return "";
+  try {
+    return new Date(dateString).toLocaleString("es-EC");
+  } catch {
+    return String(dateString);
+  }
+}
+
+async function exportData(apiUrl, entityName, type, options = {}) {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    const records = data.data || data;
+
+    if (!Array.isArray(records) || records.length === 0) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+
+    const fileName = `reporte_${entityName}`;
+
+    switch (type) {
+      case "json": {
+        downloadFile(
+          new Blob([JSON.stringify(records, null, 2)], {
+            type: "application/json",
+          }),
+          `${fileName}.json`
+        );
+        break;
+      }
+
+      case "csv": {
+        const csv = convertToCSV(records);
+        downloadFile(
+          new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+          `${fileName}.csv`
+        );
+        break;
+      }
+
+      case "xlsx": {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(records);
+        XLSX.utils.book_append_sheet(
+          wb,
+          ws,
+          entityName.charAt(0).toUpperCase() + entityName.slice(1)
+        );
+        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        break;
+      }
+
+      case "pdf": {
+        const doc = new jsPDF();
+        doc.text(
+          `Reporte de ${
+            entityName.charAt(0).toUpperCase() + entityName.slice(1)
+          }`,
+          14,
+          15
+        );
+
+        const headers = options.pdfHeaders || Object.keys(records[0]);
+        const body = records.map((record) => {
+          if (options.pdfRowMapper) {
+            return options.pdfRowMapper(record);
+          }
+          return headers.map((header) => {
+            const value = record[header];
+            if (value === null || value === undefined) return "";
+            if (typeof value === "object") return JSON.stringify(value);
+            if (
+              typeof value === "string" &&
+              value.includes("T") &&
+              value.includes("Z")
+            ) {
+              return formatDateExport(value);
+            }
+            return String(value);
+          });
+        });
+
+        autoTable(doc, {
+          startY: 20,
+          head: [headers],
+          body: body,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [66, 139, 202] },
+        });
+
+        doc.save(`${fileName}.pdf`);
+        break;
+      }
+
+      default:
+        throw new Error(`Tipo de exportación no soportado: ${type}`);
+    }
+  } catch (error) {
+    console.error("Error al exportar:", error);
+    alert("Error al generar el reporte.");
+  }
+}
+
+// Función genérica para inicializar exportación de entidades
+function initEntityExport(entityName, apiUrl, pdfOptions = null) {
+  const btnCSV = document.getElementById(`btnExport${entityName}CSV`);
+  const btnJSON = document.getElementById(`btnExport${entityName}JSON`);
+  const btnPDF = document.getElementById(`btnExport${entityName}PDF`);
+  const btnXLSX = document.getElementById(`btnExport${entityName}XLSX`);
+
+  if (btnCSV) {
+    btnCSV.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "csv", pdfOptions);
+    });
+  }
+
+  if (btnJSON) {
+    btnJSON.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "json");
+    });
+  }
+
+  if (btnPDF) {
+    btnPDF.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "pdf", pdfOptions);
+    });
+  }
+
+  if (btnXLSX) {
+    btnXLSX.addEventListener("click", () => {
+      exportData(apiUrl, entityName.toLowerCase(), "xlsx");
+    });
+  }
+}
+
+// Inicializar exportación para todas las entidades de datos personales
+function initDatosPersonalesExports() {
+  const baseUrl = envConfig.BACKEND_URL;
+
+  // Género/Sexo
+  initEntityExport("GeneroSexo", `${baseUrl}/v1/genero-sexo`, {
+    pdfHeaders: ["ID", "Nombre"],
+    pdfRowMapper: (row) => [row.Gen_id_genero_sexo, row.Gen_nombre || ""],
+  });
+
+  // Estado Civil
+  initEntityExport("EstadoCivil", `${baseUrl}/v1/estado-civil`, {
+    pdfHeaders: ["ID", "Nombre"],
+    pdfRowMapper: (row) => [row.Gen_id_estado_civil, row.Gen_nombre || ""],
+  });
+
+  // Tipo Documento
+  initEntityExport("TipoDocumento", `${baseUrl}/v1/tipo-documento`, {
+    pdfHeaders: ["ID", "Código", "Nombre", "Descripción"],
+    pdfRowMapper: (row) => [
+      row.Gen_id_tipo_documento,
+      row.Gen_codigo || "",
+      row.Gen_nombre || "",
+      row.Gen_descripcion || "",
+    ],
+  });
+}
+
 window.editRecord = editRecord;
 window.deleteRecord = deleteRecord;
 window.handleSubmit = handleSubmit;
 window.openModal = openModal;
 
-function init() {
+function initDashboard() {
   highlightActive();
   initMobileMenu();
   initTabs();
   loadTableData("genero-sexo");
+  initDatosPersonalesExports();
   createIcons(iconConfig);
 }
 
-document.addEventListener("DOMContentLoaded", init);
-
+document.addEventListener("DOMContentLoaded", initDashboard);

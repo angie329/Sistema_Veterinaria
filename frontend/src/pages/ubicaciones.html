@@ -45,6 +45,20 @@
           <span>Ubicaciones</span>
         </a>
 
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
         <a
           href="/datos-personales"
           class="sidebar-nav-item"
@@ -120,12 +134,44 @@
           <div class="tab-content active" data-content="estado-general">
             <div class="section-header">
               <h2>Estado General</h2>
-              <button
-                class="btn btn-primary"
-                onclick="openModal('estado-general')"
-              >
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('estado-general')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-estado-general" class="crud-table-container"></div>
           </div>
@@ -133,9 +179,41 @@
           <div class="tab-content" data-content="provincia">
             <div class="section-header">
               <h2>Provincia</h2>
-              <button class="btn btn-primary" onclick="openModal('provincia')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('provincia')">
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-provincia" class="crud-table-container"></div>
           </div>
@@ -143,9 +221,41 @@
           <div class="tab-content" data-content="ciudad">
             <div class="section-header">
               <h2>Ciudad</h2>
-              <button class="btn btn-primary" onclick="openModal('ciudad')">
-                <i data-lucide="plus"></i> Crear
-              </button>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('ciudad')">
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
             </div>
             <div id="table-ciudad" class="crud-table-container"></div>
           </div>
