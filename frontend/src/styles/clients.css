@@ -1,0 +1,299 @@
+/* Sección de Clientes */
+.clients-content {
+  padding: var(--spacing-lg);
+  background-color: var(--gray-50);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-md);
+  }
+
+  @media (max-width: 640px) {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Encabezado de Clientes */
+.clients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+
+  @media (max-width: 640px) {
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+.clients-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  @media (max-width: 640px) {
+    font-size: 1.5rem;
+  }
+}
+
+/* Estilo para la sección de gestión de clientes (la tabla y el formulario) */
+.clients-section {
+  display: grid;
+  grid-template-columns: 1fr; /* Una sola columna para la tabla */
+  gap: var(--spacing-lg); /* Espacio entre las secciones si hubiera más */
+}
+
+/* Contenedor de la tabla, estilizado como tarjeta */
+.table-wrapper {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+}
+
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+
+  @media (max-width: 768px) {
+    min-width: 600px;
+  }
+}
+
+.clients-table thead {
+  background-color: white;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.clients-table th,
+.clients-table td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.clients-table th {
+  font-weight: 600;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clients-table tr:hover {
+  background-color: var(--gray-50);
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-edit {
+    color: var(--primary, #10b981);
+  }
+
+  .btn-edit:hover {
+    background-color: var(--primary-light, rgba(16, 185, 129, 0.1));
+    transform: scale(1.05);
+  }
+
+  .btn-delete {
+    color: var(--error, #ef4444);
+  }
+
+  .btn-delete:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    transform: scale(1.05);
+  }
+
+  i {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Formulario de clientes - Estilizado como tarjeta de sección */
+#form-section {
+  margin-top: var(--spacing-lg);
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  @media (max-width: 640px) {
+    padding: var(--spacing-sm);
+  }
+}
+
+#form-section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--gray-200);
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+#cliente-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+}
+
+#cliente-form > div {
+  /* Contenedor para envolver label e input si fuera necesario, aunque el HTML no los usa */
+  display: flex;
+  flex-direction: column;
+}
+
+#cliente-form label {
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+#cliente-form input {
+  padding: 0.625rem; /* Aumentamos el padding para mejor estética */
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#cliente-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+#cliente-form button {
+  grid-column: 1 / -1;
+  justify-self: end;
+  margin-top: var(--spacing-md);
+  background-color: var(--primary);
+  color: white;
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+
+  @media (max-width: 640px) {
+    justify-self: stretch;
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  &:hover {
+    background-color: #059669;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--gray-500);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  margin-top: var(--spacing-lg);
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-md);
+  opacity: 0.6;
+}
+
+.empty-state-message {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+}
+
+/* Botones de exportación */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.btn-secondary {
+  background: var(--gray-200);
+  color: var(--gray-700);
+
+  &:hover {
+    background: var(--gray-300);
+  }
+}
+
+.btn-sm {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: 0.75rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.25rem;
+}

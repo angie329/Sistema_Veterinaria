@@ -1,5 +1,4 @@
 import express from "express";
-
 import { dashboardRouter } from "./dashboard.js";
 import { estadoGeneralRouter } from "./estado-general.js";
 import { provinciaRouter } from "./provincia.js";
@@ -17,10 +16,12 @@ import { especialidadesRouter } from "./especialidades.js";
 import { turnosRouter } from "./turnos.js";
 import reporteRoutes from "./reportes.js";
 import { petsRouter } from "./pets.js";
+import clientsRoutes from "./clients.js";
 
 export const router = express.Router();
 
 router.get("/health", (_, res) => res.send("OK"));
+router.use("/api/clientes", clientsRoutes);
 router.use(dashboardRouter);
 router.use("/estado-general", estadoGeneralRouter);
 router.use("/provincia", provinciaRouter);

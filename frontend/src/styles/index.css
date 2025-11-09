@@ -458,6 +458,16 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+
+  i {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
 }
 
 .btn-primary {
@@ -490,6 +500,35 @@
 .btn-sm {
   padding: var(--spacing-xs) var(--spacing-md);
   font-size: 0.75rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+
+  .btn {
+    min-width: 36px;
+    height: 36px;
+    padding: var(--spacing-xs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
 }
 
 .data-table {
