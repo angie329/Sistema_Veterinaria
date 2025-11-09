@@ -64,3 +64,12 @@ export const outputsPrevBtn = document.getElementById("outputsPrev");
 export const outputsNextBtn = document.getElementById("outputsNext");
 export const outputsPageInput = document.getElementById("outputsPageInput");
 
+// --- Elementos de Exportación ---
+export const exportProductBtn = document.getElementById("exportProductBtn");
+export const exportIncomeBtn = document.getElementById("exportIncomeBtn");
+export const exportOutputBtn = document.getElementById("exportOutputBtn");
+export const exportMovementBtn = document.getElementById("exportMovementBtn");
+
+export const exportModalOverlay = document.getElementById("exportModalOverlay");
+export const closeExportModalBtn = document.getElementById("closeExportModalBtn");
+export const cancelExportModalBtn = document.getElementById("cancelExportModalBtn");

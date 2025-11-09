@@ -547,6 +547,77 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal para Opciones de Exportación -->
+        <div class="modal-overlay" id="exportModalOverlay" style="display: none;">
+            <div class="modal" id="exportModal" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exportModalTitle">Exportar Datos</h3>
+                    <button class="modal-close-btn" id="closeExportModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Selecciona el formato en el que deseas exportar los datos:</p>
+                    <div class="export-options-grid">
+                        <button class="btn btn-export" data-format="pdf">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M10 15.5c.2.8.8 1.5 1.5 1.5.7 0 1.3-.7 1.5-1.5"></path>
+                                <path d="M12 14v-4"></path>
+                                <path d="M10 12h4"></path>
+                                <path d="M10 18h1"></path>
+                                <path d="M13 18h1"></path>
+                            </svg>
+                            PDF
+                        </button>
+                        <button class="btn btn-export" data-format="excel">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="m15 13-3 3-3-3"></path>
+                                <path d="M12 16V9"></path>
+                            </svg>
+                            Excel
+                        </button>
+                        <button class="btn btn-export" data-format="csv">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path
+                                    d="M12 12.5a2.5 2.5 0 0 0-2.5 2.5v0a2.5 2.5 0 0 0 2.5 2.5h0a2.5 2.5 0 0 0 2.5-2.5v0a2.5 2.5 0 0 0-2.5-2.5Z">
+                                </path>
+                                <path d="M15 10.5a2.5 2.5 0 0 0-5 0v0"></path>
+                            </svg>
+                            CSV
+                        </button>
+                        <button class="btn btn-export" data-format="json">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1"></path>
+                                <path d="M14 12a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1"></path>
+                            </svg>
+                            JSON
+                        </button>
+                        <button class="btn btn-export" data-format="txt">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><line x1="10" x2="8" y1="9" y2="9"></line></svg>
+                            TXT
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelExportModalBtn">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 </body>
