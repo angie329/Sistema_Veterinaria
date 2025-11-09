@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMovements, getMovementById, updateMovement, createMovement, getMovementOptions, toggleMovementStatus } from '../controllers/movements.controller.js';
+import { getMovements, getMovementById, updateMovement, createMovement, getMovementOptions, toggleMovementStatus } from '../../controllers/inventario/movements.controller.js';
 
 export const movementsRouter = Router();
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import PDFDocument from "pdfkit-table";
 import ExcelJS from "exceljs";
-import { query } from "../config/database.js";
+import { query } from "../../config/database.js";
 
 export const invExportsRouter = Router();
 

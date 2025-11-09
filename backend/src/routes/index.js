@@ -1,10 +1,10 @@
 import express from "express";
 import { dashboardRouter } from "./dashboard.js";
-import { productsRouter } from './products.routes.js';
-import { movementsRouter } from './movements.routes.js';
-import { incomesRouter } from './incomes.routes.js';
-import { salidasRouter } from './salidas.routes.js';
-import { invExportsRouter } from "./invExports.routes.js";
+import { productsRouter } from './inventario/products.routes.js';
+import { movementsRouter } from './inventario/movements.routes.js';
+import { incomesRouter } from './inventario/incomes.routes.js';
+import { salidasRouter } from './inventario/salidas.routes.js';
+import { invExportsRouter } from "./inventario/invExports.routes.js";
 import { estadoGeneralRouter } from "./estado-general.js";
 import { provinciaRouter } from "./provincia.js";
 import { ciudadRouter } from "./ciudad.js";

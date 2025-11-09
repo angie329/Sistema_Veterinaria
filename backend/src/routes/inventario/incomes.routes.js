@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getIncomes, getIncomeOptions, getIncomeById, createIncome, updateIncome, toggleIncomeStatus } from '../controllers/incomes.controller.js';
+import { getIncomes, getIncomeOptions, getIncomeById, createIncome, updateIncome, toggleIncomeStatus } from '../../controllers/inventario/incomes.controller.js';
 
 export const incomesRouter = Router();
 

@@ -1,4 +1,4 @@
-import { query } from "../config/database.js";
+import { query } from "../../config/database.js";
 
 export const getSalidas = async (req, res) => {
     try {

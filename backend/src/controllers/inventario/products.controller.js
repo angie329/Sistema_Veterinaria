@@ -1,4 +1,4 @@
-import { query } from "../config/database.js";
+import { query } from "../../config/database.js";
 
 export const getProducts = async (req, res) => {
     // 1. Leer los parámetros de la URL
@@ -14,7 +14,7 @@ export const getProducts = async (req, res) => {
         // Query para contar el total de productos que coinciden con la búsqueda
         const countResult = await query(
             "SELECT COUNT(*) as total FROM Inv_Articulo WHERE Inv_Nombre LIKE ? AND Inv_EsActivo = 1",
-            [searchPattern, ]
+            [searchPattern,]
         );
         const totalProducts = countResult[0].total;
         const totalPages = Math.ceil(totalProducts / limit);

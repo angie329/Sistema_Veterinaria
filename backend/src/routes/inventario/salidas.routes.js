@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSalidas, getSalidaOptions, getSalidaById, createSalida, updateSalida, toggleSalidaStatus } from '../controllers/salidas.controller.js';
+import { getSalidas, getSalidaOptions, getSalidaById, createSalida, updateSalida, toggleSalidaStatus } from '../../controllers/inventario/salidas.controller.js';
 
 export const salidasRouter = Router();
 

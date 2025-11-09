@@ -177,8 +177,7 @@ function renderAppointments(data) {
     <li class="appointment-item">
       <div class="appointment-time">${appointment.time || "—"}</div>
       <div class="appointment-details">
-        <div class="appointment-reason">${
-          appointment.reason || "Sin motivo"
+        <div class="appointment-reason">${appointment.reason || "Sin motivo"
         }</div>
       </div>
     </li>
@@ -261,30 +260,28 @@ async function loadProveedores() {
         </thead>
         <tbody>
           ${data
-            .map(
-              (row) => `
+        .map(
+          (row) => `
             <tr>
               <td>${row.Gen_nombre || ""}</td>
               <td>${row.Gen_telefono || ""}</td>
               <td>${row.Gen_email || ""}</td>
               <td>
                 <div class="table-actions">
-                  <button class="btn-edit" onclick="editProveedor('${
-                    row.Gen_id_proveedor
-                  }')" title="Editar">
+                  <button class="btn-edit" onclick="editProveedor('${row.Gen_id_proveedor
+            }')" title="Editar">
                     <i data-lucide="edit"></i>
                   </button>
-                  <button class="btn-delete" onclick="deleteProveedor('${
-                    row.Gen_id_proveedor
-                  }')" title="Eliminar">
+                  <button class="btn-delete" onclick="deleteProveedor('${row.Gen_id_proveedor
+            }')" title="Eliminar">
                     <i data-lucide="trash2"></i>
                   </button>
                 </div>
               </td>
             </tr>
           `
-            )
-            .join("")}
+        )
+        .join("")}
         </tbody>
       </table>
     `;
@@ -383,9 +380,8 @@ async function handleProveedorSubmit(event) {
   if (!data.Gen_producto_servicio) data.Gen_producto_servicio = "";
 
   try {
-    const API_URL = `${config.BACKEND_URL}/v1/proveedores${
-      editingProveedorId ? `/${editingProveedorId}` : ""
-    }`;
+    const API_URL = `${config.BACKEND_URL}/v1/proveedores${editingProveedorId ? `/${editingProveedorId}` : ""
+      }`;
     const method = editingProveedorId ? "PUT" : "POST";
 
     const response = await fetch(API_URL, {
@@ -501,8 +497,7 @@ async function exportData(apiUrl, entityName, type, options = {}) {
       case "pdf": {
         const doc = new jsPDF();
         doc.text(
-          `Reporte de ${
-            entityName.charAt(0).toUpperCase() + entityName.slice(1)
+          `Reporte de ${entityName.charAt(0).toUpperCase() + entityName.slice(1)
           }`,
           14,
           15

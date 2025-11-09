@@ -1,4 +1,4 @@
-import { query } from "../config/database.js";
+import { query } from "../../config/database.js";
 
 // Obtiene todos los movimientos con paginación y búsqueda
 export const getMovements = async (req, res) => {
