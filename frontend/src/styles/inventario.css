@@ -191,6 +191,13 @@ body {
 
 /* Acciones */
 
+.table-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+
+
 /* Tabs */
 .tabs {
     display: flex;
