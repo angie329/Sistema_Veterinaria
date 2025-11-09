@@ -420,12 +420,13 @@ function initVeterinarioSelect() {
 // === Sidebar / Mobile ===
 function highlightActive() {
 	const path = window.location.pathname;
-	document.querySelectorAll(".sidebar-nav-item").forEach(a => {
+	document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
 		const href = a.getAttribute("href");
-		a.classList.toggle("sidebar-nav-item-active", href === path || (path === "/index.html" && href === "/"));
+		a.classList.toggle("sidebar-nav-item-active", href === path || (path === "/pages/citas_agendas" && href === "../pages/citas_agendas"));
 	});
 }
 
+/*==================================================================*/
 function initMobileMenu() {
 	const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 	const sidebar = document.getElementById("sidebar");
