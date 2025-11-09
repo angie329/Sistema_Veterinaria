@@ -17,7 +17,12 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "src/pages/index.html"),
         clients: resolve(__dirname, "src/pages/clients.html"),
-        inventario: resolve(__dirname, "src/pages/inventario.html")
+        inventario: resolve(__dirname, "src/pages/inventario.html"),
+        configuracion: resolve(__dirname, "src/pages/configuracion.html"),
+        datosPersonales: resolve(__dirname, "src/pages/datos-personales.html"),
+        ubicaciones: resolve(__dirname, "src/pages/ubicaciones.html"),
+        veterinarios: resolve(__dirname, "src/pages/veterinarios.html"),
+        pets: resolve(__dirname, "src/pages/pets.html"),
       },
     },
   },
