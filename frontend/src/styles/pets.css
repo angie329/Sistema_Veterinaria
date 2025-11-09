@@ -79,7 +79,7 @@
 .pets-table-section {
   background-color: #fff;
   border-radius: 10px;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -245,6 +245,18 @@
   color: #176B87;
 }
 
+.modal-description p{
+  padding-block: 15px;
+  padding-inline: 10px;
+  font-size: 1.1em;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  padding-block: 0 10px;
+}
+
 .modal-close {
   background: none;
   border: none;
@@ -360,6 +372,20 @@
 
 .btn-cancelar:hover {
   background: #bbb;
+}
+
+.btn-eliminar {
+  background: var(--error);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-eliminar:hover {
+  background: #7b1b1b;
 }
 
 /* Input con botón (+) */

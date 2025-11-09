@@ -126,6 +126,14 @@
         </div>
       </section>
 
+      <!-- PANEL DE OBSERVACIONES -->
+      <section class="pet-observations">
+        <h3>Observaciones</h3>
+        <p id="observations-text">
+          Selecciona una mascota para ver sus observaciones.
+        </p>
+      </section>
+
       <!-- BOTÓN AGREGAR -->
       <div class="pets-actions">
         <button id="btnAgregarMascota" class="btn-add">
@@ -154,13 +162,6 @@
         </table>
       </section>
 
-      <!-- PANEL DE OBSERVACIONES -->
-      <section class="pet-observations">
-        <h3>Observaciones</h3>
-        <p id="observations-text">
-          Selecciona una mascota para ver sus observaciones.
-        </p>
-      </section>
 
       <!-- Modal para registrar nueva mascota -->
       <dialog id="modalRegistrarMascota" class="modal">
@@ -185,9 +186,19 @@
               <label for="generoMascota">Género:</label>
               <div class="select-group">
                 <select id="generoMascota" name="generoMascota" required>
-                  <option value="" disabled selected>Seleccionar género</option>
+                  <option value="" disabled>Seleccionar género</option>
                 </select>
               </div>
+            </div>
+
+            <div class="form-group" id="grupoEstadoMascota" style="display: none;">
+              <label for="estadoMascota">Estado:</label>
+              <select id="estadoMascota" name="estadoMascota" required>
+                <option value="" disabled selected>Seleccionar estado</option>
+                <option value="A">Activo</option>
+                <option value="T">Tratamiento</option>
+                <option value="I">Inactivo</option>
+              </select>
             </div>
 
 
@@ -195,7 +206,7 @@
               <label for="clasificacionAnimal">Clasificacion Animal:</label>
               <div class="select-group">
                 <select id="clasificacionAnimal" name="clasificacionAnimal" required>
-                  <option value="" disabled selected>Seleccionar tipo</option>
+                  <option value="" disabled>Seleccionar tipo</option>
                   <option value="Mamífero">Mamífero</option>
                   <option value="Ave">Ave</option>
                   <option value="Reptil">Reptil</option>
@@ -208,7 +219,7 @@
               <label for="tipoMascota">Tipo de mascota:</label>
               <div class="select-group">
                 <select id="tipoMascota" name="tipoMascota" required>
-                  <option value="" disabled selected>Seleccionar tipo</option>
+                  <option value="" disabled>Seleccionar tipo</option>
                   <option value="Perro">Perro</option>
                   <option value="Gato">Gato</option>
                   <option value="Loro">Loro</option>

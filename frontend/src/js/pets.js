@@ -91,62 +91,8 @@ function initModalMascota() {
   btnCerrar?.addEventListener("click", () => modal.close());
 
   // ✅ Envío del formulario
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  form.addEventListener("submit", manejarEnvioFormularioMascota);
 
-    const nombre = document.getElementById("nombreMascota").value.trim();
-    const fechaNacimiento = document.getElementById("fechaNacimiento").value;
-    const razaId = document.getElementById("razaMascota").value;
-    const tipoId = document.getElementById("tipoMascota").value;
-    const generoId = document.getElementById("generoMascota").value;
-    const observaciones = document.getElementById("observacionesMascota").value.trim();
-
-    // ✅ Validación en frontend
-    if (!nombre || !fechaNacimiento || !razaId || !tipoId || !generoId) {
-      alert("Por favor, completa todos los campos requeridos.");
-      return;
-    }
-
-    const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
-    if (regexSQL.test(nombre) || regexSQL.test(observaciones)) {
-      alert("Entrada inválida detectada. No uses palabras reservadas SQL.");
-      return;
-    }
-
-    const payload = {
-      nombre,
-      fecha_nacimiento: fechaNacimiento,
-      raza_id: parseInt(razaId),
-      tipo_id: parseInt(tipoId),
-      genero_id: parseInt(generoId),
-      observaciones: observaciones || null,
-    };
-
-    try {
-      const response = await fetch(`${config.BACKEND_URL}/v1/pets`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        alert(result.error || "Error al registrar la mascota.");
-        return;
-      }
-
-      alert("🐾 Mascota registrada correctamente.");
-      modal.close();
-      form.reset();
-
-      // Opcional: recargar la tabla de mascotas
-      if (typeof cargarMascotas === "function") cargarMascotas();
-    } catch (error) {
-      console.error("Error al registrar mascota:", error);
-      alert("Ocurrió un error al enviar los datos.");
-    }
-  });
 }
 
 
@@ -173,7 +119,11 @@ async function cargarMascotas() {
       `;
       return;
     }
-
+    const estados = {
+      "A": "Activo",
+      "I": "Inactivo",
+      "T": "Tratamiento",
+    };
     // Construir las filas con los botones y el data-id
     tablaBody.innerHTML = result.data
       .map(
@@ -185,7 +135,7 @@ async function cargarMascotas() {
         <td>${pet.raza || "-"}</td>
         <td>${pet.genero}</td>
         <td>${calcularEdad(pet.mas_fecha_nacimiento)}</td>
-        <td>${pet.mas_estado === "A" ? "Activo" : "Inactivo"}</td>
+        <td>${estados[pet.mas_estado]}</td>
         <td class="table-actions">
           <button class="btn-edit" data-id="${pet.id_mascota}" title="Editar">
             <i data-lucide="edit"></i>
@@ -256,6 +206,8 @@ async function mostrarObservaciones(idMascota) {
       <strong>${nombre_mascota}</strong><br>
       ${observaciones || "Sin observaciones registradas."}
     `;
+    
+    observacionesPanel.scrollIntoView({behavior: "smooth", block: "center"});
   } catch (error) {
     console.error("Error obteniendo observaciones:", error);
     observacionesPanel.textContent = "Error al cargar observaciones.";
@@ -287,18 +239,6 @@ function calcularEdad(fechaNacimiento) {
     edad--;
   }
   return edad + " año" + (edad !== 1 ? "s" : "");
-}
-
-function manejarEditarMascota(event) {
-  const idMascota = event.currentTarget.dataset.id;
-  console.log("Editar mascota con ID:", idMascota);
-  // TODO: implementar lógica de edición
-}
-
-function manejarEliminarMascota(event) {
-  const idMascota = event.currentTarget.dataset.id;
-  console.log("Eliminar mascota con ID:", idMascota);
-  // TODO: implementar lógica de eliminación
 }
 
 /* ==========================================================
@@ -333,6 +273,209 @@ async function recargarSelector(select, selector, idRelacion = null, idSeleccion
   if (idSeleccionar) select.value = idSeleccionar;
   return data;
 }
+
+// Variable global para controlar el modo (agregar o editar)
+let modoEdicionMascota = null;
+
+/* ==========================================================
+   🐾 FUNCIÓN PRINCIPAL DE ENVÍO DE FORMULARIO (POST/PUT)
+========================================================== */
+async function manejarEnvioFormularioMascota(e) {
+  e.preventDefault();
+
+  const modal = document.getElementById("modalRegistrarMascota");
+  const form = document.getElementById("formMascota");
+
+  const nombre = document.getElementById("nombreMascota").value.trim();
+  const fechaNacimiento = document.getElementById("fechaNacimiento").value;
+  const razaId = document.getElementById("razaMascota").value;
+  const tipoId = document.getElementById("tipoMascota").value;
+  const generoId = document.getElementById("generoMascota").value;
+  const observaciones = document.getElementById("observacionesMascota").value.trim();
+  const estado = document.getElementById("estadoMascota")?.value || "A";
+
+  if (!nombre || !fechaNacimiento || !razaId || !tipoId || !generoId) {
+    alert("Por favor, completa todos los campos requeridos.");
+    return;
+  }
+
+  const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
+  if (regexSQL.test(nombre) || regexSQL.test(observaciones)) {
+    alert("Entrada inválida detectada. No uses palabras reservadas SQL.");
+    return;
+  }
+
+  const payload = {
+    nombre,
+    fecha_nacimiento: fechaNacimiento,
+    raza_id: parseInt(razaId),
+    tipo_id: parseInt(tipoId),
+    genero_id: parseInt(generoId),
+    observaciones: observaciones || null,
+    mas_estado: estado,
+  };
+
+  const isEdit = modoEdicionMascota !== null;
+
+  try {
+    const endpoint = isEdit
+      ? `${config.BACKEND_URL}/v1/pet/${modoEdicionMascota}`
+      : `${config.BACKEND_URL}/v1/pets`;
+
+    const method = isEdit ? "PUT" : "POST";
+
+    const response = await fetch(endpoint, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      alert(result.error || `Error al ${isEdit ? "actualizar" : "registrar"} la mascota.`);
+      return;
+    }
+
+    alert(`🐾 Mascota ${isEdit ? "actualizada" : "registrada"} correctamente.`);
+    modal.close();
+    form.reset();
+    modoEdicionMascota = null;
+
+    const btnGuardar = form.querySelector(".btn-guardar");
+    if (btnGuardar) btnGuardar.textContent = "Guardar";
+
+    // 🆕 Ocultar nuevamente el selector de estado al guardar
+    const grupoEstado = document.getElementById("grupoEstadoMascota");
+    if (grupoEstado) grupoEstado.style.display = "none";
+
+    if (typeof cargarMascotas === "function") cargarMascotas();
+  } catch (error) {
+    console.error("Error al guardar mascota:", error);
+    alert("Ocurrió un error al enviar los datos.");
+  }
+}
+
+/* ==========================================================
+   🐕 FUNCIÓN DE EDITAR MASCOTA
+========================================================== */
+async function manejarEditarMascota(event) {
+  const idMascota = event.currentTarget.dataset.id;
+  if (!idMascota) return;
+
+  modoEdicionMascota = idMascota; // activamos modo edición
+  const modal = document.getElementById("modalRegistrarMascota");
+  const form = document.getElementById("formMascota");
+
+  try {
+    const response = await fetch(`${config.BACKEND_URL}/v1/pet/${idMascota}`);
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+    const result = await response.json();
+    if (!result.success || !result.data) {
+      alert("No se encontró la información de la mascota.");
+      return;
+    }
+
+    const mascota = result.data;
+
+    // Cargar selectores y esperar que terminen antes de asignar valores
+    inicializarSelectoresDinamicos();
+
+    // Llenar los campos del formulario
+    document.getElementById("nombreMascota").value = mascota.nombre_mascota || "";
+    document.getElementById("fechaNacimiento").value = mascota.mas_fecha_nacimiento
+      ? mascota.mas_fecha_nacimiento.split("T")[0]
+      : "";
+    document.getElementById("observacionesMascota").value = mascota.mas_observaciones || "";
+
+    // 🆕 Mostrar y asignar valor al selector de estado
+    const grupoEstado = document.getElementById("grupoEstadoMascota");
+    grupoEstado.style.display = "block";
+    const selectEstado = document.getElementById("estadoMascota");
+    selectEstado.value = mascota.mas_estado || "A";
+
+    // Asignar valores a los selects (esperando sus dependencias)
+    await recargarSelector(
+      document.getElementById("generoMascota"),
+      { endpoint: "genders", word: "género" },
+      null,
+      mascota.genero_id
+    );
+
+    await recargarSelector(
+      document.getElementById("clasificacionAnimal"),
+      { endpoint: "types", word: "clasificación" },
+      null,
+      mascota.clasificacion_id
+    );
+
+    await recargarSelector(
+      document.getElementById("tipoMascota"),
+      { endpoint: "types", word: "tipo" },
+      mascota.clasificacion_id,
+      mascota.tipo_id
+    );
+    document.getElementById("tipoMascota").closest(".form-group").style.display = "block";
+
+    await recargarSelector(
+      document.getElementById("razaMascota"),
+      { endpoint: "breeds", word: "raza" },
+      mascota.tipo_id,
+      mascota.raza_id
+    );
+    document.getElementById("razaMascota").closest(".form-group").style.display = "block";
+
+    // Cambiar texto del botón principal
+    const btnGuardar = form.querySelector(".btn-guardar");
+    if (btnGuardar) btnGuardar.textContent = "Actualizar";
+
+    modal.showModal();
+  } catch (error) {
+    console.error("Error al cargar datos de la mascota:", error);
+    alert("Error al cargar los datos de la mascota.");
+  }
+}
+
+function manejarEliminarMascota(event) {
+  event.stopPropagation(); // evita que se dispare el click en la fila
+  const idMascota = event.currentTarget.dataset.id;
+  if (!idMascota) return;
+
+  const modal = document.getElementById("modalEliminarMascota");
+  const btnConfirmar = document.getElementById("btnConfirmarEliminar");
+
+  modal.showModal();
+
+  // remover cualquier listener previo
+  btnConfirmar.replaceWith(btnConfirmar.cloneNode(true));
+  const nuevoBtnConfirmar = document.getElementById("btnConfirmarEliminar");
+
+  nuevoBtnConfirmar.addEventListener("click", async () => {
+    try {
+      const response = await fetch(`${config.BACKEND_URL}/v1/pet/${idMascota}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        alert(result.error || "Error al eliminar la mascota.");
+        return;
+      }
+
+      alert("🐾 Mascota eliminada correctamente.");
+      modal.close();
+
+      // Recargar tabla
+      if (typeof cargarMascotas === "function") cargarMascotas();
+    } catch (error) {
+      console.error("Error al eliminar mascota:", error);
+      alert("Ocurrió un error al eliminar la mascota.");
+    }
+  });
+}
+
 
 /* ==========================================================
    🔧 INICIALIZACIÓN DE SELECTORES EN EL MODAL
@@ -466,12 +609,42 @@ async function agregarElemento(endpoint, data) {
   }
 }
 
+function crearModalEliminar() {
+  if (document.getElementById("modalEliminarMascota")) return; // evitar duplicados
+
+  const modalHTML = `
+    <dialog id="modalEliminarMascota" class="modal">
+      <div class="modal-header">
+        <h2>Confirmar eliminación</h2>
+      </div>
+      <div class="modal-description">
+        <p>
+          ¿Estás seguro de que deseas eliminar esta mascota?<br>
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button id="btnConfirmarEliminar" class="btn-eliminar">Eliminar</button>
+        <button id="btnCancelarEliminar" class="btn-cancelar">Cancelar</button>
+      </div>
+    </dialog>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+  const modal = document.getElementById("modalEliminarMascota");
+  const btnCancelar = document.getElementById("btnCancelarEliminar");
+
+  btnCancelar.addEventListener("click", () => modal.close());
+}
+
 
 
 function initDashboard() {
   highlightActive();
   initMobileMenu();
   initModalMascota();
+  crearModalEliminar();
   cargarMascotas();
 }
 

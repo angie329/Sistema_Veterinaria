@@ -6,7 +6,7 @@ export const petsRouter = express.Router();
 petsRouter.get("/pets", async (req, res) => {
   try {
 
-    let textQuery =
+    const sql =
       `SELECT 
       m.mas_id_mascota AS id_mascota,
       m.mas_nombre AS nombre_mascota,
@@ -26,7 +26,7 @@ petsRouter.get("/pets", async (req, res) => {
     ORDER BY id_mascota
     ;`;
 
-    const rows = await query(textQuery);
+    const rows = await query(sql);
     // Siempre devolver un JSON, aunque esté vacío
     res.json({
       success: true,
@@ -76,6 +76,77 @@ petsRouter.get("/pets/:id/details", async (req, res) => {
     });
   }
 });
+
+/* ==========================================================
+   GET /v1/pet/:id
+   Devuelve toda la información de una mascota por su ID
+========================================================== */
+petsRouter.get("/pet/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const sql = `
+      SELECT 
+        m.mas_id_mascota AS id_mascota,
+        m.mas_nombre AS nombre_mascota,
+
+        -- 🐾 Clasificación
+        c.mas_id_clasificacion_animal AS clasificacion_id,
+        c.mas_descripcion AS clasificacion_nombre,
+
+        -- 🐶 Tipo
+        t.mas_id_tipo_mascota AS tipo_id,
+        t.mas_descripcion AS tipo_mascota,
+
+        -- 🐕 Raza
+        r.mas_id_raza AS raza_id,
+        r.mas_descripcion AS raza,
+
+        -- ⚧ Género
+        g.gen_id_genero_sexo AS genero_id,
+        g.gen_nombre AS genero,
+
+        m.mas_fecha_nacimiento,
+        m.mas_estado,
+        m.mas_observaciones
+
+      FROM mas_mascota m
+      INNER JOIN mas_tipo_mascota t 
+        ON m.mas_id_tipo_mascota_fk = t.mas_id_tipo_mascota
+      INNER JOIN mas_raza r 
+        ON m.mas_id_raza_fk = r.mas_id_raza
+      INNER JOIN mas_clasificacion_animal c 
+        ON t.mas_id_clasificacion_animal_fk = c.mas_id_clasificacion_animal
+      INNER JOIN gen_generosexo g 
+        ON m.mas_id_genero_sexo_fk = g.gen_id_genero_sexo
+      WHERE m.mas_id_mascota = ?
+      ORDER BY id_mascota;
+    `;
+
+    const result = await query(sql, [id]);
+
+    if (result.length === 0) {
+      return res.json({
+        success: true,
+        message: "Mascota no encontrada",
+        data: null,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result[0],
+    });
+  } catch (error) {
+    console.error("Error al obtener mascota:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error al obtener mascota",
+    });
+  }
+});
+
+
 
 /* ==========================================================
    GET /v1/pets/types
@@ -375,6 +446,132 @@ petsRouter.post("/pets", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error interno al registrar la mascota.",
+    });
+  }
+});
+
+
+/* ==========================================================
+   PUT /v1/pet/:id
+   Actualiza los datos de una mascota existente
+========================================================== */
+petsRouter.put("/pet/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      nombre,
+      fecha_nacimiento,
+      raza_id,
+      tipo_id,
+      genero_id,
+      observaciones,
+      mas_estado, // 🆕 ahora se puede recibir el estado
+    } = req.body;
+
+    // ✅ Validar datos mínimos
+    if (!id || !nombre || !fecha_nacimiento || !raza_id || !tipo_id || !genero_id) {
+      return res.status(400).json({
+        success: false,
+        error: "Datos incompletos: se requieren todos los campos obligatorios",
+      });
+    }
+
+    // ✅ Validar que no haya inyección SQL
+    const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
+    if (regexSQL.test(nombre) || regexSQL.test(observaciones || "")) {
+      return res.status(400).json({
+        success: false,
+        error: "Entrada inválida detectada. No uses palabras reservadas SQL.",
+      });
+    }
+
+    // 🆕 Si no se envía mas_estado, se mantiene el estado actual
+    let estadoFinal = mas_estado;
+    if (!estadoFinal) {
+      const estadoQuery = await query(
+        "SELECT mas_estado FROM mas_mascota WHERE mas_id_mascota = ?",
+        [id]
+      );
+      if (estadoQuery.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "Mascota no encontrada.",
+        });
+      }
+      estadoFinal = estadoQuery[0].mas_estado;
+    }
+
+    // ✅ Construir query de actualización
+    const sql = `
+      UPDATE mas_mascota
+      SET 
+        mas_nombre = ?,
+        mas_fecha_nacimiento = ?,
+        mas_id_raza_fk = ?,
+        mas_id_tipo_mascota_fk = ?,
+        mas_id_genero_sexo_fk = ?,
+        mas_observaciones = ?,
+        mas_estado = ?
+      WHERE mas_id_mascota = ?;
+    `;
+
+    const result = await query(sql, [
+      nombre,
+      fecha_nacimiento,
+      raza_id,
+      tipo_id,
+      genero_id,
+      observaciones,
+      estadoFinal,
+      id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No se encontró la mascota especificada",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Mascota actualizada correctamente",
+    });
+  } catch (error) {
+    console.error("Error al actualizar mascota:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error al actualizar los datos de la mascota",
+    });
+  }
+});
+
+/* ==========================================================
+   DELETE /v1/pet/:id
+   Elimina una mascota (solo de la tabla mas_mascota)
+========================================================== */
+petsRouter.delete("/pet/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id)
+      return res.status(400).json({ success: false, error: "ID de mascota requerido" });
+
+    const sql = "DELETE FROM mas_mascota WHERE mas_id_mascota = ?";
+    const result = await query(sql, [id]);
+
+    if (result.affectedRows === 0)
+      return res.status(404).json({ success: false, error: "Mascota no encontrada" });
+
+    res.json({
+      success: true,
+      message: "Mascota eliminada correctamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar mascota:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error al eliminar la mascota",
     });
   }
 });
