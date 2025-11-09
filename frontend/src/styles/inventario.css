@@ -466,3 +466,25 @@ input.paginacion-boton {
 .btn-secondary:hover {
     background-color: var(--gray-50);
 }
+
+/* --- Estilos para el Modal de Exportación --- */
+
+.export-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.btn-export {
+    background-color: var(--gray-50);
+    color: var(--gray-900);
+    border: 1px solid var(--gray-300);
+    justify-content: flex-start;
+    /* Alinea el contenido a la izquierda */
+}
+
+.btn-export:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+}

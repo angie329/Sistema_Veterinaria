@@ -2,6 +2,7 @@ import { createIcons, icons } from "lucide";
 import { productsRender, setupProductEventListeners } from './products.js';
 import { setupMovementEventListeners } from './movements.js';
 import { setupIncomeEventListeners } from './ingresos.js';
+import * as DOM from './domElements.js';
 import { setupSalidaEventListeners } from './salidas.js';
 import { setupTabNavigation, setupPaginationControls } from './ui.js';
 
@@ -93,13 +94,48 @@ export const state = {
         currentPage: 1,
         totalPages: 1,
     },
-    salidas:
-    {
-        currentPage: 1,
-        totalPages: 1,
-    },
 
 };
+
+
+function setupExportModal(exportBtn, dataType) {
+    if (!exportBtn) return;
+
+    const exportModal = document.getElementById('exportModal');
+
+    exportBtn.addEventListener('click', () => {
+        DOM.exportModalOverlay.style.display = 'flex';
+        // Guardamos el tipo de dato en el modal para saber qué exportar
+        exportModal.dataset.exportType = dataType;
+    });
+}
+
+function initExportListeners() {
+    const exportModal = document.getElementById('exportModal');
+
+    // Listener para los botones de formato dentro del modal
+    exportModal.addEventListener('click', (e) => {
+        const formatBtn = e.target.closest('.btn-export');
+        if (!formatBtn) return;
+
+        const format = formatBtn.dataset.format;
+        const dataType = exportModal.dataset.exportType;
+
+        if (dataType && format) {
+            // Construimos la URL y abrimos en una nueva pestaña
+            const url = `/v1/invexports/${dataType}${format}`;
+            window.open(url, '_blank');
+            closeExportModal();
+        }
+    });
+
+    // Listeners para cerrar el modal
+    DOM.closeExportModalBtn.addEventListener('click', closeExportModal);
+    DOM.cancelExportModalBtn.addEventListener('click', closeExportModal);
+    DOM.exportModalOverlay.addEventListener('click', (e) => {
+        if (e.target === DOM.exportModalOverlay) closeExportModal();
+    });
+}
 
 
 function initInventoryModule() {
@@ -115,8 +151,21 @@ function initInventoryModule() {
     setupSalidaEventListeners();
     setupPaginationControls();
 
+    // 3. Configurar modales de exportación
+    setupExportModal(DOM.exportProductBtn, 'products');
+    setupExportModal(DOM.exportIncomeBtn, 'income');
+    setupExportModal(DOM.exportOutputBtn, 'salidas');
+    setupExportModal(DOM.exportMovementBtn, 'movements');
+    initExportListeners();
+
     // 3. Carga inicial de datos (la pestaña de productos es la activa por defecto)
     productsRender();
+}
+
+function closeExportModal() {
+    if (DOM.exportModalOverlay) {
+        DOM.exportModalOverlay.style.display = 'none';
+    }
 }
 
 // Iniciar todo cuando el DOM esté listo
