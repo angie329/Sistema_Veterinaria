@@ -12,7 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "exceljs": "^4.4.0",
     "express": "5.1.0",
-    "mysql2": "3.15.3"
+    "mysql2": "3.15.3",
+    "pdfkit": "^0.17.2",
+    "pdfkit-table": "^0.1.99"
   }
 }
