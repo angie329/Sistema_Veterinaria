@@ -44,10 +44,6 @@ function switchTab(tabName) {
         salidasRender();
     }
 
-    if (tabName === 'salidas' && DOM.outputTableBody.childElementCount === 0) {
-        salidasRender();
-    }
-
     if (tabName === 'ingresos' && DOM.incomeTableBody.childElementCount === 0) {
         incomesRender();
     }
