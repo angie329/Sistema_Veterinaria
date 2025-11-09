@@ -347,7 +347,18 @@ async function handleSubmit(event, tableKey) {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const error = await response.json();
+      if (error.error) {
+        if (error.error.includes("chk_Gen_IVA_fechas_validas")) {
+          throw new Error(
+            "La fecha de fin de vigencia no puede ser anterior a la fecha de inicio de vigencia"
+          );
+        }
+      }
+
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const modal = document.getElementById(`modal-${tableKey}`);
     if (modal) {
