@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes - VetSystem</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+  <link rel="stylesheet" href="/src/styles/components.css" />
+  <link rel="stylesheet" href="/src/styles/pets.css" />
+  <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+</head>
+
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path
+            d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+            fill="currentColor" />
+        </svg>
+        <span>VetSystem</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="sidebar-nav-item" data-module="dashboard">
+        <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+        <span>Panel</span>
+      </a>
+
+      <a href="/clients" class="sidebar-nav-item" data-module="clients">
+        <i data-lucide="users" class="sidebar-nav-icon"></i>
+        <span>Clientes</span>
+      </a>
+
+      <a
+        href="/ubicaciones"
+        class="sidebar-nav-item"
+        data-module="ubicaciones"
+      >
+        <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
+        <span>Ubicaciones</span>
+      </a>
+
+      <a href="/pets" class="sidebar-nav-item" data-module="pets">
+        <i data-lucide="dog" class="sidebar-nav-icon"></i>
+        <span>Mascotas</span>
+      </a>
+
+      <a
+        href="/veterinarios"
+        class="sidebar-nav-item"
+        data-module="veterinarians"
+      >
+        <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+        <span>Veterinarios</span>
+      </a>
+
+      <a
+        href="/datos-personales"
+        class="sidebar-nav-item"
+        data-module="datos-personales"
+      >
+        <i data-lucide="user" class="sidebar-nav-icon"></i>
+        <span>Datos Personales</span>
+      </a>
+
+      <a
+        href="/configuracion"
+        class="sidebar-nav-item"
+        data-module="configuracion"
+      >
+        <i data-lucide="settings" class="sidebar-nav-icon"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+  </aside>
+
+  <header class="header">
+    <button class="header-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+      <i data-lucide="menu"></i>
+    </button>
+    <div class="header-search">
+      <i data-lucide="search" class="header-search-icon"></i>
+      <input type="text" class="header-search-input" placeholder="Buscar clientes, mascotas, medicamentos..."
+        id="globalSearch" />
+    </div>
+
+    <div class="header-actions">
+      <button class="header-icon-btn" id="notificationsBtn">
+        <i data-lucide="bell"></i>
+        <span class="header-badge">3</span>
+      </button>
+
+      <div class="header-user-btn" id="userMenuBtn">
+        <div class="header-avatar">AD</div>
+        <span>Admin</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+    <main class="pets-container">
+      <!-- ENCABEZADO -->
+      <header class="pets-header">
+        <h1 class="pets-title">
+          Mascotas <i data-lucide="dog"></i>
+        </h1>
+      </header>
+
+      <!-- MÉTRICAS GENERALES -->
+      <section class="pets-metrics">
+        <div class="metric-card">
+          <i data-lucide="heart"></i>
+          <div class="metric-info">
+            <span class="metric-label">Última mascota agregada</span>
+            <span id="lastPet" class="metric-value"></span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <i data-lucide="activity"></i>
+          <div class="metric-info">
+            <span class="metric-label">En tratamiento</span>
+            <span id="totalTreatmentPets" class="metric-value"></span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <i data-lucide="paw-print"></i>
+          <div class="metric-info">
+            <span class="metric-label">Total mascotas</span>
+            <span id="totalPets" class="metric-value"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL DE OBSERVACIONES -->
+      <section class="pet-observations">
+        <h3>Observaciones</h3>
+        <p id="observations-text">
+          Selecciona una mascota para ver sus observaciones.
+        </p>
+      </section>
+
+      <!-- BOTÓN AGREGAR Y REPORTE-->
+      <div class="pets-actions">
+        <button id="btnAgregarMascota" class="btn-add">
+          <i data-lucide="plus-circle"></i>
+          Agregar mascota
+        </button>
+        <button id="btnGenerarPDF" class="btn-add">
+          <i data-lucide="file-text"></i> PDF
+        </button>
+      </div>
+
+      <!-- TABLA DE MASCOTAS -->
+      <section class="pets-table-section">
+        <table class="pets-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Especie</th>
+              <th>Raza</th>
+              <th>Género</th>
+              <th>Edad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </section>
+
+
+      <!-- Modal para registrar nueva mascota -->
+      <dialog id="modalRegistrarMascota" class="modal">
+        <form method="dialog" id="formMascota" class="form-mascota">
+          <header class="modal-header">
+            <h2>Registrar nueva mascota</h2>
+            <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
+          </header>
+
+          <div class="form-body">
+            <div class="form-group">
+              <label for="nombreMascota">Nombre de la mascota:</label>
+              <input type="text" id="nombreMascota" name="nombreMascota" placeholder="Ej. Luna" required>
+            </div>
+
+            <div class="form-group">
+              <label for="DuenoMascota">Nombre del Dueño:</label>
+              <input type="text" id="DuenoMascota" name="DuenoMascota" placeholder="Ej. Karla" required>
+            </div>
+
+            <div class="form-group">
+              <label for="generoMascota">Género:</label>
+              <div class="select-group">
+                <select id="generoMascota" name="generoMascota" required>
+                  <option value="" disabled>Seleccionar género</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="grupoEstadoMascota" style="display: none;">
+              <label for="estadoMascota">Estado:</label>
+              <select id="estadoMascota" name="estadoMascota" required>
+                <option value="" disabled selected>Seleccionar estado</option>
+                <option value="A">Activo</option>
+                <option value="T">Tratamiento</option>
+                <option value="I">Inactivo</option>
+              </select>
+            </div>
+
+
+            <div class="form-group">
+              <label for="clasificacionAnimal">Clasificacion Animal:</label>
+              <div class="select-group">
+                <select id="clasificacionAnimal" name="clasificacionAnimal" required>
+                  <option value="" disabled>Seleccionar tipo</option>
+                  <option value="Mamífero">Mamífero</option>
+                  <option value="Ave">Ave</option>
+                  <option value="Reptil">Reptil</option>
+                </select>
+                <button type="button" class="btn-add-option" title="Agregar nueva clasificacion">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="tipoMascota">Tipo de mascota:</label>
+              <div class="select-group">
+                <select id="tipoMascota" name="tipoMascota" required>
+                  <option value="" disabled>Seleccionar tipo</option>
+                  <option value="Perro">Perro</option>
+                  <option value="Gato">Gato</option>
+                  <option value="Loro">Loro</option>
+                </select>
+                <button type="button" class="btn-add-option" title="Agregar nuevo tipo">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="razaMascota">Raza:</label>
+              <div class="select-group">
+                <select id="razaMascota" name="razaMascota" required>
+                  <option value="" disabled selected>Seleccionar raza</option>
+                  <option value="Labrador">Labrador</option>
+                  <option value="Persa">Persa</option>
+                  <option value="Golden Retriever">Golden Retriever</option>
+                </select>
+                <button type="button" class="btn-add-option" title="Agregar nueva raza">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fechaNacimiento">Fecha de nacimiento:</label>
+              <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+            </div>
+
+            <div class="form-group">
+              <label for="observacionesMascota">Observaciones:</label>
+              <textarea id="observacionesMascota" name="observacionesMascota" rows="4"
+                placeholder="Anota información relevante..."></textarea>
+            </div>
+          </div>
+
+          <footer class="form-actions">
+            <button type="submit" class="btn-guardar">Guardar</button>
+            <button type="button" class="btn-cancelar">Cancelar</button>
+          </footer>
+        </form>
+      </dialog>
+
+      <!-- Mini modal genérico para agregar opciones -->
+      <dialog id="modalAgregarOpcion" class="modal">
+        <form method="dialog" id="formAgregarOpcion" class="form-mascota">
+          <header class="modal-header">
+            <h2 id="tituloModalOpcion">Agregar nueva opción</h2>
+            <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
+          </header>
+
+          <div class="form-body">
+            <div class="form-group">
+              <label for="nombreOpcion">Nombre:</label>
+              <input type="text" id="nombreOpcion" name="nombreOpcion" placeholder="Ej. Reptil, Canario..." required />
+            </div>
+          </div>
+
+          <footer class="form-actions">
+            <button type="submit" class="btn-guardar">Guardar</button>
+            <button type="button" class="btn-cancelar">Cancelar</button>
+          </footer>
+        </form>
+      </dialog>
+
+
+    </main>
+  </div>
+
+  <script type="module" src="/src/js/pets.js"></script>
+</body>
+
+</html>

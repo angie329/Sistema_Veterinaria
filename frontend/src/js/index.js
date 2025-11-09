@@ -269,15 +269,15 @@ async function loadProveedores() {
               <td>${row.Gen_email || ""}</td>
               <td>
                 <div class="table-actions">
-                  <button class="btn btn-sm btn-primary" onclick="editProveedor('${
+                  <button class="btn-edit" onclick="editProveedor('${
                     row.Gen_id_proveedor
-                  }')">
-                    <i data-lucide="edit"></i> Editar
+                  }')" title="Editar">
+                    <i data-lucide="edit"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteProveedor('${
+                  <button class="btn-delete" onclick="deleteProveedor('${
                     row.Gen_id_proveedor
-                  }')">
-                    <i data-lucide="trash2"></i> Eliminar
+                  }')" title="Eliminar">
+                    <i data-lucide="trash2"></i>
                   </button>
                 </div>
               </td>

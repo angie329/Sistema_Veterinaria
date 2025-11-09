@@ -37,8 +37,8 @@ const iconConfig = {
     ChevronDown: icons.ChevronDown,
     PlusCircle: icons.PlusCircle,
     Menu: icons.Menu,
-    Pencil: icons.Pencil,
-    Trash: icons.Trash,
+    Edit: icons.Edit,
+    Trash2: icons.Trash2,
     X: icons.X,
     FileText: icons.FileText,
     FileSpreadsheet: icons.FileSpreadsheet,
@@ -118,10 +118,10 @@ function renderVeterinarios(veterinarios = []) {
             <div class="actions">
               <button class="action-btn edit" data-vet='${JSON.stringify(
                 vet
-              )}'><i data-lucide="pencil"></i></button>
+              )}' title="Editar"><i data-lucide="edit"></i></button>
               <button class="action-btn delete" data-id="${
                 vet.id_Veterinario
-              }"><i data-lucide="trash"></i></button>
+              }" title="Eliminar"><i data-lucide="trash2"></i></button>
             </div>
           </td>
         </tr>`

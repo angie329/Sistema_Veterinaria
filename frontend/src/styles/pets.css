@@ -1,0 +1,506 @@
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   Define la estructura base de la vista y la disposición general
+   ========================================================= */
+.pets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem 2rem;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   ENCABEZADO PRINCIPAL
+   Contiene el título de la sección y las acciones principales
+   ========================================================= */
+.pets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pets-title {
+  font-size: 1.8rem;
+  color: #176b87;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pets-title i {
+  width: 26px;
+  height: 26px;
+}
+
+/* =========================================================
+   SECCIÓN DE MÉTRICAS
+   Presenta estadísticas resumidas en formato de tarjetas
+   ========================================================= */
+.pets-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.8rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.metric-card i {
+  color: #176b87;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.metric-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #176b87;
+}
+
+/* =========================================================
+   TABLA DE REGISTROS
+   Muestra los datos principales en formato tabular
+   ========================================================= */
+.pets-table-section {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow-x: auto;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.pets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pets-table th,
+.pets-table td {
+  padding: 14px 16px;
+  text-align: center;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.pets-table th {
+  background-color: #f0f5fa;
+  font-weight: 600;
+  color: #2e3a45;
+}
+
+.pets-table tr:hover {
+  background-color: #f8fcff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pets-table td {
+  color: #333;
+}
+
+/* =========================================================
+   PANEL DE OBSERVACIONES
+   Contenedor adicional para notas o comentarios relevantes
+   ========================================================= */
+.pet-observations {
+  background-color: #ffffff;
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  min-height: 100px;
+  transition: all 0.3s ease;
+}
+
+.pet-observations h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: #176b87;
+}
+
+.pet-observations p {
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* =========================================================
+   BOTÓN PRINCIPAL DE ACCIÓN
+   Se utiliza para agregar nuevos registros o elementos
+   ========================================================= */
+.pets-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-add {
+  background-color: #176b87;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-add:hover {
+  background-color: #145a73;
+  transform: translateY(-1px);
+}
+
+.btn-add i {
+  width: 20px;
+  height: 20px;
+}
+
+/* =========================================================
+   COLUMNA DE ACCIONES EN TABLA
+   Contiene los botones de edición y eliminación
+   ========================================================= */
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table-actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit {
+  color: #176b87;
+}
+
+.btn-edit:hover {
+  background-color: rgba(23, 107, 135, 0.1);
+  transform: scale(1.05);
+}
+
+.btn-delete {
+  color: #d9534f;
+}
+
+.btn-delete:hover {
+  background-color: rgba(217, 83, 79, 0.1);
+  transform: scale(1.05);
+}
+
+.table-actions i {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================================
+   MODAL (DIALOG)
+   Contenedor emergente para formularios o confirmaciones
+   ========================================================= */
+.modal {
+  border: none;
+  border-radius: 10px;
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease-out;
+  margin: auto auto;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* =========================================================
+   CABECERA DEL MODAL
+   Muestra el título y el botón de cierre
+   ========================================================= */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f8fafc;
+  border-radius: 10px 10px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #176b87;
+}
+
+.modal-description p {
+  padding-block: 15px;
+  padding-inline: 10px;
+  font-size: 1.1em;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  padding-block: 0 10px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #176b87;
+}
+
+/* =========================================================
+   CUERPO DEL FORMULARIO
+   Contiene los campos y controles de entrada de datos
+   ========================================================= */
+.form-mascota {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #176b87;
+}
+
+/* =========================================================
+   SELECT CON BOTÓN ADICIONAL (+)
+   Permite agregar opciones dinámicamente desde el formulario
+   ========================================================= */
+.select-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-add-option {
+  background: #176b87;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add-option:hover {
+  background: #12566b;
+}
+
+/* =========================================================
+   PIE DEL FORMULARIO
+   Contiene los botones de acción del formulario (guardar, cancelar, eliminar)
+   ========================================================= */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-radius: 0 0 10px 10px;
+}
+
+.btn-guardar {
+  background: #176b87;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-guardar:hover {
+  background: #12566b;
+}
+
+.btn-cancelar {
+  background: #ccc;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #bbb;
+}
+
+.btn-eliminar {
+  background: var(--error);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-eliminar:hover {
+  background: #7b1b1b;
+}
+
+/* =========================================================
+   INPUT CON BOTÓN ADICIONAL
+   Estructura combinada de select o input con botón auxiliar
+   ========================================================= */
+.input-with-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.input-with-btn select {
+  flex: 1;
+}
+
+.btn-agregar-opcion {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn-agregar-opcion:hover {
+  background-color: var(--primary);
+}
+
+/* =========================================================
+   DISEÑO RESPONSIVO
+   Ajustes de estilo para dispositivos con pantallas pequeñas
+   ========================================================= */
+@media (max-width: 768px) {
+  .pets-container {
+    padding: 1rem;
+  }
+
+  .pets-title {
+    font-size: 1.4rem;
+  }
+
+  .metric-card {
+    padding: 0.8rem;
+  }
+
+  .metric-value {
+    font-size: 1.1rem;
+  }
+
+  .pets-table th,
+  .pets-table td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .pet-observations {
+    font-size: 0.9rem;
+  }
+
+  .btn-add {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-actions {
+    gap: 0.3rem;
+  }
+
+  .table-actions button {
+    padding: 4px;
+  }
+}

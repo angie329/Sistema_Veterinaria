@@ -193,15 +193,15 @@ async function loadTableData(tableKey) {
                 .join("")}
               <td>
                 <div class="table-actions">
-                  <button class="btn btn-sm btn-primary" onclick="editRecord('${tableKey}', '${
+                  <button class="btn-edit" onclick="editRecord('${tableKey}', '${
                 row[config.idField]
-              }')">
-                    <i data-lucide="edit"></i> Editar
+              }')" title="Editar">
+                    <i data-lucide="edit"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteRecord('${tableKey}', '${
+                  <button class="btn-delete" onclick="deleteRecord('${tableKey}', '${
                 row[config.idField]
-              }')">
-                    <i data-lucide="trash2"></i> Eliminar
+              }')" title="Eliminar">
+                    <i data-lucide="trash2"></i>
                   </button>
                 </div>
               </td>

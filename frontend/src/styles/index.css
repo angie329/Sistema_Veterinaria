@@ -365,7 +365,6 @@
   gap: var(--spacing-sm);
   border-bottom: 2px solid var(--gray-200);
   margin-bottom: var(--spacing-lg);
-  overflow-x: auto;
 }
 
 .tab-btn {
@@ -499,12 +498,11 @@
   background: white;
   border-radius: var(--radius-md);
   overflow: hidden;
-  min-width: 600px;
 
   th,
   td {
     padding: var(--spacing-md);
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid var(--gray-200);
   }
 
@@ -527,17 +525,50 @@
 
   .table-actions {
     display: flex;
-    gap: var(--spacing-xs);
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+
+    button {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-edit {
+      color: var(--primary, #10b981);
+    }
+
+    .btn-edit:hover {
+      background-color: var(--primary-light, rgba(16, 185, 129, 0.1));
+      transform: scale(1.05);
+    }
+
+    .btn-delete {
+      color: var(--error, #ef4444);
+    }
+
+    .btn-delete:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      transform: scale(1.05);
+    }
+
+    i {
+      width: 18px;
+      height: 18px;
+    }
 
     @media (max-width: 768px) {
       button {
-        padding: var(--spacing-xs) var(--spacing-sm);
+        padding: 6px;
         font-size: 0.8rem;
         min-width: unset;
-
-        i {
-          margin-right: var(--spacing-xxs);
-        }
       }
     }
 
@@ -545,7 +576,7 @@
       gap: 4px;
 
       button {
-        padding: var(--spacing-xs);
+        padding: 6px;
         font-size: 0;
         width: auto;
         height: auto;

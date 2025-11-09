@@ -98,7 +98,7 @@
 .table-container {
   background-color: white;
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--gray-200);
 
@@ -122,7 +122,7 @@ thead {
 
 th {
   padding: var(--spacing-md);
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 0.875rem;
   color: var(--gray-600);
@@ -135,6 +135,7 @@ td {
   border-top: 1px solid var(--gray-200);
   font-size: 0.875rem;
   color: var(--gray-900);
+  text-align: center;
 }
 
 tbody tr {
@@ -147,32 +148,43 @@ tbody tr {
 
 .actions {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .action-btn {
-  background: none;
-  border: 1px solid var(--gray-300);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1rem;
-  color: var(--gray-700);
-  display: inline-flex;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
   align-items: center;
   justify-content: center;
 
+  &.edit {
+    color: var(--primary, #10b981);
+  }
+
   &.edit:hover {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
+    background-color: var(--primary-light, rgba(16, 185, 129, 0.1));
+    transform: scale(1.05);
+  }
+
+  &.delete {
+    color: var(--error, #ef4444);
   }
 
   &.delete:hover {
-    background-color: var(--error);
-    border-color: var(--error);
-    color: white;
+    background-color: rgba(239, 68, 68, 0.1);
+    transform: scale(1.05);
+  }
+
+  i {
+    width: 18px;
+    height: 18px;
   }
 }
 
