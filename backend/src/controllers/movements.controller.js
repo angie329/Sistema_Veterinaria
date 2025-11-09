@@ -137,7 +137,7 @@ export const createMovement = async (req, res) => {
         const sql = `
             INSERT INTO Inv_Movimiento 
             (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
-            VALUES (?, ?, ?, ?, 2, 1)`;
+            VALUES (?, ?, ?, ?, 7, 1)`;
         const result = await query(sql, [fecha, producto, tipo, cantidad]);
 
         res.status(201).json({

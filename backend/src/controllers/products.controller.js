@@ -143,7 +143,7 @@ export const createProduct = async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
-        const result = await query(sql, [name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria, 2]);
+        const result = await query(sql, [name, tipoArticulo, unidadMedida, cantidad, iva, precio, stock, categoria, 7]);
 
         res.status(201).json({
             message: "Producto creado exitosamente",
