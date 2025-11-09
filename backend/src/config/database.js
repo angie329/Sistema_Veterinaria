@@ -25,3 +25,4 @@ export const query = async (sql, params) => {
   const [rows] = await connection.execute(sql, params);
   return rows;
 };
+

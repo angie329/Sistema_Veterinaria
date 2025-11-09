@@ -1,6 +1,6 @@
 import { createIcons, icons } from "lucide";
 
-import { config } from "@/config/env.js";
+import { config } from "../config/env.js";
 
 const iconConfig = {
   icons: {

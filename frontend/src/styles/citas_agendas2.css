@@ -1,0 +1,416 @@
+/* ===========================
+   Citas y Agendas - estilos
+   =========================== */
+
+/* Contenedor principal */
+main {
+	margin-left: 250px; /* espacio para la sidebar */
+	padding: 2rem;
+	background-color: #f5f6fa;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	gap: 3rem;
+}
+
+/* Responsivo para tablets y móviles */
+@media (max-width: 768px) {
+	main {
+		margin-left: 0;
+		padding: 1rem;
+		gap: 2rem;
+	}
+}
+
+@media (max-width: 480px) {
+	main {
+		padding: 0.5rem;
+		gap: 1.5rem;
+	}
+}
+
+/* Secciones */
+.agenda-section,
+.cita-section {
+	background-color: #ffffff;
+	padding: 1.5rem 2rem;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+	.agenda-section,
+	.cita-section {
+		padding: 1rem 1.5rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.agenda-section,
+	.cita-section {
+		padding: 1rem;
+	}
+}
+
+.agenda-section h2,
+.cita-section h2 {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+	color: #2f3640;
+}
+
+.cita-section h3 {
+	font-size: 1.2rem;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+	color: #2f3640;
+}
+
+@media (max-width: 480px) {
+	.agenda-section h2,
+	.cita-section h2 {
+		font-size: 1.2rem;
+	}
+
+	.cita-section h3 {
+		font-size: 1rem;
+	}
+}
+
+/* Labels */
+.agenda-section label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+	color: #2f3640;
+}
+
+/* Selects y inputs */
+.agenda-section select,
+.cita-section input,
+.cita-section select,
+.cita-section textarea {
+	display: block;
+	width: 100%;
+	padding: 0.6rem 1rem;
+	margin: 0.5rem 0 1rem 0;
+	border: 1px solid #dcdde1;
+	border-radius: 6px;
+	font-size: 1rem;
+	transition: border-color 0.2s;
+	font-family: inherit;
+	}
+
+.cita-section textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+
+.agenda-section select:focus,
+.cita-section input:focus,
+.cita-section select:focus,
+.cita-section textarea:focus {
+	outline: none;
+	border-color: #4cd137;
+	box-shadow: 0 0 0 3px rgba(76, 209, 55, 0.1);
+}
+
+.cita-section button[type="submit"] {
+	background-color: #4cd137;
+	color: #fff;
+	border: none;
+	padding: 0.7rem 1.2rem;
+	font-size: 1rem;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	width: 100%;
+}
+
+.cita-section button[type="submit"]:hover {
+	background-color: #44bd32;
+}
+
+/* Tablas */
+.agenda-table,
+.citas-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 1rem;
+	overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .agenda-table,
+  .citas-table {
+	font-size: 0.85rem;
+  }
+}
+
+.agenda-table thead,
+.citas-table thead,
+.agenda-table tbody,
+.citas-table tbody {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.agenda-table th,
+.agenda-table td,
+.citas-table th,
+.citas-table td {
+	text-align: left;
+	padding: 0.8rem 1rem;
+	border-bottom: 1px solid #dcdde1;
+}
+
+@media (max-width: 768px) {
+	.agenda-table th,
+	.agenda-table td,
+	.citas-table th,
+	.citas-table td {
+		padding: 0.6rem 0.5rem;
+	}
+}
+
+.agenda-table th,
+.citas-table th {
+  background-color: #f1f2f6;
+  font-weight: 600;
+}
+
+/* Mensaje por defecto en tablas */
+.agenda-table td[colspan],
+.citas-table td[colspan] {
+	text-align: center;
+	color: #718093;
+	font-style: italic;
+}
+
+/* Acciones en citas */
+.actions-cell {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon-btn {
+	border: none;
+	padding: 0.5rem;
+	border-radius: 6px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	width: 36px;
+	height: 36px;
+}
+
+.icon-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* Btoón de editar cita */
+.icon-btn.edit-btn {
+	background-color: #f39c12;
+	color: white;
+}
+
+.icon-btn.edit-btn:hover {
+	background-color: #e67e22;
+	transform: scale(1.1);
+}
+
+/* Btoón de eliminar cita */
+.icon-btn.delete-btn {
+	background-color: #e74c3c;
+	color: white;
+}
+
+.icon-btn.delete-btn:hover {
+	background-color: #c0392b;
+	transform: scale(1.1);
+}
+
+@media (max-width: 480px) {
+	.icon-btn {
+		width: 32px;
+		height: 32px;
+		padding: 0.4rem;
+	}
+
+	.icon-btn svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.actions-cell {
+		gap: 0.3rem;
+	}
+}
+
+/* Notificaciones dropdown */
+.notifications-dropdown {
+	display: none;
+	position: absolute;
+	top: 50px;
+	right: 0;
+	width: 300px;
+	max-width: 90vw;
+	background: #fff;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	border-radius: 8px;
+	z-index: 1000;
+	list-style: none;
+	padding: 0;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.notifications-dropdown.visible {
+	display: block;
+}
+
+.notification-item {
+	padding: 12px 16px;
+	border-bottom: 1px solid #eee;
+	transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+	background-color: #f9f9f9;
+}
+
+.notification-item:last-child {
+	border-bottom: none;
+}
+
+.notification-empty {
+	padding: 20px;
+	text-align: center;
+	color: #999;
+}
+
+.notification-message {
+	display: block;
+	color: #2f3640;
+	margin-bottom: 4px;
+}
+
+.notification-time {
+	font-size: 0.75rem;
+	color: #999;
+}
+
+/* Badge de notificaciones */
+.header-badge {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	background: #e84118;
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: 700;
+	border-radius: 50%;
+	padding: 2px 6px;
+	min-width: 18px;
+	text-align: center;
+}
+
+/* Notificaciones flotantes */
+#notificaciones {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	z-index: 999;
+	pointer-events: none;
+}
+
+.floating-notification {
+	background-color: #4cd137;
+	color: white;
+	padding: 1rem 1.5rem;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	margin-top: 0.5rem;
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.3s ease;
+	pointer-events: auto;
+	max-width: 300px;
+}
+
+.floating-notification.show {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  #notificaciones {
+	right: 0.5rem;
+	left: 0.5rem;
+  }
+  
+  .floating-notification {
+	max-width: 100%;
+	padding: 0.8rem 1rem;
+	font-size: 0.9rem;
+  }
+}
+
+/* Badges de estado */
+.status-badge {
+	display: inline-block;
+	padding: 0.3rem 0.8rem;
+	border-radius: 12px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.status-pending {
+	background-color: #fff3cd;
+	color: #856404;
+}
+
+.status-confirmed {
+	background-color: #d1ecf1;
+	color: #0c5460;
+}
+
+.status-completed {
+	background-color: #d4edda;
+	color: #155724;
+}
+
+.status-cancelled {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+/* --- Corrección del desalineamiento --- */
+.citas-table,
+.citas-table th,
+.citas-table td {
+	border-collapse: collapse;
+	border: 1px solid #ccc;
+}
+
+.citas-table th,
+.citas-table td {
+	text-align: left;
+	padding: 8px;
+	vertical-align: middle;
+	word-break: break-word; /* evita que textos largos desplacen las filas */
+	white-space: normal;
+}
+
+.citas-table {
+	width: 100%;
+	border-spacing: 0;
+	table-layout: fixed; /* fuerza que todas las columnas tengan el mismo ancho */
+}
