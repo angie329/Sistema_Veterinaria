@@ -1,7 +1,11 @@
 import { Activity, AlertTriangle, createIcons, Heart, icons, PawPrint } from "lucide";
-import { config } from "@/config/env.js"; // si ya usas alias @, o ajusta la ruta
+import { config } from "@/config/env.js"; // Importa la configuración del entorno con la URL base del backend
 
+/* ==========================================================
+   FUNCIONES DE INTERFAZ GENERAL (MENÚ, ICONOS, ESTILOS)
+========================================================== */
 
+// Resalta en el sidebar la sección activa según la ruta actual
 function highlightActive() {
   const currentPath = window.location.pathname;
   document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
@@ -14,6 +18,7 @@ function highlightActive() {
   });
 }
 
+// Mapeo de íconos Lucide utilizados en la aplicación
 const iconos = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
@@ -36,9 +41,10 @@ const iconos = {
     Heart: icons.Heart,
     AlertTriangle: icons.AlertTriangle,
   },
-}
+};
 createIcons(iconos);
 
+// Controla el menú lateral en dispositivos móviles
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const sidebar = document.getElementById("sidebar");
@@ -46,6 +52,7 @@ function initMobileMenu() {
     document.getElementById("sidebarOverlay") ||
     document.querySelector(".sidebar-overlay");
 
+  // Alternar visibilidad del sidebar
   if (mobileMenuBtn && sidebar) {
     mobileMenuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("sidebar-open");
@@ -55,6 +62,7 @@ function initMobileMenu() {
     });
   }
 
+  // Cerrar menú al hacer clic en el fondo oscuro
   if (overlay) {
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("sidebar-open");
@@ -62,15 +70,18 @@ function initMobileMenu() {
     });
   }
 
+  // Al cambiar el tamaño de la ventana, cerrar el menú si supera el ancho móvil
   window.addEventListener("resize", () => {
     if (window.innerWidth > 768) {
       sidebar.classList.remove("sidebar-open");
-      if (overlay) {
-        overlay.classList.remove("overlay-visible");
-      }
+      if (overlay) overlay.classList.remove("overlay-visible");
     }
   });
 }
+
+/* ==========================================================
+   MODAL DE REGISTRO DE MASCOTAS
+========================================================== */
 
 function initModalMascota() {
   const modal = document.getElementById("modalRegistrarMascota");
@@ -81,20 +92,24 @@ function initModalMascota() {
 
   if (!modal || !btnAgregar) return;
 
+  // Abrir modal al presionar "Agregar"
   btnAgregar.addEventListener("click", () => {
     modal.showModal();
     inicializarSelectoresDinamicos();
     inicializarBotonesAgregar();
   });
 
+  // Cerrar modal
   btnCancelar?.addEventListener("click", () => modal.close());
   btnCerrar?.addEventListener("click", () => modal.close());
 
-  // ✅ Envío del formulario
+  // Envío del formulario
   form.addEventListener("submit", manejarEnvioFormularioMascota);
-
 }
 
+/* ==========================================================
+   TABLA DE MASCOTAS (CARGA, EVENTOS, FILAS)
+========================================================== */
 
 async function cargarMascotas() {
   const tablaBody = document.querySelector(".pets-table tbody");
@@ -109,56 +124,53 @@ async function cargarMascotas() {
 
     const result = await response.json();
 
+    // Si no hay datos, mostrar mensaje vacío
     if (!result.success || result.count === 0) {
       tablaBody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align:center; padding:1rem;">
             No hay mascotas registradas.
           </td>
-        </tr>
-      `;
+        </tr>`;
       return;
     }
+
     const estados = {
       "A": "Activo",
       "I": "Inactivo",
       "T": "Tratamiento",
     };
-    // Construir las filas con los botones y el data-id
-    tablaBody.innerHTML = result.data
-      .map(
-        (pet) => `
-      <tr data-id="${pet.id_mascota}">
-        <td>${pet.id_mascota}</td>
-        <td>${pet.nombre_mascota}</td>
-        <td>${pet.tipo_mascota}</td>
-        <td>${pet.raza || "-"}</td>
-        <td>${pet.genero}</td>
-        <td>${calcularEdad(pet.mas_fecha_nacimiento)}</td>
-        <td>${estados[pet.mas_estado]}</td>
-        <td class="table-actions">
-          <button class="btn-edit" data-id="${pet.id_mascota}" title="Editar">
-            <i data-lucide="edit"></i>
-          </button>
-          <button class="btn-delete" data-id="${pet.id_mascota}" title="Eliminar">
-            <i data-lucide="trash-2"></i>
-          </button>
-        </td>
-      </tr>`
-      )
-      .join("");
 
+    // Construir filas dinámicamente
+    tablaBody.innerHTML = result.data
+      .map((pet) => `
+        <tr data-id="${pet.id_mascota}">
+          <td>${pet.id_mascota}</td>
+          <td>${pet.nombre_mascota}</td>
+          <td>${pet.tipo_mascota}</td>
+          <td>${pet.raza || "-"}</td>
+          <td>${pet.genero}</td>
+          <td>${calcularEdad(pet.mas_fecha_nacimiento)}</td>
+          <td>${estados[pet.mas_estado]}</td>
+          <td class="table-actions">
+            <button class="btn-edit" data-id="${pet.id_mascota}" title="Editar">
+              <i data-lucide="edit"></i>
+            </button>
+            <button class="btn-delete" data-id="${pet.id_mascota}" title="Eliminar">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </td>
+        </tr>`
+      ).join("");
+
+    // Actualizar métricas
     lastPet.textContent = result.data[result.data.length - 1].nombre_mascota;
     totalPets.textContent = result.data.length;
-    totalTreatmentPets.textContent = result.data.filter(pet => { return pet.mas_estado == "T" }).length;
+    totalTreatmentPets.textContent = result.data.filter(p => p.mas_estado === "T").length;
 
-    // Regenerar los íconos
     createIcons(iconos);
-
-    // Agregar eventos a los botones
     agregarEventosBotones();
     agregarEventosFilas();
-
   } catch (error) {
     console.error("Error cargando mascotas:", error);
     tablaBody.innerHTML = `
@@ -166,14 +178,13 @@ async function cargarMascotas() {
         <td colspan="7" style="text-align:center; padding:1rem; color:red;">
           Error al cargar las mascotas: ${error.message}
         </td>
-      </tr>
-    `;
+      </tr>`;
   }
 }
 
+// Asigna evento de clic a cada fila para mostrar observaciones
 function agregarEventosFilas() {
   const filas = document.querySelectorAll(".pets-table tbody tr");
-
   filas.forEach((fila) => {
     fila.addEventListener("click", async () => {
       const idMascota = fila.dataset.id;
@@ -183,67 +194,63 @@ function agregarEventosFilas() {
   });
 }
 
+// Muestra detalles u observaciones de una mascota
 async function mostrarObservaciones(idMascota) {
   const observacionesPanel = document.getElementById("observations-text");
   if (!observacionesPanel) return;
 
   observacionesPanel.textContent = "Cargando observaciones...";
-
   try {
     const response = await fetch(`${config.BACKEND_URL}/v1/pets/${idMascota}/details`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const result = await response.json();
-
     if (!result.success || !result.data) {
-      observacionesPanel.textContent = "No se encontraron observaciones para esta mascota.";
+      observacionesPanel.textContent = "No se encontraron observaciones.";
       return;
     }
 
     const { nombre_mascota, observaciones } = result.data;
-
     observacionesPanel.innerHTML = `
       <strong>${nombre_mascota}</strong><br>
-      ${observaciones || "Sin observaciones registradas."}
-    `;
-    
-    observacionesPanel.scrollIntoView({behavior: "smooth", block: "center"});
+      ${observaciones || "Sin observaciones registradas."}`;
+    observacionesPanel.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (error) {
     console.error("Error obteniendo observaciones:", error);
     observacionesPanel.textContent = "Error al cargar observaciones.";
   }
 }
 
+/* ==========================================================
+   EVENTOS DE BOTONES (EDITAR / ELIMINAR)
+========================================================== */
 
+// Agrega los eventos de edición y eliminación
 function agregarEventosBotones() {
-  // Botones de editar
-  const btnsEditar = document.querySelectorAll(".btn-edit");
-  btnsEditar.forEach((btn) => {
-    btn.addEventListener("click", manejarEditarMascota);
-  });
-
-  // Botones de eliminar
-  const btnsEliminar = document.querySelectorAll(".btn-delete");
-  btnsEliminar.forEach((btn) => {
-    btn.addEventListener("click", manejarEliminarMascota);
-  });
+  document.querySelectorAll(".btn-edit").forEach((btn) =>
+    btn.addEventListener("click", manejarEditarMascota)
+  );
+  document.querySelectorAll(".btn-delete").forEach((btn) =>
+    btn.addEventListener("click", manejarEliminarMascota)
+  );
 }
 
+// Calcula la edad en años a partir de la fecha de nacimiento
 function calcularEdad(fechaNacimiento) {
   if (!fechaNacimiento) return "-";
   const nacimiento = new Date(fechaNacimiento);
   const hoy = new Date();
   let edad = hoy.getFullYear() - nacimiento.getFullYear();
   const m = hoy.getMonth() - nacimiento.getMonth();
-  if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
-    edad--;
-  }
+  if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
   return edad + " año" + (edad !== 1 ? "s" : "");
 }
 
 /* ==========================================================
-   🔧 CARGA DE SELECTORES Y OPCIONES DINÁMICAS
+   CARGA Y GESTIÓN DE SELECTORES DINÁMICOS
 ========================================================== */
+
+// Realiza una petición genérica para obtener datos de un endpoint
 async function fetchData(endpoint) {
   try {
     const res = await fetch(`${config.BACKEND_URL}/v1/pets/${endpoint}`);
@@ -256,8 +263,9 @@ async function fetchData(endpoint) {
   }
 }
 
+// Recarga dinámicamente un selector según su dependencia
 async function recargarSelector(select, selector, idRelacion = null, idSeleccionar = null) {
-  const {endpoint, word} = selector
+  const { endpoint, word } = selector;
   const url = idRelacion ? `${endpoint}/${idRelacion}` : endpoint;
   const data = await fetchData(url);
 
@@ -274,11 +282,14 @@ async function recargarSelector(select, selector, idRelacion = null, idSeleccion
   return data;
 }
 
-// Variable global para controlar el modo (agregar o editar)
+// Variable global que indica si se está editando una mascota existente
 let modoEdicionMascota = null;
 
+
 /* ==========================================================
-   🐾 FUNCIÓN PRINCIPAL DE ENVÍO DE FORMULARIO (POST/PUT)
+   FUNCIÓN PRINCIPAL DE ENVÍO DE FORMULARIO (POST/PUT)
+   Maneja el registro o actualización de una mascota mediante
+   el envío de datos al servidor en formato JSON.
 ========================================================== */
 async function manejarEnvioFormularioMascota(e) {
   e.preventDefault();
@@ -337,7 +348,7 @@ async function manejarEnvioFormularioMascota(e) {
       return;
     }
 
-    alert(`🐾 Mascota ${isEdit ? "actualizada" : "registrada"} correctamente.`);
+    alert(`Mascota ${isEdit ? "actualizada" : "registrada"} correctamente.`);
     modal.close();
     form.reset();
     modoEdicionMascota = null;
@@ -345,7 +356,7 @@ async function manejarEnvioFormularioMascota(e) {
     const btnGuardar = form.querySelector(".btn-guardar");
     if (btnGuardar) btnGuardar.textContent = "Guardar";
 
-    // 🆕 Ocultar nuevamente el selector de estado al guardar
+    // Oculta nuevamente el selector de estado después de guardar
     const grupoEstado = document.getElementById("grupoEstadoMascota");
     if (grupoEstado) grupoEstado.style.display = "none";
 
@@ -357,13 +368,15 @@ async function manejarEnvioFormularioMascota(e) {
 }
 
 /* ==========================================================
-   🐕 FUNCIÓN DE EDITAR MASCOTA
+   FUNCIÓN DE EDICIÓN DE MASCOTA
+   Obtiene los datos de una mascota específica y los muestra
+   en el formulario para su edición.
 ========================================================== */
 async function manejarEditarMascota(event) {
   const idMascota = event.currentTarget.dataset.id;
   if (!idMascota) return;
 
-  modoEdicionMascota = idMascota; // activamos modo edición
+  modoEdicionMascota = idMascota; // activa el modo edición
   const modal = document.getElementById("modalRegistrarMascota");
   const form = document.getElementById("formMascota");
 
@@ -379,23 +392,23 @@ async function manejarEditarMascota(event) {
 
     const mascota = result.data;
 
-    // Cargar selectores y esperar que terminen antes de asignar valores
+    // Carga los selectores dinámicos antes de asignar valores
     inicializarSelectoresDinamicos();
 
-    // Llenar los campos del formulario
+    // Rellena los campos del formulario con los datos obtenidos
     document.getElementById("nombreMascota").value = mascota.nombre_mascota || "";
     document.getElementById("fechaNacimiento").value = mascota.mas_fecha_nacimiento
       ? mascota.mas_fecha_nacimiento.split("T")[0]
       : "";
     document.getElementById("observacionesMascota").value = mascota.mas_observaciones || "";
 
-    // 🆕 Mostrar y asignar valor al selector de estado
+    // Muestra y asigna valor al selector de estado
     const grupoEstado = document.getElementById("grupoEstadoMascota");
     grupoEstado.style.display = "block";
     const selectEstado = document.getElementById("estadoMascota");
     selectEstado.value = mascota.mas_estado || "A";
 
-    // Asignar valores a los selects (esperando sus dependencias)
+    // Asigna los valores a los selectores dependientes
     await recargarSelector(
       document.getElementById("generoMascota"),
       { endpoint: "genders", word: "género" },
@@ -426,7 +439,7 @@ async function manejarEditarMascota(event) {
     );
     document.getElementById("razaMascota").closest(".form-group").style.display = "block";
 
-    // Cambiar texto del botón principal
+    // Cambia el texto del botón principal
     const btnGuardar = form.querySelector(".btn-guardar");
     if (btnGuardar) btnGuardar.textContent = "Actualizar";
 
@@ -437,6 +450,11 @@ async function manejarEditarMascota(event) {
   }
 }
 
+/* ==========================================================
+   FUNCIÓN DE ELIMINACIÓN DE MASCOTA
+   Muestra un cuadro de confirmación y, de aceptarse,
+   elimina la mascota seleccionada del sistema.
+========================================================== */
 function manejarEliminarMascota(event) {
   event.stopPropagation(); // evita que se dispare el click en la fila
   const idMascota = event.currentTarget.dataset.id;
@@ -447,7 +465,7 @@ function manejarEliminarMascota(event) {
 
   modal.showModal();
 
-  // remover cualquier listener previo
+  // Elimina cualquier listener previo para evitar duplicados
   btnConfirmar.replaceWith(btnConfirmar.cloneNode(true));
   const nuevoBtnConfirmar = document.getElementById("btnConfirmarEliminar");
 
@@ -464,10 +482,10 @@ function manejarEliminarMascota(event) {
         return;
       }
 
-      alert("🐾 Mascota eliminada correctamente.");
+      alert("Mascota eliminada correctamente.");
       modal.close();
 
-      // Recargar tabla
+      // Recarga la tabla de mascotas
       if (typeof cargarMascotas === "function") cargarMascotas();
     } catch (error) {
       console.error("Error al eliminar mascota:", error);
@@ -476,9 +494,10 @@ function manejarEliminarMascota(event) {
   });
 }
 
-
 /* ==========================================================
-   🔧 INICIALIZACIÓN DE SELECTORES EN EL MODAL
+   INICIALIZACIÓN DE SELECTORES EN EL MODAL
+   Configura y carga los selectores de clasificación, tipo,
+   raza y género de manera dinámica.
 ========================================================== */
 function inicializarSelectoresDinamicos() {
   const selectGenero = document.getElementById("generoMascota");
@@ -489,7 +508,7 @@ function inicializarSelectoresDinamicos() {
   selectTipo.closest(".form-group").style.display = "none";
   selectRaza.closest(".form-group").style.display = "none";
 
-  // Cargar género y clasificación
+  // Carga los selectores iniciales de género y clasificación
   recargarSelector(selectGenero, {endpoint: "genders", word:"género"});
   fetchData("types").then((data) => {
     selectClasificacion.innerHTML = `<option value="" disabled selected>Seleccionar clasificación</option>`;
@@ -501,7 +520,7 @@ function inicializarSelectoresDinamicos() {
       selectClasificacion.appendChild(opt);
     });
 
-    // Al cambiar clasificación → carga tipos
+    // Al cambiar la clasificación, se cargan los tipos correspondientes
     selectClasificacion.addEventListener("change", async () => {
       const id = selectClasificacion.value;
       await recargarSelector(selectTipo, {endpoint: "types", word: "tipo"}, id);
@@ -509,7 +528,7 @@ function inicializarSelectoresDinamicos() {
       selectRaza.closest(".form-group").style.display = "none";
     });
 
-    // Al cambiar tipo → carga razas
+    // Al cambiar el tipo, se cargan las razas correspondientes
     selectTipo.addEventListener("change", async () => {
       const id = selectTipo.value;
       await recargarSelector(selectRaza, {endpoint: "breeds", word: "raza"}, id);
@@ -519,7 +538,9 @@ function inicializarSelectoresDinamicos() {
 }
 
 /* ==========================================================
-   🔧 MODAL DE AGREGAR NUEVA OPCIÓN
+   MODAL PARA AGREGAR NUEVAS OPCIONES
+   Permite registrar nuevas clasificaciones, tipos o razas
+   directamente desde el formulario principal.
 ========================================================== */
 function inicializarBotonesAgregar() {
   const modal = document.getElementById("modalAgregarOpcion");
@@ -578,7 +599,7 @@ function inicializarBotonesAgregar() {
 
     const result = await agregarElemento(endpoint, body);
     if (result?.success) {
-      alert(`🐾 ${tipoActual.charAt(0).toUpperCase() + tipoActual.slice(1)} agregada correctamente.`);
+      alert(`${tipoActual.charAt(0).toUpperCase() + tipoActual.slice(1)} agregada correctamente.`);
       if (tipoActual === "clasificacion")
         await recargarSelector(selects.clasificacion, {endpoint: "types", word: "tipo"}, null, result.id);
       if (tipoActual === "tipo")
@@ -587,13 +608,14 @@ function inicializarBotonesAgregar() {
         await recargarSelector(selects.raza, {endpoint: "breeds", word: "raza"}, body.tipo_id, result.id);
       modal.close();
     } else {
-      alert("Error al agregar.");
+      alert("Error al agregar el elemento.");
     }
   });
 }
 
 /* ==========================================================
-   🔧 FUNCIÓN ÚNICA PARA POSTEAR CLASIFICACIÓN / TIPO / RAZA
+   FUNCIÓN PARA REGISTRAR NUEVAS CLASIFICACIONES, TIPOS O RAZAS
+   Envía los datos correspondientes al backend mediante una solicitud POST.
 ========================================================== */
 async function agregarElemento(endpoint, data) {
   try {
@@ -609,8 +631,13 @@ async function agregarElemento(endpoint, data) {
   }
 }
 
+/* ==========================================================
+   MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
+   Crea dinámicamente el modal utilizado para confirmar
+   la eliminación de una mascota.
+========================================================== */
 function crearModalEliminar() {
-  if (document.getElementById("modalEliminarMascota")) return; // evitar duplicados
+  if (document.getElementById("modalEliminarMascota")) return; // evita duplicados
 
   const modalHTML = `
     <dialog id="modalEliminarMascota" class="modal">
@@ -638,9 +665,12 @@ function crearModalEliminar() {
   btnCancelar.addEventListener("click", () => modal.close());
 }
 
-
-
-function initDashboard() {
+/* ==========================================================
+   FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+   Configura los elementos y funcionalidades iniciales
+   de la sección de mascotas.
+========================================================== */
+function initPets() {
   highlightActive();
   initMobileMenu();
   initModalMascota();
@@ -648,5 +678,5 @@ function initDashboard() {
   cargarMascotas();
 }
 
-document.addEventListener("DOMContentLoaded", initDashboard);
-
+// Inicializa todas las funciones y componentes de la sección de mascotas una vez que el documento esté completamente cargado
+document.addEventListener("DOMContentLoaded", initPets);

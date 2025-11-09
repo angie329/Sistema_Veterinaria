@@ -1,37 +1,52 @@
+// ==========================================================
+// pets.routes.js
+// ----------------------------------------------------------
+// Archivo de rutas para la gestión de mascotas en el sistema.
+// Define los endpoints REST para listar, crear, actualizar,
+// eliminar y obtener detalles de mascotas, así como sus
+// clasificaciones, tipos, razas y géneros.
+// ==========================================================
+
 import express from "express";
 import { query } from "../config/database.js";
 
 export const petsRouter = express.Router();
 
+/* ==========================================================
+   GET /v1/pets
+   ----------------------------------------------------------
+   Obtiene la lista completa de mascotas registradas.
+   Incluye tipo, raza, género y estado.
+========================================================== */
 petsRouter.get("/pets", async (req, res) => {
   try {
-
-    const sql =
-      `SELECT 
-      m.mas_id_mascota AS id_mascota,
-      m.mas_nombre AS nombre_mascota,
-      t.mas_descripcion AS tipo_mascota,
-      r.mas_descripcion AS raza,
-      g.gen_nombre AS genero,
-      m.mas_fecha_nacimiento,
-      m.mas_estado,
-      m.mas_observaciones
-    FROM mas_mascota m
-    INNER JOIN mas_tipo_mascota t 
+    const sql = `
+      SELECT 
+        m.mas_id_mascota AS id_mascota,
+        m.mas_nombre AS nombre_mascota,
+        t.mas_descripcion AS tipo_mascota,
+        r.mas_descripcion AS raza,
+        g.gen_nombre AS genero,
+        m.mas_fecha_nacimiento,
+        m.mas_estado,
+        m.mas_observaciones
+      FROM mas_mascota m
+      INNER JOIN mas_tipo_mascota t 
         ON m.mas_id_tipo_mascota_fk = t.mas_id_tipo_mascota
-    INNER JOIN mas_raza r 
+      INNER JOIN mas_raza r 
         ON m.mas_id_raza_fk = r.mas_id_raza
-    INNER JOIN gen_generosexo g 
+      INNER JOIN gen_generosexo g 
         ON m.mas_id_genero_sexo_fk = g.gen_id_genero_sexo
-    ORDER BY id_mascota
-    ;`;
+      ORDER BY id_mascota;
+    `;
 
     const rows = await query(sql);
-    // Siempre devolver un JSON, aunque esté vacío
+
+    // Respuesta JSON estándar
     res.json({
       success: true,
       count: rows.length,
-      data: rows, // puede ser []
+      data: rows,
     });
   } catch (error) {
     console.error("Error al obtener mascotas:", error);
@@ -42,6 +57,12 @@ petsRouter.get("/pets", async (req, res) => {
   }
 });
 
+/* ==========================================================
+   GET /v1/pets/:id/details
+   ----------------------------------------------------------
+   Devuelve detalles básicos de una mascota específica:
+   nombre y observaciones.
+========================================================== */
 petsRouter.get("/pets/:id/details", async (req, res) => {
   try {
     const { id } = req.params;
@@ -79,7 +100,9 @@ petsRouter.get("/pets/:id/details", async (req, res) => {
 
 /* ==========================================================
    GET /v1/pet/:id
-   Devuelve toda la información de una mascota por su ID
+   ----------------------------------------------------------
+   Obtiene todos los datos completos de una mascota según su ID.
+   Incluye su clasificación, tipo, raza y género.
 ========================================================== */
 petsRouter.get("/pet/:id", async (req, res) => {
   try {
@@ -90,26 +113,21 @@ petsRouter.get("/pet/:id", async (req, res) => {
         m.mas_id_mascota AS id_mascota,
         m.mas_nombre AS nombre_mascota,
 
-        -- 🐾 Clasificación
         c.mas_id_clasificacion_animal AS clasificacion_id,
         c.mas_descripcion AS clasificacion_nombre,
 
-        -- 🐶 Tipo
         t.mas_id_tipo_mascota AS tipo_id,
         t.mas_descripcion AS tipo_mascota,
 
-        -- 🐕 Raza
         r.mas_id_raza AS raza_id,
         r.mas_descripcion AS raza,
 
-        -- ⚧ Género
         g.gen_id_genero_sexo AS genero_id,
         g.gen_nombre AS genero,
 
         m.mas_fecha_nacimiento,
         m.mas_estado,
         m.mas_observaciones
-
       FROM mas_mascota m
       INNER JOIN mas_tipo_mascota t 
         ON m.mas_id_tipo_mascota_fk = t.mas_id_tipo_mascota
@@ -146,32 +164,34 @@ petsRouter.get("/pet/:id", async (req, res) => {
   }
 });
 
-
-
 /* ==========================================================
    GET /v1/pets/types
-   Devuelve clasificaciones, tipos y razas con sus IDs reales
+   ----------------------------------------------------------
+   Devuelve una estructura jerárquica con:
+   Clasificaciones → Tipos → Razas.
+   Cada elemento incluye sus respectivos IDs.
 ========================================================== */
 petsRouter.get("/pets/types", async (req, res) => {
   try {
     const sql = `
-  SELECT 
-    ca.mas_id_clasificacion_animal AS id_clasificacion,
-    ca.mas_descripcion AS clasificacion_animal,
-    tm.mas_id_tipo_mascota AS id_tipo,
-    tm.mas_descripcion AS tipo_animal,
-    r.mas_id_raza AS id_raza,
-    r.mas_descripcion AS raza
-  FROM mas_clasificacion_animal ca
-  LEFT JOIN mas_tipo_mascota tm 
-    ON tm.mas_id_clasificacion_animal_fk = ca.mas_id_clasificacion_animal
-  LEFT JOIN mas_raza r 
-    ON r.mas_id_tipo_mascota_fk = tm.mas_id_tipo_mascota
-  ORDER BY ca.mas_descripcion, tm.mas_descripcion, r.mas_descripcion;
-`;
+      SELECT 
+        ca.mas_id_clasificacion_animal AS id_clasificacion,
+        ca.mas_descripcion AS clasificacion_animal,
+        tm.mas_id_tipo_mascota AS id_tipo,
+        tm.mas_descripcion AS tipo_animal,
+        r.mas_id_raza AS id_raza,
+        r.mas_descripcion AS raza
+      FROM mas_clasificacion_animal ca
+      LEFT JOIN mas_tipo_mascota tm 
+        ON tm.mas_id_clasificacion_animal_fk = ca.mas_id_clasificacion_animal
+      LEFT JOIN mas_raza r 
+        ON r.mas_id_tipo_mascota_fk = tm.mas_id_tipo_mascota
+      ORDER BY ca.mas_descripcion, tm.mas_descripcion, r.mas_descripcion;
+    `;
 
     const rows = await query(sql);
 
+    // Construcción de estructura anidada (clasificación > tipo > raza)
     const data = [];
     const clasificacionesMap = {};
 
@@ -197,12 +217,8 @@ petsRouter.get("/pets/types", async (req, res) => {
         }
       }
     }
-    res.json({
-      success: true,
-      count: data.length,
-      data,
-    })
 
+    res.json({ success: true, count: data.length, data });
   } catch (error) {
     console.error("Error al obtener clasificación, tipo y razas:", error);
     res.status(500).json({
@@ -214,7 +230,9 @@ petsRouter.get("/pets/types", async (req, res) => {
 
 /* ==========================================================
    GET /v1/pets/types/:clasificacionId
-   Devuelve los tipos de mascota pertenecientes a una clasificación
+   ----------------------------------------------------------
+   Devuelve todos los tipos de mascota pertenecientes
+   a una clasificación específica.
 ========================================================== */
 petsRouter.get("/pets/types/:clasificacionId", async (req, res) => {
   try {
@@ -239,7 +257,8 @@ petsRouter.get("/pets/types/:clasificacionId", async (req, res) => {
 
 /* ==========================================================
    GET /v1/pets/breeds/:tipoId
-   Devuelve las razas de un tipo de mascota específico
+   ----------------------------------------------------------
+   Devuelve las razas asociadas a un tipo de mascota.
 ========================================================== */
 petsRouter.get("/pets/breeds/:tipoId", async (req, res) => {
   try {
@@ -262,10 +281,10 @@ petsRouter.get("/pets/breeds/:tipoId", async (req, res) => {
   }
 });
 
-
 /* ==========================================================
    POST /v1/pets/classifications
-   Inserta una nueva clasificación animal
+   ----------------------------------------------------------
+   Inserta una nueva clasificación animal.
 ========================================================== */
 petsRouter.post("/pets/classifications", async (req, res) => {
   try {
@@ -293,7 +312,8 @@ petsRouter.post("/pets/classifications", async (req, res) => {
 
 /* ==========================================================
    POST /v1/pets/types
-   Inserta un nuevo tipo de mascota asociado a una clasificación
+   ----------------------------------------------------------
+   Crea un nuevo tipo de mascota asociado a una clasificación.
 ========================================================== */
 petsRouter.post("/pets/types", async (req, res) => {
   try {
@@ -321,7 +341,8 @@ petsRouter.post("/pets/types", async (req, res) => {
 
 /* ==========================================================
    POST /v1/pets/breeds
-   Inserta una nueva raza asociada a un tipo de mascota
+   ----------------------------------------------------------
+   Crea una nueva raza asociada a un tipo de mascota.
 ========================================================== */
 petsRouter.post("/pets/breeds", async (req, res) => {
   try {
@@ -349,7 +370,8 @@ petsRouter.post("/pets/breeds", async (req, res) => {
 
 /* ==========================================================
    GET /v1/pets/genders
-   Devuelve la lista de géneros del animal
+   ----------------------------------------------------------
+   Obtiene la lista de géneros disponibles para las mascotas.
 ========================================================== */
 petsRouter.get("/pets/genders", async (req, res) => {
   try {
@@ -378,10 +400,11 @@ petsRouter.get("/pets/genders", async (req, res) => {
   }
 });
 
-
 /* ==========================================================
    POST /v1/pets
-   Registra una nueva mascota
+   ----------------------------------------------------------
+   Registra una nueva mascota en la base de datos.
+   Valida campos requeridos y posibles intentos de inyección SQL.
 ========================================================== */
 petsRouter.post("/pets", async (req, res) => {
   try {
@@ -394,22 +417,17 @@ petsRouter.post("/pets", async (req, res) => {
       observaciones,
     } = req.body;
 
-    // ✅ Validación de campos requeridos
+    // Validación de campos obligatorios
     if (!nombre || !fecha_nacimiento || !raza_id || !tipo_id || !genero_id) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Faltan campos obligatorios." });
+      return res.status(400).json({ success: false, error: "Faltan campos obligatorios." });
     }
 
-    // ✅ Validar posibles intentos de inyección SQL en campos de texto
+    // Validación de contenido inseguro
     const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
     if (regexSQL.test(nombre) || regexSQL.test(observaciones || "")) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Entrada inválida detectada." });
+      return res.status(400).json({ success: false, error: "Entrada inválida detectada." });
     }
 
-    // ✅ Inserción segura (prepared statements con parámetros)
     const sql = `
       INSERT INTO mas_mascota (
         mas_id_modulo_origen,
@@ -450,10 +468,11 @@ petsRouter.post("/pets", async (req, res) => {
   }
 });
 
-
 /* ==========================================================
    PUT /v1/pet/:id
-   Actualiza los datos de una mascota existente
+   ----------------------------------------------------------
+   Actualiza los datos de una mascota existente.
+   Valida la entrada y evita inyección SQL.
 ========================================================== */
 petsRouter.put("/pet/:id", async (req, res) => {
   try {
@@ -465,10 +484,9 @@ petsRouter.put("/pet/:id", async (req, res) => {
       tipo_id,
       genero_id,
       observaciones,
-      mas_estado, // 🆕 ahora se puede recibir el estado
+      mas_estado,
     } = req.body;
 
-    // ✅ Validar datos mínimos
     if (!id || !nombre || !fecha_nacimiento || !raza_id || !tipo_id || !genero_id) {
       return res.status(400).json({
         success: false,
@@ -476,7 +494,6 @@ petsRouter.put("/pet/:id", async (req, res) => {
       });
     }
 
-    // ✅ Validar que no haya inyección SQL
     const regexSQL = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|;|--|\*|\/\*)\b)/i;
     if (regexSQL.test(nombre) || regexSQL.test(observaciones || "")) {
       return res.status(400).json({
@@ -485,7 +502,7 @@ petsRouter.put("/pet/:id", async (req, res) => {
       });
     }
 
-    // 🆕 Si no se envía mas_estado, se mantiene el estado actual
+    // Si no se especifica el estado, se mantiene el actual
     let estadoFinal = mas_estado;
     if (!estadoFinal) {
       const estadoQuery = await query(
@@ -501,7 +518,6 @@ petsRouter.put("/pet/:id", async (req, res) => {
       estadoFinal = estadoQuery[0].mas_estado;
     }
 
-    // ✅ Construir query de actualización
     const sql = `
       UPDATE mas_mascota
       SET 
@@ -548,7 +564,8 @@ petsRouter.put("/pet/:id", async (req, res) => {
 
 /* ==========================================================
    DELETE /v1/pet/:id
-   Elimina una mascota (solo de la tabla mas_mascota)
+   ----------------------------------------------------------
+   Elimina una mascota de la base de datos por su ID.
 ========================================================== */
 petsRouter.delete("/pet/:id", async (req, res) => {
   try {

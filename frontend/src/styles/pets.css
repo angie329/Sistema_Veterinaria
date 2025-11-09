@@ -1,4 +1,7 @@
-/* === CONTENEDOR PRINCIPAL === */
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   Define la estructura base de la vista y la disposición general
+   ========================================================= */
 .pets-container {
   display: flex;
   flex-direction: column;
@@ -9,7 +12,10 @@
   box-sizing: border-box;
 }
 
-/* === ENCABEZADO === */
+/* =========================================================
+   ENCABEZADO PRINCIPAL
+   Contiene el título de la sección y las acciones principales
+   ========================================================= */
 .pets-header {
   display: flex;
   justify-content: space-between;
@@ -29,7 +35,10 @@
   height: 26px;
 }
 
-/* === MÉTRICAS === */
+/* =========================================================
+   SECCIÓN DE MÉTRICAS
+   Presenta estadísticas resumidas en formato de tarjetas
+   ========================================================= */
 .pets-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -75,7 +84,10 @@
   color: #176b87;
 }
 
-/* === TABLA === */
+/* =========================================================
+   TABLA DE REGISTROS
+   Muestra los datos principales en formato tabular
+   ========================================================= */
 .pets-table-section {
   background-color: #fff;
   border-radius: 10px;
@@ -111,7 +123,10 @@
   color: #333;
 }
 
-/* === PANEL DE OBSERVACIONES === */
+/* =========================================================
+   PANEL DE OBSERVACIONES
+   Contenedor adicional para notas o comentarios relevantes
+   ========================================================= */
 .pet-observations {
   background-color: #ffffff;
   border: 1px solid #e0e6ed;
@@ -135,7 +150,10 @@
   margin: 0;
 }
 
-/* === BOTÓN PRINCIPAL === */
+/* =========================================================
+   BOTÓN PRINCIPAL DE ACCIÓN
+   Se utiliza para agregar nuevos registros o elementos
+   ========================================================= */
 .pets-actions {
   display: flex;
   justify-content: flex-end;
@@ -165,7 +183,10 @@
   height: 20px;
 }
 
-/* === COLUMNA DE ACCIONES === */
+/* =========================================================
+   COLUMNA DE ACCIONES EN TABLA
+   Contiene los botones de edición y eliminación
+   ========================================================= */
 .table-actions {
   display: flex;
   gap: 0.5rem;
@@ -206,7 +227,10 @@
   height: 18px;
 }
 
-/* ==== MODAL (DIALOG) ==== */
+/* =========================================================
+   MODAL (DIALOG)
+   Contenedor emergente para formularios o confirmaciones
+   ========================================================= */
 .modal {
   border: none;
   border-radius: 10px;
@@ -228,7 +252,10 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* ==== CABECERA ==== */
+/* =========================================================
+   CABECERA DEL MODAL
+   Muestra el título y el botón de cierre
+   ========================================================= */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -245,7 +272,7 @@
   color: #176B87;
 }
 
-.modal-description p{
+.modal-description p {
   padding-block: 15px;
   padding-inline: 10px;
   font-size: 1.1em;
@@ -270,7 +297,10 @@
   color: #176B87;
 }
 
-/* ==== CUERPO DEL FORMULARIO ==== */
+/* =========================================================
+   CUERPO DEL FORMULARIO
+   Contiene los campos y controles de entrada de datos
+   ========================================================= */
 .form-mascota {
   display: flex;
   flex-direction: column;
@@ -311,7 +341,10 @@
   border-color: #176B87;
 }
 
-/* ==== SELECT CON BOTÓN + ==== */
+/* =========================================================
+   SELECT CON BOTÓN ADICIONAL (+)
+   Permite agregar opciones dinámicamente desde el formulario
+   ========================================================= */
 .select-group {
   display: flex;
   align-items: center;
@@ -334,7 +367,10 @@
   background: #12566b;
 }
 
-/* ==== PIE DEL FORMULARIO ==== */
+/* =========================================================
+   PIE DEL FORMULARIO
+   Contiene los botones de acción del formulario (guardar, cancelar, eliminar)
+   ========================================================= */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -388,7 +424,10 @@
   background: #7b1b1b;
 }
 
-/* Input con botón (+) */
+/* =========================================================
+   INPUT CON BOTÓN ADICIONAL
+   Estructura combinada de select o input con botón auxiliar
+   ========================================================= */
 .input-with-btn {
   display: flex;
   align-items: center;
@@ -414,8 +453,10 @@
   background-color: var(--primary);
 }
 
-
-/* === RESPONSIVE === */
+/* =========================================================
+   DISEÑO RESPONSIVO
+   Ajustes de estilo para dispositivos con pantallas pequeñas
+   ========================================================= */
 @media (max-width: 768px) {
   .pets-container {
     padding: 1rem;
