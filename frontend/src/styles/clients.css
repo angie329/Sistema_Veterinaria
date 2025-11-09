@@ -1,0 +1,228 @@
+/* Sección de Clientes */
+.clients-content {
+    /* Mantenemos el padding y el fondo, pero lo ajustamos ligeramente */
+    padding: var(--spacing-lg);
+    background-color: var(--gray-50);
+    /* Se remueve el min-height del main para que sea más flexible como en index.html */
+}
+
+/* Encabezado de Clientes */
+.clients-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl); /* Aumentamos el margen como en el dashboard */
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.clients-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0; /* Aseguramos que no haya margen extra */
+}
+
+/* Estilo para la sección de gestión de clientes (la tabla y el formulario) */
+.clients-section {
+    display: grid;
+    grid-template-columns: 1fr; /* Una sola columna para la tabla */
+    gap: var(--spacing-lg); /* Espacio entre las secciones si hubiera más */
+}
+
+/* Contenedor de la tabla, estilizado como tarjeta */
+.table-wrapper {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200); /* Borde sutil como las tarjetas del dashboard */
+    overflow-x: auto;
+    padding: 0; /* Quitamos el padding para que la tabla lo maneje */
+}
+
+.clients-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.clients-table thead {
+    background-color: white; /* Cambiamos a blanco para el encabezado */
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.clients-table th,
+.clients-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--gray-100); /* Borde más sutil entre filas */
+    font-size: 0.875rem; /* Ajustamos a 0.875rem para uniformidad */
+}
+
+.clients-table th {
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.clients-table tr:hover {
+    background-color: var(--gray-50);
+}
+
+/* Acciones en la tabla (botones) */
+.clients-table td:last-child {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Botones primarios y de acción */
+.btn-primary,
+.btn-editar,
+.btn-eliminar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem; /* Ajustamos tamaño de fuente */
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 1px 2px 0 rgba(16, 185, 129, 0.4); /* Sombra para resaltar */
+}
+
+.btn-primary:hover {
+    background-color: #059669; /* Un poco más oscuro que primary-dark */
+}
+
+.btn-editar {
+    /* Ajustamos el color para que luzca como botón de acción sutil */
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    padding: 0.4rem 0.6rem;
+}
+
+.btn-editar:hover {
+    background-color: var(--gray-200);
+    color: var(--primary);
+}
+
+.btn-eliminar {
+    /* Mejoramos el contraste del rojo */
+    background-color: var(--error);
+    color: white;
+    padding: 0.4rem 0.6rem;
+}
+
+.btn-eliminar:hover {
+    background-color: #dc2626;
+}
+
+/* Formulario de clientes - Estilizado como tarjeta de sección */
+#form-section {
+    margin-top: var(--spacing-lg); /* Reducimos el margen superior ya que la tabla se cierra */
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200); /* Borde sutil */
+
+}
+
+#form-section h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--gray-200);
+
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+#cliente-form {
+    display: grid;
+    /* Usamos un grid más responsivo para el formulario */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+}
+
+#cliente-form > div { /* Contenedor para envolver label e input si fuera necesario, aunque el HTML no los usa */
+    display: flex;
+    flex-direction: column;
+}
+
+#cliente-form label {
+    font-weight: 500;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+#cliente-form input {
+    padding: 0.625rem; /* Aumentamos el padding para mejor estética */
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#cliente-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+#cliente-form button {
+    /* Estilo para el botón de Guardar */
+    grid-column: 1 / -1;
+    justify-self: end; /* Alineamos a la derecha */
+    margin-top: var(--spacing-md);
+    background-color: var(--primary);
+    color: white;
+    padding: 0.625rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#cliente-form button:hover {
+    background-color: #059669;
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--gray-500);
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    margin-top: var(--spacing-lg);
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-md);
+    opacity: 0.6;
+}
+
+.empty-state-message {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+}
