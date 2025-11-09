@@ -15,6 +15,6 @@ router.use("/veterinarios", veterinariosRouter);
 router.use("/especialidades", especialidadesRouter);
 router.use("/turnos", turnosRouter);
 router.use("/reportes", reporteRoutes);
-router.use("/pets",petsRouter);
+router.use(petsRouter);
 
 console.log("Routes loaded successfully");
