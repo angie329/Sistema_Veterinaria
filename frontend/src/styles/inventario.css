@@ -65,6 +65,18 @@ body {
     justify-content: space-between;
 }
 
+.card-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.search-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .card-title {
     font-size: 1.125rem;
     font-weight: 600;
@@ -103,6 +115,19 @@ body {
 
 .btn-primary:hover {
     background-color: var(--primary-dark);
+}
+
+.btn-sm {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 13px;
+}
+
+.search-input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    width: 250px;
 }
 
 /* Tables */
@@ -455,6 +480,9 @@ input.paginacion-boton {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 2px var(--primary-light);
+}
+.btn-primary{
+    margin: 2px 2px;
 }
 
 .btn-secondary {

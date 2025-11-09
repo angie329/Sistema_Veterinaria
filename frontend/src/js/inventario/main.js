@@ -1,9 +1,9 @@
 import { createIcons, icons } from "lucide";
 import { productsRender, setupProductEventListeners } from './products.js';
-import { setupMovementEventListeners } from './movements.js';
-import { setupIncomeEventListeners } from './ingresos.js';
+import { movementsRender, setupMovementEventListeners } from './movements.js';
+import { incomesRender, setupIncomeEventListeners } from './ingresos.js';
 import * as DOM from './domElements.js';
-import { setupSalidaEventListeners } from './salidas.js';
+import { salidasRender, setupSalidaEventListeners } from './salidas.js';
 import { setupTabNavigation, setupPaginationControls } from './ui.js';
 
 function highlightActive() {
@@ -137,6 +137,41 @@ function initExportListeners() {
     });
 }
 
+function setupSearchHandlers() {
+    const searchConfigs = [
+        { input: DOM.productSearchInput, button: DOM.productSearchBtn, renderFn: productsRender },
+        { input: DOM.movementSearchInput, button: DOM.movementSearchBtn, renderFn: movementsRender },
+        { input: DOM.incomeSearchInput, button: DOM.incomeSearchBtn, renderFn: incomesRender },
+        { input: DOM.outputSearchInput, button: DOM.outputSearchBtn, renderFn: salidasRender },
+    ];
+
+    searchConfigs.forEach(({ input, button, renderFn }) => {
+        if (!input || !button) return;
+
+        const performSearch = () => {
+            const searchTerm = input.value;
+            // Aquí podrías usar un filtro por tab si lo necesitaras en el futuro
+            // Por ahora, usamos el filtro global como está diseñado
+            state.currentFilter = searchTerm;
+            renderFn(searchTerm, 1); // Llama a la función de renderizado con el filtro y resetea a la página 1
+        };
+
+        button.addEventListener('click', performSearch);
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Opcional: Limpiar la búsqueda si el input se vacía
+        input.addEventListener('input', () => {
+            if (input.value === '') {
+                performSearch();
+            }
+        });
+    });
+}
 
 function initInventoryModule() {
     // 1. Inicializar componentes de UI compartidos
@@ -149,6 +184,7 @@ function initInventoryModule() {
     setupMovementEventListeners();
     setupIncomeEventListeners();
     setupSalidaEventListeners();
+    setupSearchHandlers();
     setupPaginationControls();
 
     // 3. Configurar modales de exportación

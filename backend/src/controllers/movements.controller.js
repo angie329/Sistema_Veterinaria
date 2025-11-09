@@ -34,8 +34,7 @@ export const getMovements = async (req, res) => {
              WHERE a.Inv_Nombre LIKE ? AND m.Inv_EsActivo = 1
              ORDER BY m.Inv_Fecha DESC
             LIMIT ${limit} OFFSET ${offset}`,
-            [searchPattern]
-        );
+            [searchPattern]);
 
         res.json({
             movements,

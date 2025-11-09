@@ -73,3 +73,13 @@ export const exportMovementBtn = document.getElementById("exportMovementBtn");
 export const exportModalOverlay = document.getElementById("exportModalOverlay");
 export const closeExportModalBtn = document.getElementById("closeExportModalBtn");
 export const cancelExportModalBtn = document.getElementById("cancelExportModalBtn");
+
+// --- Elementos de Búsqueda ---
+export const productSearchInput = document.getElementById("productSearchInput");
+export const productSearchBtn = document.getElementById("productSearchBtn");
+export const movementSearchInput = document.getElementById("movementSearchInput");
+export const movementSearchBtn = document.getElementById("movementSearchBtn");
+export const incomeSearchInput = document.getElementById("incomeSearchInput");
+export const incomeSearchBtn = document.getElementById("incomeSearchBtn");
+export const outputSearchInput = document.getElementById("outputSearchInput");
+export const outputSearchBtn = document.getElementById("outputSearchBtn");

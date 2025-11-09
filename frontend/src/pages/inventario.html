@@ -140,8 +140,15 @@
                 <div class="tab-content active" id="productos">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Lista de Productos</h3>
-                            <div>
+                            <div class="card-header-left">
+                                <h3 class="card-title">Lista de Productos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="productSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre...">
+                                    <button class="btn btn-sm btn-secondary" id="productSearchBtn">Buscar</button>
+                                </div>
+                            </div>
+                            <div style="display: inline-block; margin-left:3px;">
                                 <button class="btn btn-primary" id="addProductBtn">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                         <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
@@ -206,7 +213,14 @@
                 <div class="tab-content" id="ingresos">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Registro de Ingresos</h3>
+                            <div class="card-header-left">
+                                <h3 class="card-title">Registro de Ingresos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="incomeSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="incomeSearchBtn">Buscar</button>
+                                </div>
+                            </div>
                             <div>
                                 <button class="btn btn-primary" id="addIncomeBtn">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -266,7 +280,14 @@
                 <div class="tab-content" id="salidas">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Registro de Salidas</h3>
+                            <div class="card-header-left">
+                                <h3 class="card-title">Registro de Salidas</h3>
+                                <div class="search-group">
+                                    <input type="text" id="outputSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="outputSearchBtn">Buscar</button>
+                                </div>
+                            </div>
                             <div>
                                 <button class="btn btn-primary" id="addOutputBtn">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -324,7 +345,14 @@
                 <div class="tab-content" id="movimientos">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Historial de Movimientos</h3>
+                            <div class="card-header-left">
+                                <h3 class="card-title">Historial de Movimientos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="movementSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="movementSearchBtn">Buscar</button>
+                                </div>
+                            </div>
                             <div>
                                 <button class="btn btn-primary" id="addMovementBtn">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -608,7 +636,15 @@
                             JSON
                         </button>
                         <button class="btn btn-export" data-format="txt">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><line x1="10" x2="8" y1="9" y2="9"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" x2="8" y1="13" y2="13"></line>
+                                <line x1="16" x2="8" y1="17" y2="17"></line>
+                                <line x1="10" x2="8" y1="9" y2="9"></line>
+                            </svg>
                             TXT
                         </button>
                     </div>
