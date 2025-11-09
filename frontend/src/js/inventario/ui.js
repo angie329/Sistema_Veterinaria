@@ -134,25 +134,6 @@ export function setupPaginationControls() {
         }
     });
 
-    // Paginacion de Salidas
-    DOM.outputsPrevBtn?.addEventListener('click', () => {
-        if (state.salidas.currentPage > 1) salidasRender(state.currentFilter, state.salidas.currentPage - 1);
-    });
-    DOM.outputsNextBtn?.addEventListener('click', () => {
-        if (state.salidas.currentPage < state.salidas.totalPages) salidasRender(state.currentFilter, state.salidas.currentPage + 1);
-    });
-    DOM.outputsPageInput?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const page = parseInt(e.target.value, 10);
-            if (!isNaN(page) && page > 0 && page <= state.salidas.totalPages) {
-                salidasRender(state.currentFilter, page);
-            } else {
-                alert(`Por favor, introduce un número de página válido entre 1 y ${state.salidas.totalPages}.`);
-            }
-        }
-    });
-
-
 }
 
 // funcion para rellenar un <select> con opciones.
