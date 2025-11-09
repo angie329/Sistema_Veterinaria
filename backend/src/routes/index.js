@@ -1,5 +1,4 @@
 import express from "express";
-
 import { dashboardRouter } from "./dashboard.js";
 import { productsRouter } from './products.routes.js';
 import { movementsRouter } from './movements.routes.js';
@@ -22,10 +21,12 @@ import { especialidadesRouter } from "./especialidades.js";
 import { turnosRouter } from "./turnos.js";
 import reporteRoutes from "./reportes.js";
 import { petsRouter } from "./pets.js";
+import clientsRoutes from "./clients.js";
 
 export const router = express.Router();
 
 router.get("/health", (_, res) => res.send("OK"));
+router.use("/api/clientes", clientsRoutes);
 router.use(dashboardRouter);
 router.use('/products', productsRouter);
 router.use('/movements', movementsRouter);

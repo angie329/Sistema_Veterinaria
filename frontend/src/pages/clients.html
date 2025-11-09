@@ -6,6 +6,7 @@
     <title>Clientes - VetSystem</title>
     <link rel="stylesheet" href="/src/styles/global.css" />
     <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/clients.css" />
     <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
   </head>
   <body>
@@ -116,10 +117,108 @@
     </header>
 
     <div class="content">
-      <main id="mainContent">
-        <h1 class="clients-title">
-          Clientes con un icono extra <i data-lucide="plus-circle"></i>
-        </h1>
+      <main id="mainContent" class="clients-content">
+        <div class="clients-header">
+          <h1 class="clients-title">
+            Gestión de Clientes
+            <i data-lucide="table"></i>
+          </h1>
+          <div style="display: flex; gap: 0.5rem; align-items: center">
+            <div class="export-buttons" style="display: flex; gap: 0.25rem">
+              <button
+                class="btn btn-sm btn-secondary"
+                id="btnExportClientesJSON"
+                title="Exportar JSON"
+              >
+                <i data-lucide="braces"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-secondary"
+                id="btnExportClientesPDF"
+                title="Exportar PDF"
+              >
+                <i data-lucide="file"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <section id="clientes-section" class="clients-section">
+          <div class="table-wrapper">
+            <table id="tabla-clientes" class="clients-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Identificación</th>
+                  <th>Nombres</th>
+                  <th>Apellidos</th>
+                  <th>Teléfono</th>
+                  <th>Email</th>
+                  <th>Dirección</th>
+                  <th>Fecha Registro</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="clientes-body">
+                <!-- Aquí se cargarán los clientes -->
+              </tbody>
+            </table>
+            <section id="form-section">
+              <h2>
+                Registrar / Editar Cliente
+
+                <i data-lucide="user-plus"></i>
+              </h2>
+              <form id="cliente-form">
+                <input type="hidden" id="cliente-id" />
+
+                <label>Identificación</label>
+                <input type="text" id="Cli_Identificacion" required />
+
+                <label>Nombres</label>
+                <input type="text" id="Cli_Nombres" required />
+
+                <label>Apellidos</label>
+                <input type="text" id="Cli_Apellidos" required />
+
+                <label>Teléfono</label>
+                <input type="text" id="Cli_Telefono" required />
+
+                <label>Email</label>
+                <input type="email" id="Cli_Email" required />
+
+                <label>Dirección</label>
+                <input type="text" id="Cli_DireccionDetalle" required />
+
+                <button type="submit" id="btn-guardar">Guardar</button>
+              </form>
+            </section>
+          </div>
+
+          <!-- Estado vacío -->
+          <div id="emptyState" class="empty-state" style="display: none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="empty-state-icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 10.5c0 7.5-7.5 10.5-7.5 10.5S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z"
+              />
+            </svg>
+            <p class="empty-state-message">No hay clientes registrados.</p>
+          </div>
+        </section>
       </main>
     </div>
 

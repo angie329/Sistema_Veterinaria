@@ -8,13 +8,13 @@ export const getDashboardMetrics = async () => {
     pendingAppsResult,
   ] = await Promise.all([
     query(
-      `SELECT COUNT(id_aut_usuario) AS totalClients FROM aut_usuario WHERE aut_estado = 'Activo' AND id_aut_rol_fk != 1`
+      `SELECT COUNT(id_Clientes) AS totalClients FROM clientes WHERE Cli_Estado = 1`
     ),
     query(
       `SELECT COUNT(mas_id_mascota) AS totalPets FROM mas_mascota WHERE mas_estado = 'A'`
     ),
     query(
-      `SELECT COUNT(id_Veterinario) AS activeVeterinarians FROM vet_veterinarios`
+      `SELECT COUNT(id_Veterinario) AS activeVeterinarians FROM vet_veterinarios WHERE Vet_Estado = 'Activo'`
     ),
     query(
       `SELECT COUNT(id_cita) AS pendingAppointments FROM cya_reserva_cita WHERE id_estado_cita = 2 AND DATE(fecha_hora_cita) >= CURDATE()`
@@ -41,4 +41,3 @@ export const getTodayAppointments = async () => {
     LIMIT 5
   `);
 };
-
