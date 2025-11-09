@@ -4,6 +4,8 @@ import express from "express";
 import { config } from "./config/env.js";
 import { router } from "./routes/index.js";
 
+
+
 const app = express();
 
 app.use((_, res, next) => {
