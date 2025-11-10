@@ -139,6 +139,7 @@ export const actualizarCita = async (req, res) => {
 export const eliminarCita = async (req, res) => {
   try {
     const { id } = req.params;
+	 console.log("🧠 ID recibido para eliminar:", id);
     await deleteAppointment(id);
     res.json({ mensaje: "Cita eliminada correctamente" });
   } catch (error) {

@@ -123,7 +123,7 @@ console.log("Insertando cita con estos valores:", {
     `INSERT INTO CYA_Reserva_Cita 
      (id_cliente, id_mascota, id_veterinario, id_estado_cita, modulo_origen, fecha_hora_cita, motivo, observaciones)
      VALUES (?, ?, ?, ?, 1, ?, ?, ?)`,
-    [idCliente, idMascota, idvet, idStatus, time, reason, observaciones]
+    [idCliente, idMascota, idVet, idStatus, time, reason, observaciones]
   );
 
   return result.insertId;
@@ -154,7 +154,7 @@ export const updateAppointment = async (id, data) => {
     `,
     [idCliente, idMascota, idVet, idStatus, time, reason, observaciones,modulo_origen, id]
   )
-   return result[0];
+   return result.affectedRows;
 };
 
 // Eliminar cita existente
