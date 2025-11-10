@@ -87,7 +87,7 @@ async function cargarDatosIniciales(){
   products.forEach(item => {
     const opt = document.createElement('option');
     opt.value = item.id;
-    opt.textContent = `${item.nombre} - $${item.precio.toFixed(2)}`;
+    opt.textContent = `${item.nombre} - $${parseFloat(item.precio).toFixed(2)}`;
     opt.dataset.precio = item.precio;
     selItem.appendChild(opt);
   });
@@ -95,9 +95,11 @@ async function cargarDatosIniciales(){
   const selIva = document.getElementById('iva');
   ivaList.forEach(tax => {
     const opt = document.createElement('option');
-    opt.value = tax.valor;
+    opt.value = tax.id;
     opt.textContent = tax.descripcion;
+    opt.dataset.valor = tax.valor; 
     selIva.appendChild(opt);
+    console.log(ivaList);
   });
 
   const selPay = document.getElementById('payment');
@@ -134,6 +136,7 @@ async function buscarCliente(){
     div.textContent = `${cl.nombre} - ${cl.cedula}`;
     div.classList.add('result-item');
     div.addEventListener('click',() => {
+      document.getElementById('txtClient').value = cl.id;
       document.getElementById('TxtName').value = cl.nombre;
       document.getElementById('txtID').value = cl.cedula;
       document.getElementById('txtTlf').value = cl.telefono;
@@ -205,13 +208,14 @@ function updateTotal(){
   document.getElementById('subTotalBill').textContent = `Subtotal a pagar: $${subtotal.toFixed(2)}`;
 
   const ivaSelect = document.getElementById('iva');
-  const ivaValue = parseFloat(ivaSelect.value) || 0;
+  const ivaValue = parseFloat(ivaSelect.selectedOptions[0].dataset.valor) || 0; 
   const total = subtotal + subtotal * ivaValue;
   document.getElementById('totalBill').textContent = `Total a pagar: $${total.toFixed(2)}`;
 }
 
 async function sendBill(){
   const cliente = {
+    id: document.getElementById('txtClient').value,
     nombre: document.getElementById('TxtName').value.trim(),
     cedula: document.getElementById('txtID').value.trim(),
     telefono: document.getElementById('txtTlf').value.trim()
@@ -241,11 +245,11 @@ async function sendBill(){
     cliente,
     billDetail,
     iva: {
-      valor: parseFloat(ivaSelect.value),
+      id: parseInt(ivaSelect.value),
       descripcion: ivaSelect.options[ivaSelect.selectedIndex].textContent
     },
     metodoPagoId: parseInt(paySelect.value),
-    fecha: new Date().toISOString()
+    fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
   };
 
   try {

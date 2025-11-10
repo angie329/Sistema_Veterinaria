@@ -116,6 +116,10 @@
 
 }
 
+#clientID{
+  display: none;
+}
+
 .result-list{
   margin-top: 2px;
   margin-bottom: 9px;

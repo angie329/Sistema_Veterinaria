@@ -17,7 +17,7 @@ export const getPool = () => {
       connectionLimit: 10,
       queueLimit: 0,
       ssl:{
-        rejectUnauthorized: true
+        rejectUnauthorized: false,
       }
     });
   }
