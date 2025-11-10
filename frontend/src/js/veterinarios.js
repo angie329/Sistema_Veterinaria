@@ -9,19 +9,6 @@ const REPORT_URL = `${config.BACKEND_URL}/v1/reportes/veterinarios`;
 const API_URL = `${config.BACKEND_URL}/v1/veterinarios`;
 const TURNOS_URL = `${config.BACKEND_URL}/v1/turnos`;
 
-/* ========== NAVEGACIÓN Y MENÚ ========== */
-function highlightActive() {
-  const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
-    const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath ||
-        (currentPath.includes("veterinarios") && href.includes("veterinarios"))
-    );
-  });
-}
-
 const iconConfig = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
@@ -50,6 +37,19 @@ const iconConfig = {
     User: icons.User,
   },
 };
+
+// Resalta el elemento activo en el sidebar
+function highlightActive() {
+  const currentPath = window.location.pathname;
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
+    const href = a.getAttribute("href");
+    const isActive =
+      href === currentPath ||
+      (currentPath.includes("veterinarios") && href.includes("veterinarios"));
+    a.classList.toggle("sidebar-nav-item-active", isActive);
+  });
+}
 
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
@@ -84,7 +84,6 @@ function initMobileMenu() {
   });
 }
 
-/* ========== CRUD: LEER ========== */
 async function fetchVeterinarios() {
   try {
     const res = await fetch(API_URL);
@@ -96,41 +95,6 @@ async function fetchVeterinarios() {
   }
 }
 
-function renderVeterinarios(veterinarios = []) {
-  const tableBody = document.getElementById("veterinariansTable");
-  tableBody.innerHTML = veterinarios.length
-    ? veterinarios
-        .map(
-          (vet) => `
-        <tr>
-          <td>${vet.Vet_Nombres} ${vet.Vet_Apellidos}</td>
-          <td>${vet.Especialidad || "Sin especialidad"}</td>
-          <td>${vet.Vet_Telefono || "—"}</td>
-          <td>${vet.Vet_Correo || "—"}</td>
-          <td>
-            <button class="btn-turnos" data-id="${
-              vet.id_Veterinario
-            }" data-nombre="${vet.Vet_Nombres}">
-              Ver turnos
-            </button>
-          </td>
-          <td>
-            <div class="actions">
-              <button class="action-btn edit" data-vet='${JSON.stringify(
-                vet
-              )}' title="Editar"><i data-lucide="edit"></i></button>
-              <button class="action-btn delete" data-id="${
-                vet.id_Veterinario
-              }" title="Eliminar"><i data-lucide="trash2"></i></button>
-            </div>
-          </td>
-        </tr>`
-        )
-        .join("")
-    : `<tr><td colspan="6" style="text-align:center; color:#888;">No hay veterinarios registrados</td></tr>`;
-}
-
-/* ========== FUNCIONES AUXILIARES ========== */
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal && modal instanceof HTMLDialogElement) {
@@ -145,41 +109,42 @@ function closeModal(id) {
   }
 }
 
-/* ========== ESPECIALIDADES ========== */
+// Carga las opciones de especialidades en un select
 function cargarEspecialidades(selectId, selectedNombre = null) {
   const select = document.getElementById(selectId);
   const opciones = ["Animal", "Enfermedad"];
-  select.innerHTML = opciones
-    .map(
-      (nombre) => `
-        <option value="${nombre}" ${
-        nombre === selectedNombre ? "selected" : ""
-      }>${nombre}</option>
-      `
-    )
+  const optionsHTML = opciones
+    .map((nombre) => {
+      const selected = nombre === selectedNombre ? "selected" : "";
+      return `<option value="${nombre}" ${selected}>${nombre}</option>`;
+    })
     .join("");
+  select.innerHTML = optionsHTML;
 }
 
-/* ========== TURNOS ========== */
 async function verTurnos(idVeterinario, nombreVet) {
   try {
     const res = await fetch(`${TURNOS_URL}/${idVeterinario}`);
     if (!res.ok) throw new Error("Error al obtener turnos");
     const turnos = await res.json();
 
-    const listaTurnos = turnos.length
-      ? turnos
-          .map(
-            (t) => `
+    // Genera el HTML de las filas de turnos
+    let listaTurnos = "";
+    if (turnos.length) {
+      listaTurnos = turnos
+        .map(
+          (t) => `
           <tr>
             <td>${t.Tur_Dia || "—"}</td>
             <td>${t.Tur_HoraInicio || "—"}</td>
             <td>${t.Tur_HoraFin || "—"}</td>
             <td>${t.Tur_Tipo || "—"}</td>
           </tr>`
-          )
-          .join("")
-      : "<tr><td colspan='4'>Sin turnos registrados</td></tr>";
+        )
+        .join("");
+    } else {
+      listaTurnos = "<tr><td colspan='4'>Sin turnos registrados</tr>";
+    }
 
     const modalTitle = document.getElementById("modalTitle");
     const modalBody = document.getElementById("modalBody");
@@ -215,7 +180,6 @@ function cerrarModalTurnos() {
   }
 }
 
-/* ========== EDITAR VETERINARIO ========== */
 async function abrirModalEditar(vet) {
   document.getElementById("editIdVet").value = vet.id_Veterinario;
   document.getElementById("editNombre").value = vet.Vet_Nombres;
@@ -226,9 +190,6 @@ async function abrirModalEditar(vet) {
   openModal("modalEditar");
 }
 
-/* ========== AGREGAR VETERINARIO ========== */
-
-/* ========== GUARDAR (POST / PUT) ========== */
 async function saveVeterinario(method, endpoint, data) {
   const res = await fetch(endpoint, {
     method,
@@ -239,115 +200,29 @@ async function saveVeterinario(method, endpoint, data) {
   await fetchVeterinarios();
 }
 
-/* ========== EVENTOS CRUD ========== */
-document.addEventListener("click", async (e) => {
-  const editBtn = e.target.closest(".action-btn.edit");
-  const deleteBtn = e.target.closest(".action-btn.delete");
-  const turnosBtn = e.target.closest(".btn-turnos");
-
-  if (editBtn) {
-    const vet = JSON.parse(editBtn.dataset.vet);
-    abrirModalEditar(vet);
-  }
-
-  if (deleteBtn) {
-    const id = deleteBtn.dataset.id;
-    if (confirm("¿Seguro que deseas eliminar este veterinario?")) {
-      try {
-        await saveVeterinario("DELETE", `${API_URL}/${id}`);
-        alert("Veterinario desactivado correctamente");
-      } catch (err) {
-        console.error(err);
-        alert("Error al eliminar el veterinario");
-      }
-    }
-  }
-
-  if (turnosBtn) {
-    const { id, nombre } = turnosBtn.dataset;
-    verTurnos(id, nombre);
-  }
-});
-
-/* === FORMULARIOS === */
-["editVetForm", "addVetForm"].forEach((formId) => {
-  document.getElementById(formId).addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const isEdit = formId === "editVetForm";
-    const id = document.getElementById(
-      isEdit ? "editIdVet" : "addIdVet"
-    )?.value;
-    const prefix = isEdit ? "edit" : "add";
-
-    const data = {
-      Vet_Nombres: document.getElementById(`${prefix}Nombre`).value,
-      Vet_Apellidos: document.getElementById(`${prefix}Apellido`).value,
-      Vet_Telefono: document.getElementById(`${prefix}Telefono`).value,
-      Vet_Correo: document.getElementById(`${prefix}Correo`).value,
-      EspecialidadNombre: document.getElementById(`${prefix}Especialidad`)
-        .value,
-    };
-
-    try {
-      await saveVeterinario(
-        isEdit ? "PUT" : "POST",
-        isEdit ? `${API_URL}/${id}` : API_URL,
-        data
-      );
-      alert(`Veterinario ${isEdit ? "actualizado" : "agregado"} correctamente`);
-      closeModal(isEdit ? "modalEditar" : "modalAgregar");
-    } catch (error) {
-      console.error(error);
-      alert("Error al guardar veterinario");
-    }
-  });
-});
-
-/* === CERRAR MODALES === */
-// Los modales se cierran automáticamente con form method="dialog"
-// Pero mantenemos los event listeners por si acaso
-function initModalCloseListeners() {
-  const closeEditModal = document.getElementById("closeEditModal");
-  const cancelEdit = document.getElementById("cancelEdit");
-  const closeAddModal = document.getElementById("closeAddModal");
-  const cancelAdd = document.getElementById("cancelAdd");
-
-  if (closeEditModal) {
-    closeEditModal.addEventListener("click", () => closeModal("modalEditar"));
-  }
-  if (cancelEdit) {
-    cancelEdit.addEventListener("click", () => closeModal("modalEditar"));
-  }
-  if (closeAddModal) {
-    closeAddModal.addEventListener("click", () => closeModal("modalAgregar"));
-  }
-  if (cancelAdd) {
-    cancelAdd.addEventListener("click", () => closeModal("modalAgregar"));
-  }
+function formatDate(d) {
+  if (!d) return "";
+  return new Date(d).toLocaleString("es-EC");
 }
 
-// ===== EXPORTACIONES =====
-function initVeterinariosExport() {
-  const btnCSV = document.getElementById("btnDownloadCSV");
-  const btnJSON = document.getElementById("btnDownloadJSON");
-  const btnPDF = document.getElementById("btnDownloadPDF");
-  const btnXLSX = document.getElementById("btnDownloadXLSX");
+function downloadFile(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-  if (btnCSV) {
-    btnCSV.addEventListener("click", () => exportReport("csv"));
-  }
-
-  if (btnJSON) {
-    btnJSON.addEventListener("click", () => exportReport("json"));
-  }
-
-  if (btnPDF) {
-    btnPDF.addEventListener("click", () => exportReport("pdf"));
-  }
-
-  if (btnXLSX) {
-    btnXLSX.addEventListener("click", () => exportReport("xlsx"));
-  }
+// Convierte un array de objetos a formato CSV
+function convertToCSV(resgistro) {
+  const headers = Object.keys(resgistro[0]);
+  const headerRow = headers.join(",");
+  const rows = resgistro.map((obj) => {
+    const values = headers.map((h) => obj[h] ?? "");
+    return values.join(",");
+  });
+  return [headerRow, ...rows].join("\n");
 }
 
 async function exportReport(type) {
@@ -427,37 +302,150 @@ async function exportReport(type) {
   }
 }
 
-function formatDate(d) {
-  if (!d) return "";
-  return new Date(d).toLocaleString("es-EC");
+// Renderiza la tabla de veterinarios
+function renderVeterinarios(veterinarios = []) {
+  const tableBody = document.getElementById("veterinariansTable");
+  let html = "";
+  if (veterinarios.length) {
+    html = veterinarios
+      .map(
+        (vet) => `
+        <tr>
+          <td>${vet.Vet_Nombres} ${vet.Vet_Apellidos}</td>
+          <td>${vet.Especialidad || "Sin especialidad"}</td>
+          <td>${vet.Vet_Telefono || "—"}</td>
+          <td>${vet.Vet_Correo || "—"}</td>
+          <td>
+            <button class="btn-turnos" data-id="${
+              vet.id_Veterinario
+            }" data-nombre="${vet.Vet_Nombres}">
+              Ver turnos
+            </button>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="action-btn edit" data-vet='${JSON.stringify(
+                vet
+              )}' title="Editar"><i data-lucide="edit"></i></button>
+              <button class="action-btn delete" data-id="${
+                vet.id_Veterinario
+              }" title="Eliminar"><i data-lucide="trash2"></i></button>
+            </div>
+          </td>
+        </tr>`
+      )
+      .join("");
+  } else {
+    html = `<tr><td colspan="6" style="text-align:center; color:#888;">No hay veterinarios registrados</td></tr>`;
+  }
+  tableBody.innerHTML = html;
 }
 
-function downloadFile(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+function initModalCloseListeners() {
+  const closeEditModal = document.getElementById("closeEditModal");
+  const cancelEdit = document.getElementById("cancelEdit");
+  const closeAddModal = document.getElementById("closeAddModal");
+  const cancelAdd = document.getElementById("cancelAdd");
+
+  if (closeEditModal) {
+    closeEditModal.addEventListener("click", () => closeModal("modalEditar"));
+  }
+  if (cancelEdit) {
+    cancelEdit.addEventListener("click", () => closeModal("modalEditar"));
+  }
+  if (closeAddModal) {
+    closeAddModal.addEventListener("click", () => closeModal("modalAgregar"));
+  }
+  if (cancelAdd) {
+    cancelAdd.addEventListener("click", () => closeModal("modalAgregar"));
+  }
 }
 
-function convertToCSV(resgistro) {
-  const headers = Object.keys(resgistro[0]);
-  const rows = resgistro.map((obj) =>
-    headers.map((h) => obj[h] ?? "").join(",")
-  );
-  return [headers.join(","), ...rows].join("\n");
+function initVeterinariosExport() {
+  const btnCSV = document.getElementById("btnDownloadCSV");
+  const btnJSON = document.getElementById("btnDownloadJSON");
+  const btnPDF = document.getElementById("btnDownloadPDF");
+  const btnXLSX = document.getElementById("btnDownloadXLSX");
+
+  if (btnCSV) {
+    btnCSV.addEventListener("click", () => exportReport("csv"));
+  }
+
+  if (btnJSON) {
+    btnJSON.addEventListener("click", () => exportReport("json"));
+  }
+
+  if (btnPDF) {
+    btnPDF.addEventListener("click", () => exportReport("pdf"));
+  }
+
+  if (btnXLSX) {
+    btnXLSX.addEventListener("click", () => exportReport("xlsx"));
+  }
 }
 
-/* ========== FUNCIONES GLOBALES ========== */
-window.verTurnos = verTurnos;
-window.cerrarModalTurnos = cerrarModalTurnos;
-window.addVeterinarian = function () {
-  cargarEspecialidades("addEspecialidad");
-  openModal("modalAgregar");
-};
+document.addEventListener("click", async (e) => {
+  const editBtn = e.target.closest(".action-btn.edit");
+  const deleteBtn = e.target.closest(".action-btn.delete");
+  const turnosBtn = e.target.closest(".btn-turnos");
 
-/* ========== INICIALIZACIÓN ========== */
+  if (editBtn) {
+    const vet = JSON.parse(editBtn.dataset.vet);
+    abrirModalEditar(vet);
+  }
+
+  if (deleteBtn) {
+    const id = deleteBtn.dataset.id;
+    if (confirm("¿Seguro que deseas eliminar este veterinario?")) {
+      try {
+        await saveVeterinario("DELETE", `${API_URL}/${id}`);
+        alert("Veterinario desactivado correctamente");
+      } catch (err) {
+        console.error(err);
+        alert("Error al eliminar el veterinario");
+      }
+    }
+  }
+
+  if (turnosBtn) {
+    const { id, nombre } = turnosBtn.dataset;
+    verTurnos(id, nombre);
+  }
+});
+
+["editVetForm", "addVetForm"].forEach((formId) => {
+  document.getElementById(formId).addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const isEdit = formId === "editVetForm";
+    const id = document.getElementById(
+      isEdit ? "editIdVet" : "addIdVet"
+    )?.value;
+    const prefix = isEdit ? "edit" : "add";
+
+    const data = {
+      Vet_Nombres: document.getElementById(`${prefix}Nombre`).value,
+      Vet_Apellidos: document.getElementById(`${prefix}Apellido`).value,
+      Vet_Telefono: document.getElementById(`${prefix}Telefono`).value,
+      Vet_Correo: document.getElementById(`${prefix}Correo`).value,
+      EspecialidadNombre: document.getElementById(`${prefix}Especialidad`)
+        .value,
+    };
+
+    try {
+      await saveVeterinario(
+        isEdit ? "PUT" : "POST",
+        isEdit ? `${API_URL}/${id}` : API_URL,
+        data
+      );
+      alert(`Veterinario ${isEdit ? "actualizado" : "agregado"} correctamente`);
+      closeModal(isEdit ? "modalEditar" : "modalAgregar");
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar veterinario");
+    }
+  });
+});
+
 async function initDashboard() {
   highlightActive();
   initMobileMenu();
@@ -466,5 +454,12 @@ async function initDashboard() {
   initVeterinariosExport();
   createIcons(iconConfig);
 }
+
+window.verTurnos = verTurnos;
+window.cerrarModalTurnos = cerrarModalTurnos;
+window.addVeterinarian = function () {
+  cargarEspecialidades("addEspecialidad");
+  openModal("modalAgregar");
+};
 
 document.addEventListener("DOMContentLoaded", initDashboard);
