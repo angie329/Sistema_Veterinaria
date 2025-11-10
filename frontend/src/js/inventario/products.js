@@ -4,7 +4,7 @@ import { populateSelect, productsUpdatePaginationUI } from './ui.js';
 
 export async function productsRender(filter = "", page = 1, limit = 10) {
     try {
-        const res = await fetch(`/v1/products?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
+        const res = await fetch(`http://localhost:3008/v1/products?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
         const data = await res.json();
 
         if (!data.products) return;
