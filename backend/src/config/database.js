@@ -1,5 +1,4 @@
 import mysql from "mysql2/promise";
-
 import { config } from "./env.js";
 
 let pool = null;
@@ -15,6 +14,9 @@ export const getPool = () => {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
   }
   return pool;
@@ -25,4 +27,3 @@ export const query = async (sql, params) => {
   const [rows] = await connection.execute(sql, params);
   return rows;
 };
-

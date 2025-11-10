@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Datos Personales - VetSystem</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="/src/styles/modals.css" />
+    <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>VetSystem</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/" class="sidebar-nav-item" data-module="dashboard">
+          <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+          <span>Panel</span>
+        </a>
+
+        <a href="/clients" class="sidebar-nav-item" data-module="clients">
+          <i data-lucide="users" class="sidebar-nav-icon"></i>
+          <span>Clientes</span>
+        </a>
+
+        <a
+          href="/ubicaciones"
+          class="sidebar-nav-item"
+          data-module="ubicaciones"
+        >
+          <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
+          <span>Ubicaciones</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
+        <a
+          href="/datos-personales"
+          class="sidebar-nav-item"
+          data-module="datos-personales"
+        >
+          <i data-lucide="user" class="sidebar-nav-icon"></i>
+          <span>Datos Personales</span>
+        </a>
+
+        <a
+          href="/configuracion"
+          class="sidebar-nav-item"
+          data-module="configuracion"
+        >
+          <i data-lucide="settings" class="sidebar-nav-icon"></i>
+          <span>Configuración</span>
+        </a>
+      </nav>
+    </aside>
+
+    <header class="header">
+      <button
+        class="header-menu-btn"
+        id="mobileMenuBtn"
+        aria-label="Toggle menu"
+      >
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="header-search">
+        <i data-lucide="search" class="header-search-icon"></i>
+        <input
+          type="text"
+          class="header-search-input"
+          placeholder="Buscar clientes, mascotas, medicamentos..."
+          id="globalSearch"
+        />
+      </div>
+
+      <div class="header-actions">
+        <button class="header-icon-btn" id="notificationsBtn">
+          <i data-lucide="bell"></i>
+          <span class="header-badge">3</span>
+        </button>
+
+        <div class="header-user-btn" id="userMenuBtn">
+          <div class="header-avatar">AD</div>
+          <span>Admin</span>
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <main id="mainContent">
+        <div class="dashboard-header">
+          <div>
+            <h1 class="dashboard-title">
+              <i data-lucide="user"></i>
+              Datos Personales
+            </h1>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="genero-sexo">Género/Sexo</button>
+          <button class="tab" data-tab="estado-civil">Estado Civil</button>
+          <button class="tab" data-tab="tipo-documento">Tipo Documento</button>
+        </div>
+
+        <div id="tabContent">
+          <div class="tab-content active" data-content="genero-sexo">
+            <div class="section-header">
+              <h2>Género/Sexo</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportGeneroSexoXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('genero-sexo')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-genero-sexo"></div>
+          </div>
+
+          <div class="tab-content" data-content="estado-civil">
+            <div class="section-header">
+              <h2>Estado Civil</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoCivilXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('estado-civil')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-estado-civil"></div>
+          </div>
+
+          <div class="tab-content" data-content="tipo-documento">
+            <div class="section-header">
+              <h2>Tipo Documento</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportTipoDocumentoXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('tipo-documento')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-tipo-documento"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <dialog id="modal-genero-sexo" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-genero-sexo">
+          Nuevo Género/Sexo
+        </h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form id="form-genero-sexo" onsubmit="handleSubmit(event, 'genero-sexo')">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="genero-sexo-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="genero-sexo-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-genero-sexo" class="btn btn-primary">
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-estado-civil" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-estado-civil">
+          Nuevo Estado Civil
+        </h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-estado-civil"
+        onsubmit="handleSubmit(event, 'estado-civil')"
+      >
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="estado-civil-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="estado-civil-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-estado-civil" class="btn btn-primary">
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-tipo-documento" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-tipo-documento">
+          Nuevo Tipo Documento
+        </h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-tipo-documento"
+        onsubmit="handleSubmit(event, 'tipo-documento')"
+      >
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="tipo-documento-codigo">Código</label>
+            <input type="text" id="tipo-documento-codigo" name="Gen_codigo" />
+          </div>
+          <div class="form-group">
+            <label for="tipo-documento-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="tipo-documento-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="tipo-documento-descripcion">Descripción</label>
+            <textarea
+              id="tipo-documento-descripcion"
+              name="Gen_descripcion"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button
+          type="submit"
+          form="form-tipo-documento"
+          class="btn btn-primary"
+        >
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/js/datos-personales.js"></script>
+  </body>
+</html>

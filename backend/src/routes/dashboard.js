@@ -1,7 +1,10 @@
 import express from "express";
 import { appointments, notifications, veterinarios, estadosCita, agendas } from "./mockData.js";
+import { getDashboard } from "../controllers/dashboard.controller.js";
 
 export const dashboardRouter = express.Router();
+
+// === Rutas de tu rama (mock data) ===
 
 // GET Veterinarios
 dashboardRouter.get("/veterinarians", (req, res) => res.json(veterinarios));
@@ -80,3 +83,6 @@ dashboardRouter.delete("/appointments/:id", (req, res) => {
 
 // GET Notificaciones
 dashboardRouter.get("/notifications", (req, res) => res.json(notifications));
+
+// === Ruta del main (controller) ===
+dashboardRouter.get("/dashboard", getDashboard);

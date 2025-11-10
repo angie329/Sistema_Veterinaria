@@ -1,5 +1,5 @@
 // === Configuración de la API ===
-const API_URL = "http://localhost:3006/v1/dashboard";
+const API_URL = "http://localhost:3006/v1/citas";
 
 // === Datos iniciales ===
 let appointments = [];
@@ -125,6 +125,29 @@ async function addAppointment(citaData) {
 	}
 }
 
+async function guardarCambiosCita(idCitaSeleccionada) {
+  const clienteSelect = document.getElementById("clienteSelect");
+  const mascotaSelect = document.getElementById("mascotaSelect");
+  const veterinarianSelect = document.getElementById("veterinarioCitaSelect");
+  const fechaCitaRaw = document.getElementById("fechaCitaInput").value;
+  const motivo = document.getElementById("motivoInput").value.trim();
+  const observaciones = document.getElementById("observacionesInput").value.trim() || "";
+
+  const updateData = {
+    idCliente: parseInt(clienteSelect.value),
+    idMascota: parseInt(mascotaSelect.value),
+    idVet: parseInt(veterinarianSelect.value),
+    idStatus: parseInt(document.getElementById("estadoCitaSelect").value),
+    time: fechaCitaRaw.replace("T", " ") + ":00",
+    reason: motivo,
+    observaciones: observaciones
+  };
+
+  console.log("📦 Datos que se enviarán al backend:", updateData);
+  await updateCita(idCitaSeleccionada, updateData);
+}
+
+
 async function updateCita(id, updateData) {
 	try {
 		const response = await fetch(`${API_URL}/appointments/${id}`, {
@@ -142,6 +165,8 @@ async function updateCita(id, updateData) {
 		console.error(error);
 		alert("Error al actualizar la cita.");
 	}
+	
+	console.log("🧩 Datos que se enviarán a updateCita:", updateData);
 }
 
 async function deleteCita(id) {
@@ -195,6 +220,30 @@ function renderEstadosCitaSelect() {
 		select.appendChild(option);
 	});
 }
+
+
+// === Cargar clientes ===
+async function cargarClientes() {
+    try {
+        const res = await fetch("http://localhost:3006/v1/cliente");
+        if (!res.ok) throw new Error("Error al obtener clientes");
+
+        const clientes = await res.json();
+
+        const clienteSelect = document.getElementById('clienteSelect');
+        clienteSelect.innerHTML = '<option value="">-- Seleccione Cliente --</option>';
+
+        clientes.forEach(cliente => {
+            const option = document.createElement('option');
+            option.value = cliente.id_Clientes; // id correcto
+            option.textContent = `${cliente.Cli_Nombres} ${cliente.Cli_Apellidos}`; // nombres correctos
+            clienteSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error al cargar clientes:", error);
+    }
+}
+
 
 // === Render Agenda ===
 function renderAgendaFromAPI(agenda) {
@@ -278,7 +327,9 @@ function renderCitas() {
 	initIcons();
 }
 
+
 // === CRUD Citas ===
+/*
 function editAppointment(id) {
 	const cita = appointments.find(a => a.id === id);
 	if (!cita) return;
@@ -288,13 +339,40 @@ function editAppointment(id) {
 
 	const vet = veterinarios.find(v => v.name === cita.veterinarian);
 	updateCita(id, {
-		time: newDateTime,
-		veterinarianId: vet ? vet.id : null,
-		veterinarian: cita.veterinarian,
-		statusId: cita.statusId,
-		status: cita.status
+		idCliente: cita.clientId,     // reutiliza el mismo cliente
+		idMascota: cita.petId,        // reutiliza la misma mascota
+		idVet: vet ? vet.id : cita.veterinarianId,
+		idStatus: cita.statusId,
+		time: newDateTime.replace("T", " ") + ":00",
+		reason: cita.reason || "",    // por si existe en la cita original
+		observaciones: cita.observaciones || ""
 	});
 }
+
+*/
+
+function editAppointment(id) {
+	const cita = appointments.find(a => a.id === id);
+	if (!cita) return;
+
+	const newDateTime = prompt("Nueva fecha y hora (YYYY-MM-DDTHH:MM):", cita.time.substring(0,16));
+	if (!newDateTime || newDateTime === cita.time) return;
+
+	const vet = veterinarios.find(v => v.name === cita.veterinarian);
+
+	// 👇 Aseguramos que cliente y mascota sean los mismos que ya tenía la cita
+	updateCita(id, {
+		idCliente: cita.clientId,
+		idMascota: cita.petId,
+		idVet: vet ? vet.id : cita.veterinarianId,
+		idStatus: cita.statusId,
+		time: newDateTime.replace("T", " ") + ":00",
+		reason: cita.reason || "",
+		observaciones: cita.observaciones || ""
+	});
+}
+
+
 
 function deleteAppointmentHandler(id) {
 	if (confirm("¿Desea eliminar esta cita?")) deleteCita(id);
@@ -304,107 +382,134 @@ window.editAppointment = editAppointment;
 window.deleteAppointment = deleteAppointmentHandler;
 
 // === Formulario ===
+// === Formulario ===
 const CITA_DURACION_MINUTOS = 30;
 
 function initForm() {
-	const form = document.getElementById("formCita");
-	if (!form) return;
+    const form = document.getElementById("formCita");
+    if (!form) return;
 
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-		const clientName = document.getElementById("clienteInput").value.trim();
-		const petName = document.getElementById("mascotaInput").value.trim();
-		const veterinarianSelect = document.getElementById("veterinarioCitaSelect");
-		const vetId = parseInt(veterinarianSelect.value);
-		const fechaCita = document.getElementById("fechaCitaInput").value;
-		const motivo = document.getElementById("motivoInput").value.trim();
-		const observaciones = document.getElementById("observacionesInput").value.trim();
+        // --- Obtener valores del formulario ---
+        const clienteSelect = document.getElementById("clienteSelect");
+        const mascotaSelect = document.getElementById("mascotaSelect");
+        const veterinarianSelect = document.getElementById("veterinarioCitaSelect");
+        const fechaCitaRaw = document.getElementById("fechaCitaInput").value;
+        const motivo = document.getElementById("motivoInput").value.trim();
+        const observaciones = document.getElementById("observacionesInput").value.trim() || "";
 
-		if (!clientName || !petName || !vetId || !fechaCita || !motivo) {
-			return alert("Por favor complete todos los campos obligatorios.");
-		}
+        // --- Validación básica ---
+        if (!clienteSelect.value || !mascotaSelect.value || !veterinarianSelect.value || !fechaCitaRaw || !motivo) {
+            return alert("Por favor complete todos los campos obligatorios.");
+        }
 
-		// --- Obtener agenda del veterinario ---
-		const vetAgenda = await fetch(`${API_URL}/veterinarians/${vetId}/schedule`)
-		.then(r => r.json())
-		.catch(() => []);
+        // --- Obtener IDs (IMPORTANTE: usar .value para los IDs) ---
+        const clientId = parseInt(clienteSelect.value);
+        const petId = parseInt(mascotaSelect.value);
+        const veterinarianId = parseInt(veterinarianSelect.value);
+        
+        // --- Obtener nombres para notificación ---
+        const clientName = clienteSelect.selectedOptions[0].text;
+        
+        // --- Convertir fecha a formato MySQL ---
+        const fechaCitaMysql = fechaCitaRaw.replace("T", " ") + ":00";
 
-		if (!vetAgenda || vetAgenda.length === 0) {
-			return alert("Este veterinario no tiene horarios disponibles.");
-		}
+        // --- Verificar agenda del veterinario ---
+        let dentroTurno = false;
+        let vetAgenda = [];
+        
+        try {
+            vetAgenda = await fetch(`${API_URL}/veterinarians/${veterinarianId}/schedule`)
+                .then(r => r.json())
+                .catch(() => []);
+        } catch (err) {
+            console.error("Error al obtener la agenda:", err);
+        }
 
-		// --- Convertir fecha/hora de la cita ---
-		const citaDate = new Date(fechaCita);
-		const citaDayName = citaDate.toLocaleDateString("es-ES", { weekday: "long" }); // lunes, martes...
-		const citaMinutes = citaDate.getHours() * 60 + citaDate.getMinutes();
+        if (vetAgenda.length === 0) {
+            return alert("Este veterinario no tiene horarios disponibles.");
+        }
 
-		// --- Verificar si la cita está dentro del turno ---
-		let dentroTurno = false;
-		for (const turno of vetAgenda) {
-			if (turno.day.toLowerCase() !== citaDayName.toLowerCase()) continue;
+        const citaDate = new Date(fechaCitaRaw);
+        const citaDayName = citaDate.toLocaleDateString("es-ES", { weekday: "long" });
+        const citaMinutes = citaDate.getHours() * 60 + citaDate.getMinutes();
 
-			const [startH, startM] = turno.start.split(":").map(Number);
-			const [endH, endM] = turno.end.split(":").map(Number);
-			const startMinutes = startH * 60 + startM;
-			const endMinutes = endH * 60 + endM;
+        for (const turno of vetAgenda) {
+            if (turno.day.toLowerCase() !== citaDayName.toLowerCase()) continue;
+            
+            const [startH, startM] = turno.start.split(":").map(Number);
+            const [endH, endM] = turno.end.split(":").map(Number);
+            const startMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
+            
+            if (citaMinutes >= startMinutes && (citaMinutes + CITA_DURACION_MINUTOS) <= endMinutes) {
+                dentroTurno = true;
+                break;
+            }
+        }
 
-			if (citaMinutes >= startMinutes && (citaMinutes + CITA_DURACION_MINUTOS) <= endMinutes) {
-				dentroTurno = true;
-				break;
-			}
-		}
+        if (!dentroTurno) {
+            return alert("La cita no está dentro del horario disponible del veterinario.");
+        }
 
-		if (!dentroTurno) return alert("La cita no está dentro del horario disponible del veterinario.");
+        // --- Verificar solapamiento ---
+        const citasVet = appointments.filter(a => a.veterinarianId === veterinarianId);
+        const nuevaInicio = citaDate.getTime();
+        const nuevaFin = nuevaInicio + CITA_DURACION_MINUTOS * 60 * 1000;
+        
+        for (const cita of citasVet) {
+            const citaExistenteInicio = new Date(cita.time).getTime();
+            const citaExistenteFin = citaExistenteInicio + CITA_DURACION_MINUTOS * 60 * 1000;
+            
+            if (nuevaInicio < citaExistenteFin && nuevaFin > citaExistenteInicio) {
+                return alert("Ya existe una cita para este veterinario en ese horario.");
+            }
+        }
 
-		// --- Verificar solapamiento con otras citas ---
-		const citasVet = appointments.filter(a => a.veterinarianId === vetId);
-		const nuevaInicio = citaDate.getTime();
-		const nuevaFin = nuevaInicio + CITA_DURACION_MINUTOS * 60 * 1000;
+        // --- Datos a enviar al backend (CORREGIDO) ---
+        const data = {
+            clientId: clientId,           // ID del cliente seleccionado
+            petId: petId,                 // ID de la mascota seleccionad
+            veterinarianId: veterinarianId, // ID del veterinario
+            time: fechaCitaMysql,         // Fecha en formato MySQL
+            reason: motivo,               // Motivo de la cita
+            observaciones: observaciones, // Observaciones
+            statusId: 2                   // Estado: Confirmada
+        };
 
-		for (const cita of citasVet) {
-			const citaExistenteInicio = new Date(cita.time).getTime();
-			const citaExistenteFin = citaExistenteInicio + CITA_DURACION_MINUTOS * 60 * 1000;
+        console.log("Datos que se enviarán al backend:", data);
 
-			if (nuevaInicio < citaExistenteFin && nuevaFin > citaExistenteInicio) {
-				return alert("Ya existe una cita para este veterinario en ese horario.");
-			}
-		}
+        try {
+            const response = await fetch(`${API_URL}/appointments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
 
-		// --- Registrar cita ---
-		const data = {
-			id: Date.now(),
-			clientName,
-			petName,
-			petType: "-",
-			veterinarianId: vetId,
-			veterinarian: veterinarios.find(v => v.id === vetId).name,
-			time: fechaCita,
-			reason: motivo,
-			observaciones,
-			statusId: 2, // Confirmada
-			status: "Confirmada"
-		};
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Error al registrar la cita");
+            }
 
-		try {
-			const response = await fetch(`${API_URL}/appointments`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data)
-			});
-			if (!response.ok) throw new Error("Error al registrar la cita");
-
-			const nuevaCita = await response.json();
-			appointments.push(nuevaCita);
-			renderCitas();
-			createNotification(`Nueva cita registrada para ${clientName}`);
-			form.reset();
-		} catch (error) {
-			console.error(error);
-			alert("No se pudo registrar la cita.");
-		}
-	});
+            const nuevaCita = await response.json();
+            appointments.push(nuevaCita);
+            renderCitas();
+            createNotification(`Nueva cita registrada para ${clientName}`);
+            form.reset();
+            
+            // Limpiar select de mascotas
+            document.getElementById("mascotaSelect").innerHTML = '<option value="">-- Seleccione Mascota --</option>';
+            
+        } catch (error) {
+            console.error("Error al crear cita:", error);
+            alert(`No se pudo registrar la cita: ${error.message}`);
+        }
+    });
 }
+
+
 
 // === Selector veterinario agenda ===
 function initVeterinarioSelect() {
@@ -476,6 +581,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 	highlightActive();
 	initMobileMenu();
 	initNotifications();
+	//guardarCambiosCita(idCitaSeleccionada);
+	await cargarClientes(); 
 	initForm();
 	initVeterinarioSelect();
 	initIcons();
@@ -483,4 +590,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 	await fetchVeterinarios();
 	await fetchEstadosCita();
 	await fetchCitas();
+	
+	// === Cargar mascotas según cliente seleccionado ===
+document.getElementById('clienteSelect').addEventListener('change', async (e) => {
+    const clienteId = e.target.value;
+    const mascotaSelect = document.getElementById('mascotaSelect');
+    if (!clienteId) {
+        mascotaSelect.innerHTML = '<option value="">-- Seleccione Mascota --</option>';
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:3006/v1/cliente/${clienteId}/mascotas`);
+        const mascotas = await res.json();
+        mascotaSelect.innerHTML = '<option value="">-- Seleccione Mascota --</option>';
+        mascotas.forEach(mascota => {
+            const option = document.createElement('option');
+            option.value = mascota.mas_id_mascota;   // CORREGIDO
+            option.textContent = mascota.mas_nombre; // CORREGIDO
+            mascotaSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error al cargar mascotas:", error);
+    }
 });
+
+});
+

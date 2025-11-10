@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ubicaciones - VetSystem</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="/src/styles/modals.css" />
+    <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>VetSystem</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/" class="sidebar-nav-item" data-module="dashboard">
+          <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+          <span>Panel</span>
+        </a>
+
+        <a href="/clients" class="sidebar-nav-item" data-module="clients">
+          <i data-lucide="users" class="sidebar-nav-icon"></i>
+          <span>Clientes</span>
+        </a>
+
+        <a
+          href="/ubicaciones"
+          class="sidebar-nav-item"
+          data-module="ubicaciones"
+        >
+          <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
+          <span>Ubicaciones</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" data-module="pets">
+          <i data-lucide="dog" class="sidebar-nav-icon"></i>
+          <span>Mascotas</span>
+        </a>
+
+        <a
+          href="/veterinarios"
+          class="sidebar-nav-item"
+          data-module="veterinarians"
+        >
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+          <span>Veterinarios</span>
+        </a>
+
+        <a
+          href="/datos-personales"
+          class="sidebar-nav-item"
+          data-module="datos-personales"
+        >
+          <i data-lucide="user" class="sidebar-nav-icon"></i>
+          <span>Datos Personales</span>
+        </a>
+
+        <a
+          href="/configuracion"
+          class="sidebar-nav-item"
+          data-module="configuracion"
+        >
+          <i data-lucide="settings" class="sidebar-nav-icon"></i>
+          <span>Configuración</span>
+        </a>
+      </nav>
+    </aside>
+
+    <header class="header">
+      <button
+        class="header-menu-btn"
+        id="mobileMenuBtn"
+        aria-label="Toggle menu"
+      >
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="header-search">
+        <i data-lucide="search" class="header-search-icon"></i>
+        <input
+          type="text"
+          class="header-search-input"
+          placeholder="Buscar clientes, mascotas, medicamentos..."
+          id="globalSearch"
+        />
+      </div>
+
+      <div class="header-actions">
+        <button class="header-icon-btn" id="notificationsBtn">
+          <i data-lucide="bell"></i>
+          <span class="header-badge">3</span>
+        </button>
+
+        <div class="header-user-btn" id="userMenuBtn">
+          <div class="header-avatar">AD</div>
+          <span>Admin</span>
+          <i data-lucide="chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <main id="mainContent">
+        <div class="dashboard-header">
+          <div>
+            <h1 class="dashboard-title">
+              <i data-lucide="map-pin"></i>
+              Ubicaciones
+            </h1>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="estado-general">
+            Estado General
+          </button>
+          <button class="tab" data-tab="provincia">Provincia</button>
+          <button class="tab" data-tab="ciudad">Ciudad</button>
+        </div>
+
+        <div id="tabContent">
+          <div class="tab-content active" data-content="estado-general">
+            <div class="section-header">
+              <h2>Estado General</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportEstadoGeneralXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  onclick="openModal('estado-general')"
+                >
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-estado-general" class="crud-table-container"></div>
+          </div>
+
+          <div class="tab-content" data-content="provincia">
+            <div class="section-header">
+              <h2>Provincia</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportProvinciaXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('provincia')">
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-provincia" class="crud-table-container"></div>
+          </div>
+
+          <div class="tab-content" data-content="ciudad">
+            <div class="section-header">
+              <h2>Ciudad</h2>
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadCSV"
+                    title="Exportar CSV"
+                  >
+                    <i data-lucide="file-text"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadJSON"
+                    title="Exportar JSON"
+                  >
+                    <i data-lucide="braces"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadPDF"
+                    title="Exportar PDF"
+                  >
+                    <i data-lucide="file"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    id="btnExportCiudadXLSX"
+                    title="Exportar Excel"
+                  >
+                    <i data-lucide="file-spreadsheet"></i>
+                  </button>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('ciudad')">
+                  <i data-lucide="plus"></i> Crear
+                </button>
+              </div>
+            </div>
+            <div id="table-ciudad" class="crud-table-container"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <dialog id="modal-estado-general" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-estado-general">
+          Nuevo Estado General
+        </h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-estado-general"
+        onsubmit="handleSubmit(event, 'estado-general')"
+      >
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="estado-general-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="estado-general-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="estado-general-descripcion">Descripción</label>
+            <textarea
+              id="estado-general-descripcion"
+              name="Gen_descripcion"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="estado-general-activo">
+              <input
+                type="checkbox"
+                id="estado-general-activo"
+                name="Gen_es_activo"
+                checked
+              />
+              Activo
+            </label>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button
+          type="submit"
+          form="form-estado-general"
+          class="btn btn-primary"
+        >
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-provincia" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-provincia">Nueva Provincia</h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form id="form-provincia" onsubmit="handleSubmit(event, 'provincia')">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="provincia-nombre">Nombre *</label>
+            <input
+              type="text"
+              id="provincia-nombre"
+              name="Gen_nombre"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="provincia-codigo-pais">Código País</label>
+            <input
+              type="text"
+              id="provincia-codigo-pais"
+              name="Gen_codigo_pais"
+              value="EC"
+            />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-provincia" class="btn btn-primary">
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-ciudad" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-ciudad">Nueva Ciudad</h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+      <form id="form-ciudad" onsubmit="handleSubmit(event, 'ciudad')">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="ciudad-nombre">Nombre *</label>
+            <input type="text" id="ciudad-nombre" name="Gen_nombre" required />
+          </div>
+          <div class="form-group">
+            <label for="ciudad-provincia">ID Provincia</label>
+            <input
+              type="number"
+              id="ciudad-provincia"
+              name="Gen_id_provincia"
+              value="1"
+            />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-ciudad" class="btn btn-primary">
+          <i data-lucide="save"></i> Guardar
+        </button>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/js/ubicaciones.js"></script>
+  </body>
+</html>

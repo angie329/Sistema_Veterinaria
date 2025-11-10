@@ -13,6 +13,18 @@ main {
 	gap: 3rem;
 }
 
+select {
+  color: black !important;
+  background-color: white !important;
+  position: relative !important;
+  z-index: 1000 !important;
+}
+
+select option {
+  color: black !important;
+  background-color: white !important;
+}
+
 /* Responsivo para tablets y móviles */
 @media (max-width: 768px) {
 	main {
@@ -90,7 +102,7 @@ main {
 .cita-section input,
 .cita-section select,
 .cita-section textarea {
-	display: block;
+	display: flex;
 	width: 100%;
 	padding: 0.6rem 1rem;
 	margin: 0.5rem 0 1rem 0;
@@ -110,7 +122,6 @@ main {
 .cita-section input:focus,
 .cita-section select:focus,
 .cita-section textarea:focus {
-	outline: none;
 	border-color: #4cd137;
 	box-shadow: 0 0 0 3px rgba(76, 209, 55, 0.1);
 }

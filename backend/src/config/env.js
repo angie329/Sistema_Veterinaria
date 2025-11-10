@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config(); // Carga variables del .env
 export const config = {
   PORT: process.env.PORT || 3008,
   DB: {

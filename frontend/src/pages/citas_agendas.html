@@ -122,8 +122,12 @@
 			<section class="cita-section">
 				<h2>Registrar Nueva Cita</h2>
 				<form id="formCita">
-					<input type="text" id="clienteInput" placeholder="Nombre del cliente" required>
-					<input type="text" id="mascotaInput" placeholder="Nombre de la mascota" required>
+					<select id="clienteSelect" required>
+						<option value="">-- Seleccione Cliente --</option>
+					</select>
+					<select id="mascotaSelect" required>
+						<option value="">-- Seleccione Mascota --</option>
+					</select>
 					<select id="veterinarioCitaSelect" required>
 						<option value="">Seleccione veterinario</option>
 					</select>

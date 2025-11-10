@@ -1,10 +1,44 @@
 import express from "express";
 
 import { dashboardRouter } from "./dashboard.js";
-import { appointmentsRouter } from "./appointments.js";
+import { citasRouter } from "./appointments.js";
+import { estadoGeneralRouter } from "./estado-general.js";
+import { provinciaRouter } from "./provincia.js";
+import { ciudadRouter } from "./ciudad.js";
+import { tipoDocumentoRouter } from "./tipo-documento.js";
+import { generoSexoRouter } from "./genero-sexo.js";
+import { operadoraRouter } from "./operadora.js";
+import { estadoCivilRouter } from "./estado-civil.js";
+import { ivaRouter } from "./iva.js";
+import { unidadMedidaRouter } from "./unidad-medida.js";
+import { metodoPagoRouter } from "./metodo-pago.js";
+import { proveedoresRouter } from "./proveedores.js";
+import { veterinariosRouter } from "./veterinarios.js";
+import { especialidadesRouter } from "./especialidades.js";
+import { turnosRouter } from "./turnos.js";
+import reporteRoutes from "./reportes.js";
+import clientsRoutes from "./cliente.js";
 
 export const router = express.Router();
 
+// Ruta de salud
 router.get("/health", (_, res) => res.send("OK"));
-router.use("/dashboard", dashboardRouter);
-router.use("/appointments", appointmentsRouter);
+
+// Rutas de main
+router.use("/cliente", clientsRoutes);
+router.use("/estado-general", estadoGeneralRouter);
+router.use("/provincia", provinciaRouter);
+router.use("/ciudad", ciudadRouter);
+router.use("/tipo-documento", tipoDocumentoRouter);
+router.use("/genero-sexo", generoSexoRouter);
+router.use("/operadora", operadoraRouter);
+router.use("/estado-civil", estadoCivilRouter);
+router.use("/iva", ivaRouter);
+router.use("/unidad-medida", unidadMedidaRouter);
+router.use("/metodo-pago", metodoPagoRouter);
+router.use("/proveedores", proveedoresRouter);
+router.use("/veterinarios", veterinariosRouter);
+router.use("/especialidades", especialidadesRouter);
+router.use("/turnos", turnosRouter);
+router.use("/reportes", reporteRoutes);
+router.use("/citas",citasRouter);

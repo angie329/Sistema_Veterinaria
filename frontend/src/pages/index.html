@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/global.css" />
     <link rel="stylesheet" href="../styles/components.css" />
     <link rel="stylesheet" href="../styles/index.css" />
+    <link rel="stylesheet" href="../styles/modals.css" />
     <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
   </head>
   <body>
@@ -29,38 +30,28 @@
           <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
           <span>Panel</span>
         </a>
-
         <a href="/clients" class="sidebar-nav-item" data-module="clients">
           <i data-lucide="users" class="sidebar-nav-icon"></i>
           <span>Clientes</span>
         </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="pets">
-          <i data-lucide="dog" class="sidebar-nav-icon"></i>
-          <span>Mascotas</span>
+        <a href="/ubicaciones" class="sidebar-nav-item" data-module="ubicaciones">
+          <i data-lucide="map-pin" class="sidebar-nav-icon"></i>
+          <span>Ubicaciones</span>
         </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="veterinarians">
+        <a href="/veterinarios" class="sidebar-nav-item" data-module="veterinarians">
           <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
           <span>Veterinarios</span>
         </a>
-
-        <a href="../pages/citas_agendas.html" class="sidebar-nav-item" data-module="appointments">
-          <i data-lucide="calendar" class="sidebar-nav-icon"></i>
+		
+		<a href="../pages/citas_agendas.html" class="sidebar-nav-item" data-module="appointments">
+          <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
           <span>Citas</span>
+		  
+        <a href="/datos-personales" class="sidebar-nav-item" data-module="datos-personales">
+          <i data-lucide="user" class="sidebar-nav-icon"></i>
+          <span>Datos Personales</span>
         </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="inventory">
-          <i data-lucide="package" class="sidebar-nav-icon"></i>
-          <span>Inventario</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="billing">
-          <i data-lucide="receipt" class="sidebar-nav-icon"></i>
-          <span>Facturación</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item" data-module="settings">
+        <a href="/configuracion" class="sidebar-nav-item" data-module="configuracion">
           <i data-lucide="settings" class="sidebar-nav-icon"></i>
           <span>Configuración</span>
         </a>
@@ -68,29 +59,18 @@
     </aside>
 
     <header class="header">
-      <button
-        class="header-menu-btn"
-        id="mobileMenuBtn"
-        aria-label="Toggle menu"
-      >
+      <button class="header-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
         <i data-lucide="menu"></i>
       </button>
       <div class="header-search">
         <i data-lucide="search" class="header-search-icon"></i>
-        <input
-          type="text"
-          class="header-search-input"
-          placeholder="Buscar clientes, mascotas, medicamentos..."
-          id="globalSearch"
-        />
+        <input type="text" class="header-search-input" placeholder="Buscar clientes, mascotas, medicamentos..." id="globalSearch" />
       </div>
-
       <div class="header-actions">
         <button class="header-icon-btn" id="notificationsBtn">
           <i data-lucide="bell"></i>
           <span class="header-badge">3</span>
         </button>
-
         <div class="header-user-btn" id="userMenuBtn">
           <div class="header-avatar">AD</div>
           <span>Admin</span>
@@ -107,35 +87,73 @@
             <p class="dashboard-date" id="dashboardDate"></p>
           </div>
         </div>
-
         <div class="metrics-grid" id="metricsGrid"></div>
-
         <div class="dashboard-sections">
           <div class="dashboard-section">
             <div class="section-header">
-              <h2 class="section-title">
-                <i data-lucide="calendar-clock"></i>
-                Próximas Citas
-              </h2>
-              <a href="#" class="section-link">Ver todas</a>
+              <h2 class="section-title"><i data-lucide="calendar-clock"></i> Citas de Hoy</h2>
             </div>
             <ul class="appointments-list" id="appointmentsList"></ul>
           </div>
-
-          <div class="dashboard-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <i data-lucide="activity"></i>
-                Actividad Reciente
-              </h2>
-              <a href="#" class="section-link">Ver todo</a>
+        </div>
+        <div class="dashboard-section" style="margin-top: var(--spacing-xl)">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="building-2"></i> Proveedores</h2>
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div class="export-buttons" style="display: flex; gap: 0.25rem">
+                <button class="btn btn-sm btn-secondary" id="btnExportProveedoresCSV" title="Exportar CSV"><i data-lucide="file-text"></i></button>
+                <button class="btn btn-sm btn-secondary" id="btnExportProveedoresJSON" title="Exportar JSON"><i data-lucide="braces"></i></button>
+                <button class="btn btn-sm btn-secondary" id="btnExportProveedoresPDF" title="Exportar PDF"><i data-lucide="file"></i></button>
+                <button class="btn btn-sm btn-secondary" id="btnExportProveedoresXLSX" title="Exportar Excel"><i data-lucide="file-spreadsheet"></i></button>
+              </div>
+              <button class="btn btn-primary" onclick="openProveedorModal()"><i data-lucide="plus"></i> Crear</button>
             </div>
-            <ul class="activity-list" id="activityList"></ul>
           </div>
+          <div id="table-proveedores"></div>
         </div>
       </main>
     </div>
 
-    <script type="module" src="/src/js/index.js"></script>
+    <!-- Modal Proveedores -->
+    <dialog id="modal-proveedores" closedBy="any">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-proveedores">Nuevo Proveedor</h3>
+        <form method="dialog">
+          <button class="modal-close" type="submit"><i data-lucide="x"></i></button>
+        </form>
+      </div>
+      <form id="form-proveedores" onsubmit="handleProveedorSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="proveedor-nombre">Nombre *</label>
+            <input type="text" id="proveedor-nombre" name="Gen_nombre" required />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-direccion">Dirección</label>
+            <input type="text" id="proveedor-direccion" name="Gen_direccion" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-telefono">Teléfono</label>
+            <input type="text" id="proveedor-telefono" name="Gen_telefono" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-email">Email</label>
+            <input type="email" id="proveedor-email" name="Gen_email" />
+          </div>
+          <div class="form-group">
+            <label for="proveedor-producto-servicio">Producto/Servicio</label>
+            <input type="text" id="proveedor-producto-servicio" name="Gen_producto_servicio" />
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary">Cancelar</button>
+        </form>
+        <button type="submit" form="form-proveedores" class="btn btn-primary"><i data-lucide="save"></i> Guardar</button>
+      </div>
+    </dialog>
+
+    <script type="module" src="../js/index.js"></script>
   </body>
 </html>
