@@ -89,11 +89,13 @@ function initModalMascota() {
   const btnCancelar = modal?.querySelector(".btn-cancelar");
   const btnCerrar = modal?.querySelector(".modal-close");
   const form = document.getElementById("formMascota");
-
+  
   if (!modal || !btnAgregar) return;
-
+  
   // Abrir modal al presionar "Agregar"
   btnAgregar.addEventListener("click", () => {
+    const titleModal = modal?.querySelector(".modal-header h2");
+    titleModal.textContent = "Registrar Mascota";
     modal.showModal();
     inicializarSelectoresDinamicos();
     inicializarBotonesAgregar();
@@ -140,9 +142,9 @@ async function cargarMascotas() {
     }
 
     const estados = {
-      A: "Activo",
-      I: "Inactivo",
-      T: "Tratamiento",
+      "A": "Activo",
+      "I": "Inactivo",
+      "T": "Tratamiento",
     };
 
     // Construir filas dinámicamente
@@ -178,6 +180,7 @@ async function cargarMascotas() {
       (p) => p.mas_estado === "T"
     ).length;
 
+    createIcons(iconConfig);
     agregarEventosBotones();
     agregarEventosFilas();
   } catch (error) {
@@ -400,6 +403,7 @@ async function manejarEditarMascota(event) {
   modoEdicionMascota = idMascota; // activa el modo edición
   const modal = document.getElementById("modalRegistrarMascota");
   const form = document.getElementById("formMascota");
+  const titleModal = document.querySelector("#modalRegistrarMascota .modal-header h2");
 
   try {
     const response = await fetch(`${config.BACKEND_URL}/v1/pet/${idMascota}`);
@@ -413,6 +417,7 @@ async function manejarEditarMascota(event) {
 
     const mascota = result.data;
 
+    titleModal.textContent = "Editar Mascota";
     // Carga los selectores dinámicos antes de asignar valores
     inicializarSelectoresDinamicos();
 
