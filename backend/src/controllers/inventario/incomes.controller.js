@@ -49,6 +49,7 @@ export const getIncomes = async (req, res) => {
     }
 };
 
+// obtiene las opciones para los formularios de ingresos (productos)
 export const getIncomeOptions = async (req, res) => {
     try {
         const products = await query(
