@@ -134,12 +134,39 @@ export const createMovement = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
 
+        // Si el movimiento es de tipo 'Salida', verificar el stock
+        if (tipo === 'Salida') {
+            const [product] = await query("SELECT Inv_StockActual FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [producto]);
+
+            if (!product) {
+                return res.status(404).json({ message: "El producto especificado no existe." });
+            }
+
+            const requestedQuantity = parseInt(cantidad, 10);
+            if (isNaN(requestedQuantity) || requestedQuantity <= 0) {
+                return res.status(400).json({ message: "La cantidad debe ser un número positivo." });
+            }
+
+            if (product.Inv_StockActual < requestedQuantity) {
+                return res.status(400).json({
+                    message: `Stock insuficiente para el producto. Stock actual: ${product.Inv_StockActual}`
+                });
+            }
+        }
+
         const sql = `
             INSERT INTO Inv_Movimiento 
             (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
             VALUES (?, ?, ?, ?, 7, 1)`;
         const result = await query(sql, [fecha, producto, tipo, cantidad]);
 
+        if (tipo === 'Ingreso') {
+            const updateStockSql = `UPDATE Inv_Articulo SET Inv_StockActual = Inv_StockActual + ? WHERE id_Inv_Articulo = ?`;
+            await query(updateStockSql, [cantidad, producto]);
+        } else if (tipo === 'Salida') {
+            const updateStockSql = `UPDATE Inv_Articulo SET Inv_StockActual = Inv_StockActual - ? WHERE id_Inv_Articulo = ?`;
+            await query(updateStockSql, [cantidad, producto]);
+        }
         res.status(201).json({
             message: "Movimiento creado exitosamente",
             movementId: result.insertId

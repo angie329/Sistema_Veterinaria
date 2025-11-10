@@ -119,6 +119,13 @@ export const createIncome = async (req, res) => {
             VALUES (?, ?, 'Ingreso', ?, 7, 1)`;
         const result = await query(sql, [fecha, producto, cantidad]);
 
+        // Actualizar el stock del artículo
+        const updateStockSql = `
+            UPDATE Inv_Articulo 
+            SET Inv_StockActual = Inv_StockActual + ? 
+            WHERE id_Inv_Articulo = ?`;
+        await query(updateStockSql, [cantidad, producto]);
+
         res.status(201).json({
             message: "Ingreso creado exitosamente",
             incomeId: result.insertId
