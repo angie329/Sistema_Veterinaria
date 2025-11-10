@@ -2,16 +2,20 @@ import * as DOM from './domElements.js';
 import { state } from './main.js';
 import { populateSelect, incomesUpdatePaginationUI } from './ui.js';
 
+// renderiza la tabla de ingresos, obtiene los datos de la api.
 export async function incomesRender(filter = "", page = 1, limit = 10) {
     try {
+        // hace la peticion a la api para obtener los ingresos.
         const res = await fetch(`/v1/incomes?search=${encodeURIComponent(filter)}&page=${page}&limit=${limit}`);
         const data = await res.json();
 
         if (!data.incomes) return;
 
+        // actualiza el estado de la paginacion.
         state.incomes.currentPage = data.currentPage;
         state.incomes.totalPages = data.totalPages;
 
+        // si no hay ingresos, muestra un mensaje. si hay, los renderiza en la tabla.
         if (data.incomes.length === 0) {
             DOM.incomeTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No se encontraron ingresos.</td></tr>`;
         } else {
@@ -30,6 +34,7 @@ export async function incomesRender(filter = "", page = 1, limit = 10) {
             `).join("");
         }
 
+        // actualiza la interfaz de usuario de la paginacion.
         incomesUpdatePaginationUI(state.incomes.totalPages, state.incomes.currentPage);
     } catch (error) {
         console.error("Error rendering incomes:", error);
@@ -37,17 +42,20 @@ export async function incomesRender(filter = "", page = 1, limit = 10) {
     }
 }
 
+// abre el modal para crear un nuevo ingreso.
 async function openIncomeModalForCreate() {
     DOM.incomeForm.reset();
     DOM.incomeIdInput.value = '';
     document.getElementById('incomeModalTitle').textContent = 'Registrar Nuevo Ingreso';
 
     try {
+        // obtiene las opciones (productos) para el select del formulario.
         const response = await fetch('/v1/incomes/options');
         if (!response.ok) {
             throw new Error('No se pudieron cargar las opciones para el formulario.');
         }
         const options = await response.json();
+        // rellena el select y muestra el modal.
         populateSelect('incomeProduct', options.products);
         DOM.incomeModalOverlay.style.display = 'flex';
     } catch (error) {
@@ -56,11 +64,13 @@ async function openIncomeModalForCreate() {
     }
 }
 
+// abre el modal para editar un ingreso existente.
 async function openIncomeModalForEdit(incomeId) {
     DOM.incomeForm.reset();
     DOM.incomeIdInput.value = incomeId;
 
     try {
+        // obtiene los datos del ingreso y las opciones para el formulario.
         const response = await fetch(`/v1/incomes/${incomeId}`);
         if (!response.ok) {
             throw new Error('No se pudo cargar la información del ingreso.');
@@ -68,13 +78,15 @@ async function openIncomeModalForEdit(incomeId) {
         const { income, options } = await response.json();
         document.getElementById('incomeModalTitle').textContent = 'Editar Ingreso';
 
+        // rellena el select de productos.
         populateSelect('incomeProduct', options.products);
 
-        // Formatear la fecha para el input type="date"
+        // formatea la fecha para el input type="date".
         if (income.fecha) {
             income.fecha = income.fecha.split(' ')[0];
         }
 
+        // rellena el formulario con los datos del ingreso.
         for (const key in income) {
             if (DOM.incomeForm.elements[key]) {
                 DOM.incomeForm.elements[key].value = income[key];
@@ -89,12 +101,14 @@ async function openIncomeModalForEdit(incomeId) {
     }
 }
 
+// cierra el modal de ingreso.
 function closeIncomeModal() {
     if (DOM.incomeModalOverlay) {
         DOM.incomeModalOverlay.style.display = 'none';
     }
 }
 
+// guarda un ingreso (crea uno nuevo o actualiza uno existente).
 async function saveIncome() {
     const formData = new FormData(DOM.incomeForm);
     const incomeData = Object.fromEntries(formData.entries());
@@ -104,6 +118,7 @@ async function saveIncome() {
     const url = isUpdating ? `/v1/incomes/${incomeId}` : '/v1/incomes';
     const method = isUpdating ? 'PUT' : 'POST';
 
+    // envia la peticion a la api.
     try {
         const response = await fetch(url, {
             method: method,
@@ -118,6 +133,7 @@ async function saveIncome() {
 
         alert(`Ingreso ${isUpdating ? 'actualizado' : 'creado'} exitosamente`);
         closeIncomeModal();
+        // vuelve a renderizar la tabla para mostrar los cambios.
         incomesRender(state.currentFilter, state.incomes.currentPage);
     } catch (error) {
         console.error('Failed to save income:', error);
@@ -125,17 +141,20 @@ async function saveIncome() {
     }
 }
 
+// cambia el estado de un ingreso (lo desactiva).
 async function toggleIncomeStatus(incomeId) {
     const confirmation = confirm('¿Estás seguro de que deseas desactivar este ingreso?');
     if (!confirmation) return;
 
     try {
+        // envia la peticion patch para cambiar el estado.
         const response = await fetch(`/v1/incomes/${incomeId}/toggle-status`, { method: 'PATCH' });
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || 'Error al cambiar el estado del ingreso.');
         }
         alert('Estado del ingreso cambiado exitosamente.');
+        // vuelve a renderizar la tabla para reflejar el cambio.
         incomesRender(state.currentFilter, state.incomes.currentPage);
     } catch (error) {
         console.error('Failed to toggle income status:', error);
@@ -143,18 +162,24 @@ async function toggleIncomeStatus(incomeId) {
     }
 }
 
+// configura todos los listeners de eventos para la seccion de ingresos.
 export function setupIncomeEventListeners() {
+    // listeners para abrir y cerrar el modal.
     if (DOM.addIncomeBtn) DOM.addIncomeBtn.addEventListener('click', openIncomeModalForCreate);
     if (DOM.closeIncomeModalBtn) DOM.closeIncomeModalBtn.addEventListener('click', closeIncomeModal);
     if (DOM.cancelIncomeModalBtn) DOM.cancelIncomeModalBtn.addEventListener('click', closeIncomeModal);
     if (DOM.incomeModalOverlay) {
+        // cierra el modal si se hace clic fuera del contenido.
         DOM.incomeModalOverlay.addEventListener('click', (e) => {
             if (e.target === DOM.incomeModalOverlay) closeIncomeModal();
         });
     }
+    // listener para el envio del formulario.
     if (DOM.incomeForm) {
         DOM.incomeForm.addEventListener('submit', (e) => { e.preventDefault(); saveIncome(); });
     }
+
+    // delegacion de eventos en la tabla para los botones de editar y eliminar.
     DOM.incomeTableBody.addEventListener('click', (e) => {
         const editButton = e.target.closest('.btn-edit-income');
         if (editButton) openIncomeModalForEdit(editButton.dataset.id);

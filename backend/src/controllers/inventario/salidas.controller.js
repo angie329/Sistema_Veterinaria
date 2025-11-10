@@ -1,11 +1,13 @@
 import { query } from "../../config/database.js";
 
+// obtiene todas las salidas con paginacion y busqueda
 export const getSalidas = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const searchTerm = req.query.search || "";
 
+        // calcula el offset para la paginacion
         const offset = (page - 1) * limit;
         const searchPattern = `%${searchTerm}%`;
 
@@ -46,6 +48,7 @@ export const getSalidas = async (req, res) => {
     }
 };
 
+// obtiene las opciones para los formularios de salidas (productos)
 export const getSalidaOptions = async (req, res) => {
     try {
         const products = await query(
@@ -62,6 +65,7 @@ export const getSalidaOptions = async (req, res) => {
     }
 };
 
+// obtiene una salida por su id y las opciones para el formulario
 export const getSalidaById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -98,15 +102,16 @@ export const getSalidaById = async (req, res) => {
     }
 };
 
+// crea una nueva salida
 export const createSalida = async (req, res) => {
     try {
-        const { fecha, producto, cantidad } = req.body;
+        const { producto, cantidad } = req.body;
 
-        if (!fecha || !producto || !cantidad) {
+        if (!producto || !cantidad) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
 
-        // Verificar si hay stock suficiente
+        // verifica si hay stock suficiente
         const [product] = await query("SELECT Inv_StockActual FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [producto]);
 
         if (!product) {
@@ -125,10 +130,10 @@ export const createSalida = async (req, res) => {
         const sql = `
             INSERT INTO Inv_Movimiento 
             (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
-            VALUES (?, ?, 'Salida', ?, 7, 1)`;
-        const result = await query(sql, [fecha, producto, cantidad]);
+            VALUES (NOW(), ?, 'Salida', ?, 7, 1)`;
+        const result = await query(sql, [producto, cantidad]);
 
-        // Actualizar (restar) el stock del artículo
+        // actualiza (resta) el stock del articulo
         const updateStockSql = `
             UPDATE Inv_Articulo 
             SET Inv_StockActual = Inv_StockActual - ? 
@@ -146,6 +151,7 @@ export const createSalida = async (req, res) => {
     }
 };
 
+// actualiza una salida existente
 export const updateSalida = async (req, res) => {
     try {
         const { id } = req.params;
@@ -154,6 +160,8 @@ export const updateSalida = async (req, res) => {
         if (!fecha || !producto || !cantidad) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
+
+        // aqui falta la logica para reajustar el stock
 
         const sql = `
             UPDATE Inv_Movimiento SET
@@ -170,6 +178,7 @@ export const updateSalida = async (req, res) => {
     }
 };
 
+// cambia el estado de una salida (activa/inactiva)
 export const toggleSalidaStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -181,6 +190,8 @@ export const toggleSalidaStatus = async (req, res) => {
         }
 
         const newStatus = !salida.Inv_EsActivo;
+
+        // aqui falta la logica para reajustar el stock si se desactiva/reactiva una salida
 
         const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
         await query(sql, [newStatus, id]);

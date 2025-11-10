@@ -1,11 +1,13 @@
 import { query } from "../../config/database.js";
 
+// obtiene todos los ingresos con paginacion y busqueda
 export const getIncomes = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) - 1 || 10;
         const searchTerm = req.query.search || "";
 
+        // calcula el offset para la paginacion
         const offset = (page - 1) * limit;
         const searchPattern = `%${searchTerm}%`;
 
@@ -68,6 +70,7 @@ export const getIncomeOptions = async (req, res) => {
     }
 };
 
+// obtiene un ingreso por su id y las opciones para el formulario
 export const getIncomeById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -106,21 +109,22 @@ export const getIncomeById = async (req, res) => {
     }
 };
 
+// crea un nuevo ingreso
 export const createIncome = async (req, res) => {
     try {
-        const { fecha, producto, cantidad } = req.body;
+        const { producto, cantidad } = req.body;
 
-        if (!fecha || !producto || !cantidad) {
+        if (!producto || !cantidad) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
 
         const sql = `
             INSERT INTO Inv_Movimiento 
             (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
-            VALUES (?, ?, 'Ingreso', ?, 7, 1)`;
-        const result = await query(sql, [fecha, producto, cantidad]);
+            VALUES (NOW(), ?, 'Ingreso', ?, 7, 1)`;
+        const result = await query(sql, [producto, cantidad]);
 
-        // Actualizar el stock del artículo
+        // actualiza el stock del articulo
         const updateStockSql = `
             UPDATE Inv_Articulo 
             SET Inv_StockActual = Inv_StockActual + ? 
@@ -138,6 +142,7 @@ export const createIncome = async (req, res) => {
     }
 };
 
+// actualiza un ingreso existente
 export const updateIncome = async (req, res) => {
     try {
         const { id } = req.params;
@@ -146,6 +151,8 @@ export const updateIncome = async (req, res) => {
         if (!fecha || !producto || !cantidad) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
+
+        // aqui falta la logica para reajustar el stock
 
         const sql = `
             UPDATE Inv_Movimiento SET
@@ -162,6 +169,7 @@ export const updateIncome = async (req, res) => {
     }
 };
 
+// cambia el estado de un ingreso (activo/inactivo)
 export const toggleIncomeStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -173,6 +181,8 @@ export const toggleIncomeStatus = async (req, res) => {
         }
 
         const newStatus = !income.Inv_EsActivo;
+
+        // aqui falta la logica para reajustar el stock si se desactiva/reactiva un ingreso
 
         const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
         await query(sql, [newStatus, id]);

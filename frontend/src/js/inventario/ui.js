@@ -35,16 +35,16 @@ function switchTab(tabName) {
     if (activeButton) activeButton.classList.add("active");
     if (activeContent) activeContent.classList.add("active");
 
-    // si se cambia a la pestaña 'movimientos' y su tabla esta vacia, carga los datos.
-    if (tabName === 'movimientos' && DOM.movementsTableBody.childElementCount === 0) {
+    // si se cambia a la pestaña 'movimientos'  carga los datos.
+    if (tabName === 'movimientos') {
         movementsRender();
     }
 
-    if (tabName === 'salidas' && DOM.outputTableBody.childElementCount === 0) {
+    if (tabName === 'salidas') {
         salidasRender();
     }
 
-    if (tabName === 'ingresos' && DOM.incomeTableBody.childElementCount === 0) {
+    if (tabName === 'ingresos') {
         incomesRender();
     }
 
@@ -201,7 +201,7 @@ function updatePaginationUI(container, prevBtn, nextBtn, pageInput, totalPages, 
     prevBtn.disabled = currentPage === 1;
     prevBtn.classList.toggle("disabled", currentPage === 1);
     nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-    pageInput.value = "...";
+
 }
 
 // funcion especifica para actualizar la paginacion de productos.

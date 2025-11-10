@@ -1,6 +1,6 @@
 import { query } from "../../config/database.js";
 
-// Obtiene todos los movimientos con paginación y búsqueda
+// obtiene todos los movimientos con paginacion y busqueda
 export const getMovements = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -10,7 +10,7 @@ export const getMovements = async (req, res) => {
         const offset = (page - 1) * limit;
         const searchPattern = `%${searchTerm}%`;
 
-        // Contar el total de movimientos que coinciden con la búsqueda
+        // cuenta el total de movimientos que coinciden con la busqueda
         const countResult = await query(
             `SELECT COUNT(*) as total 
              FROM Inv_Movimiento m
@@ -21,7 +21,7 @@ export const getMovements = async (req, res) => {
         const totalMovements = countResult[0].total;
         const totalPages = Math.ceil(totalMovements / limit);
 
-        // Obtener los movimientos de la página actual
+        // obtiene los movimientos de la pagina actual
         const movements = await query(
             `SELECT 
                 m.id_Inv_Movimiento,
@@ -50,12 +50,12 @@ export const getMovements = async (req, res) => {
     }
 };
 
-// Obtiene un movimiento por su ID y las opciones para el formulario
+// obtiene un movimiento por su id y las opciones para el formulario
 export const getMovementById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Obtener datos del movimiento
+        // obtiene datos del movimiento
         const movementSql = `
             SELECT 
                 id_Inv_Movimiento as id,
@@ -72,7 +72,7 @@ export const getMovementById = async (req, res) => {
             return res.status(404).json({ message: "Movimiento no encontrado" });
         }
 
-        // Obtener lista de productos activos
+        // obtiene lista de productos activos para el dropdown del formulario
         const products = await query(
             `SELECT id_Inv_Articulo as id, Inv_Nombre as name 
              FROM Inv_Articulo 
@@ -80,7 +80,7 @@ export const getMovementById = async (req, res) => {
              ORDER BY Inv_Nombre`
         );
 
-        // Lista de tipos de movimiento según ENUM
+        // lista de tipos de movimiento segun enum
         const movementTypes = [
             { id: 'Ingreso', name: 'Ingreso' },
             { id: 'Salida', name: 'Salida' }
@@ -100,7 +100,7 @@ export const getMovementById = async (req, res) => {
     }
 };
 
-// Obtiene las opciones para los formularios de movimientos
+// obtiene las opciones para los formularios de movimientos
 export const getMovementOptions = async (req, res) => {
     try {
         const products = await query(
@@ -125,16 +125,16 @@ export const getMovementOptions = async (req, res) => {
     }
 };
 
-// Crea un nuevo movimiento
+// crea un nuevo movimiento
 export const createMovement = async (req, res) => {
     try {
-        const { fecha, producto, tipo, cantidad } = req.body;
+        const { producto, tipo, cantidad } = req.body;
 
-        if (!fecha || !producto || !tipo || !cantidad) {
+        if (!producto || !tipo || !cantidad) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
 
-        // Si el movimiento es de tipo 'Salida', verificar el stock
+        // si el movimiento es de tipo 'salida', verificar el stock
         if (tipo === 'Salida') {
             const [product] = await query("SELECT Inv_StockActual FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [producto]);
 
@@ -157,9 +157,10 @@ export const createMovement = async (req, res) => {
         const sql = `
             INSERT INTO Inv_Movimiento 
             (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
-            VALUES (?, ?, ?, ?, 7, 1)`;
-        const result = await query(sql, [fecha, producto, tipo, cantidad]);
+            VALUES (NOW(), ?, ?, ?, 7, 1)`;
+        const result = await query(sql, [producto, tipo, cantidad]);
 
+        // actualiza el stock del articulo segun el tipo de movimiento
         if (tipo === 'Ingreso') {
             const updateStockSql = `UPDATE Inv_Articulo SET Inv_StockActual = Inv_StockActual + ? WHERE id_Inv_Articulo = ?`;
             await query(updateStockSql, [cantidad, producto]);
@@ -178,7 +179,7 @@ export const createMovement = async (req, res) => {
     }
 };
 
-// Actualiza un movimiento existente
+// actualiza un movimiento existente
 export const updateMovement = async (req, res) => {
     try {
         const { id } = req.params;
@@ -190,16 +191,16 @@ export const updateMovement = async (req, res) => {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
 
-        const sql = `
-                        UPDATE Inv_Movimiento SET
-                            Inv_Fecha = '${fecha}', 
-                            id_Inv_ArticuloFk = ${producto}, 
-                            Inv_TipoMovimiento = '${tipo}', 
-                            Inv_Cantidad = ${cantidad}
-                        WHERE id_Inv_Movimiento = ${id};
-                    `;
-        await query(sql);
+        // aqui falta la logica para reajustar el stock
 
+        const sql = `
+            UPDATE Inv_Movimiento SET
+                Inv_Fecha = ?, 
+                id_Inv_ArticuloFk = ?, 
+                Inv_TipoMovimiento = ?, 
+                Inv_Cantidad = ?
+            WHERE id_Inv_Movimiento = ?`;
+        await query(sql, [fecha, producto, tipo, cantidad, id]);
 
         res.json({ message: "Movimiento actualizado exitosamente" });
     } catch (error) {
@@ -208,7 +209,7 @@ export const updateMovement = async (req, res) => {
     }
 };
 
-// Cambia el estado de un movimiento (activo/inactivo)
+// cambia el estado de un movimiento (activo/inactivo)
 export const toggleMovementStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -220,6 +221,8 @@ export const toggleMovementStatus = async (req, res) => {
         }
 
         const newStatus = !movement.Inv_EsActivo;
+
+        // aqui falta la logica para reajustar el stock si se desactiva/reactiva un movimiento
 
         const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
         await query(sql, [newStatus, id]);

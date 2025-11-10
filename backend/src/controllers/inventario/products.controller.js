@@ -1,17 +1,18 @@
 import { query } from "../../config/database.js";
 
+// obtiene todos los productos con paginacion y busqueda
 export const getProducts = async (req, res) => {
-    // 1. Leer los parámetros de la URL
     try {
+        // lee los parametros de la url
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) - 1 || 10;
         const searchTerm = req.query.search || "";
 
-        // 2. Lógica para obtener los datos de la base de datos
+        // logica para obtener los datos de la base de datos
         const offset = (page - 1) * limit;
         const searchPattern = `%${searchTerm}%`;
 
-        // Query para contar el total de productos que coinciden con la búsqueda
+        // query para contar el total de productos que coinciden con la busqueda
         const countResult = await query(
             "SELECT COUNT(*) as total FROM Inv_Articulo WHERE Inv_Nombre LIKE ? AND Inv_EsActivo = 1",
             [searchPattern,]
@@ -19,9 +20,9 @@ export const getProducts = async (req, res) => {
         const totalProducts = countResult[0].total;
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // Query para obtener los productos de la página actual
-        // Nota: LIMIT y OFFSET se insertan directamente en el string.
-        // Esto es seguro porque 'limit' y 'offset' son números enteros controlados por nosotros.
+        // query para obtener los productos de la pagina actual
+        // nota: limit y offset se insertan directamente en el string.
+        // esto es seguro porque 'limit' y 'offset' son numeros enteros controlados por nosotros.
         const products = await query(
             `SELECT 
         a.id_Inv_Articulo,
@@ -47,7 +48,7 @@ export const getProducts = async (req, res) => {
             [searchPattern]
         );
 
-        // 3. Enviar la respuesta en el formato que el frontend espera
+        // envia la respuesta en el formato que el frontend espera
         res.json({
             products: products,
             totalPages: totalPages,
@@ -62,6 +63,7 @@ export const getProducts = async (req, res) => {
     }
 };
 
+// obtiene un producto por su id
 export const getProductById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -93,6 +95,7 @@ export const getProductById = async (req, res) => {
     }
 };
 
+// actualiza un producto existente
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -119,6 +122,7 @@ export const updateProduct = async (req, res) => {
     }
 };
 
+// crea un nuevo producto
 export const createProduct = async (req, res) => {
     try {
         const {
@@ -132,7 +136,7 @@ export const createProduct = async (req, res) => {
             categoria,
         } = req.body;
 
-        // Validación simple
+        // validacion simple
         if (!name || !tipoArticulo || !unidadMedida || !iva || !precio) {
             return res.status(400).json({ message: "Faltan campos obligatorios." });
         }
@@ -156,21 +160,22 @@ export const createProduct = async (req, res) => {
     }
 };
 
+// cambia el estado de un producto (activo/inactivo)
 export const toggleProductStatus = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // 1. Obtener el estado actual del producto
+        // obtiene el estado actual del producto
         const [product] = await query("SELECT Inv_EsActivo FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [id]);
 
         if (!product) {
             return res.status(404).json({ message: "Producto no encontrado." });
         }
 
-        // 2. Calcular el nuevo estado (invertir el actual)
+        // calcula el nuevo estado (invertir el actual)
         const newStatus = !product.Inv_EsActivo;
 
-        // 3. Actualizar la base de datos
+        // actualiza la base de datos
         const sql = "UPDATE Inv_Articulo SET Inv_EsActivo = ? WHERE id_Inv_Articulo = ?";
         await query(sql, [newStatus, id]);
 
