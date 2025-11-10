@@ -128,7 +128,9 @@ function renderVeterinarios(veterinarios = []) {
         )
         .join("")
     : `<tr><td colspan="6" style="text-align:center; color:#888;">No hay veterinarios registrados</td></tr>`;
+    createIcons(iconConfig);
 }
+
 
 /* ========== FUNCIONES AUXILIARES ========== */
 function openModal(id) {
