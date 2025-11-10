@@ -81,7 +81,8 @@
     color: var(--primary);
   }
 
-  &.sidebar-nav-item-active {
+  &.sidebar-nav-item-active,
+  &.active {
     background-color: var(--primary-light);
     color: var(--primary);
     font-weight: 600;
@@ -96,6 +97,12 @@
   flex-shrink: 0;
   width: 20px;
   height: 20px;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: var(--gray-200);
+  margin: 8px 12px;
 }
 
 .header {

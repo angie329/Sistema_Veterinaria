@@ -26,6 +26,20 @@ const iconConfig = {
     AlertTriangle: icons.AlertTriangle,
     CheckCircle: icons.CheckCircle,
     XCircle: icons.XCircle,
+    UserCog: icons.UserCog,
+    Shield: icons.Shield,
+    Lock: icons.Lock,
+    Key: icons.Key,
+    FileText: icons.FileText,
+    LogIn: icons.LogIn,
+    LogOut: icons.LogOut,
+    Edit2: icons.Edit2,
+    Trash2: icons.Trash2,
+    Save: icons.Save,
+    RefreshCw: icons.RefreshCw,
+    Loader: icons.Loader,
+    Plus: icons.Plus,
+    PlusCircle: icons.PlusCircle,
   },
 };
 
@@ -47,30 +61,33 @@ function initials(name) {
 
 function setupAuthUI() {
   const authItem = document.getElementById("sidebarAuthItem");
-  const userBtn  = document.getElementById("userMenuBtn"); // ya existe en tu header
+  const userBtn  = document.getElementById("userMenuBtn");
   const avatar   = userBtn?.querySelector(".header-avatar");
   const nameSpan = userBtn?.querySelector("span");
 
   if (isLoggedIn()) {
-    const u = getUser(); // {username, roleName, ...}
+    const u = getUser();
     if (authItem) {
-      authItem.querySelector("span").textContent = "Cerrar sesión";
-      authItem.querySelector("i").setAttribute("data-lucide","log-out");
+      const spanEl = authItem.querySelector("span");
+      const iconEl = authItem.querySelector("i");
+      if (spanEl) spanEl.textContent = "Cerrar sesión";
+      if (iconEl) iconEl.setAttribute("data-lucide","log-out");
       authItem.onclick = (e)=>{ e.preventDefault(); logout(); };
     }
     if (avatar) avatar.textContent = initials(u?.username || "Usuario");
     if (nameSpan) nameSpan.textContent = u?.username || "Usuario";
   } else {
     if (authItem) {
-      authItem.querySelector("span").textContent = "Iniciar sesión";
-      authItem.querySelector("i").setAttribute("data-lucide","log-in");
+      const spanEl = authItem.querySelector("span");
+      const iconEl = authItem.querySelector("i");
+      if (spanEl) spanEl.textContent = "Iniciar sesión";
+      if (iconEl) iconEl.setAttribute("data-lucide","log-in");
       authItem.onclick = (e)=>{ e.preventDefault(); openLoginModal(); };
     }
     if (avatar) avatar.textContent = "IN";
     if (nameSpan) nameSpan.textContent = "Invitado";
   }
-  // re-render icons si cambiaron
-  try { window.lucide?.createIcons(); } catch {}
+  createIcons(iconConfig);
 }
 
 function openLoginModal() {
@@ -86,7 +103,6 @@ function openLoginModal() {
       await login(u,p);
       modal.style.display = "none";
       setupAuthUI();
-      // opcional: toast
       console.log("Login OK");
     } catch (err) {
       alert(err.message || "Error de login");
@@ -94,16 +110,10 @@ function openLoginModal() {
   };
 }
 
-highlightActive();
-initMobileMenu?.();
-setupAuthUI();
-
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const sidebar = document.getElementById("sidebar");
-  const overlay =
-    document.getElementById("sidebarOverlay") ||
-    document.querySelector(".sidebar-overlay");
+  const overlay = document.getElementById("sidebarOverlay");
 
   if (mobileMenuBtn && sidebar) {
     mobileMenuBtn.addEventListener("click", () => {
@@ -357,6 +367,7 @@ async function loadDashboard() {
 function initDashboard() {
   highlightActive();
   initMobileMenu();
+  setupAuthUI();
   loadDashboard();
 }
 

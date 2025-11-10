@@ -17,6 +17,10 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "src/pages/index.html"),
         clients: resolve(__dirname, "src/pages/clients.html"),
+        usuarios: resolve(__dirname, "src/pages/usuarios.html"),
+        roles: resolve(__dirname, "src/pages/roles.html"),
+        permisos: resolve(__dirname, "src/pages/permisos.html"),
+        reportes: resolve(__dirname, "src/pages/reportes.html"),
       },
     },
   },

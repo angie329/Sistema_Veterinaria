@@ -7,19 +7,21 @@
     <link rel="stylesheet" href="/src/styles/global.css" />
     <link rel="stylesheet" href="/src/styles/components.css" />
     <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="/src/styles/modals.css" />
+    <link rel="stylesheet" href="/src/styles/forms.css" />
     <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
   </head>
 
   <body>
     <!-- Modal Login -->
-    <div id="loginModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.25); align-items:center; justify-content:center;">
-      <div style="background:#fff; width:100%; max-width:360px; padding:1rem; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.1)">
-        <h2 style="margin:0 0 .5rem 0">Iniciar sesión</h2>
-        <form id="loginForm" style="display:grid; gap:.5rem">
-          <input id="loginUser" placeholder="Usuario" required style="padding:.6rem; border:1px solid #e5e7eb; border-radius:8px"/>
-          <input id="loginPass" type="password" placeholder="Contraseña" required style="padding:.6rem; border:1px solid #e5e7eb; border-radius:8px"/>
-          <button style="padding:.6rem; border:0; border-radius:8px; background:#111827; color:#fff">Entrar</button>
-          <button type="button" id="loginCancel" style="padding:.5rem; border:1px solid #e5e7eb; border-radius:8px; background:#fff">Cancelar</button>
+    <div id="loginModal" class="modal">
+      <div class="modal-content modal-sm">
+        <h2 class="modal-title">Iniciar sesión</h2>
+        <form id="loginForm" class="form-grid">
+          <input id="loginUser" placeholder="Usuario" required class="input"/>
+          <input id="loginPass" type="password" placeholder="Contraseña" required class="input"/>
+          <button class="btn btn-primary">Entrar</button>
+          <button type="button" id="loginCancel" class="btn btn-secondary">Cancelar</button>
         </form>
       </div>
     </div>
@@ -77,6 +79,28 @@
         <a href="#" class="sidebar-nav-item" data-module="settings">
           <i data-lucide="settings" class="sidebar-nav-icon"></i>
           <span>Configuración</span>
+        </a>
+        
+        <div class="sidebar-divider"></div>
+        
+        <a href="/usuarios" class="sidebar-nav-item" data-module="usuarios">
+          <i data-lucide="user-cog" class="sidebar-nav-icon"></i>
+          <span>Usuarios</span>
+        </a>
+
+        <a href="/roles" class="sidebar-nav-item" data-module="roles">
+          <i data-lucide="shield" class="sidebar-nav-icon"></i>
+          <span>Roles</span>
+        </a>
+
+        <a href="/permisos" class="sidebar-nav-item" data-module="permisos">
+          <i data-lucide="key" class="sidebar-nav-icon"></i>
+          <span>Permisos</span>
+        </a>
+
+        <a href="/reportes" class="sidebar-nav-item" data-module="reportes">
+          <i data-lucide="file-text" class="sidebar-nav-icon"></i>
+          <span>Reportes</span>
         </a>
         
         <div style="margin-top:auto;border-top:1px solid #e5e7eb"></div>

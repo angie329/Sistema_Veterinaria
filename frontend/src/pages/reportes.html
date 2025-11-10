@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportes - VetSystem</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+  <link rel="stylesheet" href="/src/styles/components.css" />
+  <link rel="stylesheet" href="/src/styles/tables.css" />
+  <link rel="stylesheet" href="/src/styles/forms.css" />
+  <link rel="stylesheet" href="/src/styles/modals.css" />
+  <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+</head>
+
+<body>
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content modal-sm">
+        <h2 class="modal-title">Iniciar sesión</h2>
+        <form id="loginForm" class="form-grid">
+          <input id="loginUser" placeholder="Usuario" required class="input"/>
+          <input id="loginPass" type="password" placeholder="Contraseña" required class="input"/>
+          <button class="btn btn-primary">Entrar</button>
+          <button type="button" id="loginCancel" class="btn btn-secondary">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+        </svg>
+        <span>VetSystem</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="sidebar-nav-item">
+        <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/clients" class="sidebar-nav-item">
+        <i data-lucide="users" class="sidebar-nav-icon"></i>
+        <span>Clientes</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+      
+      <a href="/usuarios" class="sidebar-nav-item">
+        <i data-lucide="user-cog" class="sidebar-nav-icon"></i>
+        <span>Usuarios</span>
+      </a>
+      
+      <a href="/roles" class="sidebar-nav-item">
+        <i data-lucide="shield" class="sidebar-nav-icon"></i>
+        <span>Roles</span>
+      </a>
+      
+      <a href="/permisos" class="sidebar-nav-item">
+        <i data-lucide="key" class="sidebar-nav-icon"></i>
+        <span>Permisos</span>
+      </a>
+      
+      <a href="/reportes" class="sidebar-nav-item active">
+        <i data-lucide="file-text" class="sidebar-nav-icon"></i>
+        <span>Reportes</span>
+      </a>
+
+      <div style="margin-top:auto;border-top:1px solid var(--gray-200);padding-top:8px"></div>
+      
+      <a href="#" class="sidebar-nav-item" id="sidebarAuthItem">
+        <i data-lucide="log-in" class="sidebar-nav-icon"></i>
+        <span>Iniciar sesión</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Header -->
+  <header class="header">
+    <button class="header-menu-btn" id="mobileMenuBtn">
+      <i data-lucide="menu"></i>
+    </button>
+    
+    <div class="header-search">
+      <i data-lucide="search" class="header-search-icon"></i>
+      <input type="text" class="header-search-input" placeholder="Buscar reportes..." id="searchInput"/>
+    </div>
+    
+    <div class="header-actions">
+      <button class="header-icon-btn" id="notificationsBtn">
+        <i data-lucide="bell"></i>
+        <span class="header-badge">3</span>
+      </button>
+      
+      <div class="header-user-btn" id="userMenuBtn">
+        <div class="header-avatar">AD</div>
+        <span>Admin</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+    <main>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Reportes del Sistema</h1>
+          <p class="page-subtitle">Genera y exporta reportes de usuarios por rol</p>
+        </div>
+        <button class="btn btn-primary" id="exportBtn">
+          <i data-lucide="download"></i>
+          Exportar
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">Filtros de Reporte</h2>
+        </div>
+        <div style="padding: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: end;">
+            <div>
+              <label class="form-label">Filtrar por Rol</label>
+              <select id="filterRol" class="input">
+                <option value="">Todos los roles</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Estado</label>
+              <select id="filterEstado" class="input">
+                <option value="">Todos</option>
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="applyFiltersBtn">
+              Aplicar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div class="card">
+          <div style="padding: 20px;">
+            <div style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Total Usuarios</div>
+            <div style="font-size: 32px; font-weight: 700;" id="totalUsuarios">0</div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="padding: 20px;">
+            <div style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Usuarios Activos</div>
+            <div style="font-size: 32px; font-weight: 700; color: #10b981;" id="usuariosActivos">0</div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="padding: 20px;">
+            <div style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Usuarios Inactivos</div>
+            <div style="font-size: 32px; font-weight: 700; color: #6b7280;" id="usuariosInactivos">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Usuarios por Rol</h2>
+          <div class="card-actions">
+            <button class="btn btn-secondary btn-sm" id="refreshReportBtn">
+              <i data-lucide="refresh-cw"></i>
+              Actualizar
+            </button>
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Último Acceso</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <div class="loading">
+                    <i data-lucide="loader"></i>
+                    Cargando reporte...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/src/js/reportes.js"></script>
+</body>
+</html>

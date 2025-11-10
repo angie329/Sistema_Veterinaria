@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuarios - VetSystem</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+  <link rel="stylesheet" href="/src/styles/components.css" />
+  <link rel="stylesheet" href="/src/styles/tables.css" />
+  <link rel="stylesheet" href="/src/styles/forms.css" />
+  <link rel="stylesheet" href="/src/styles/modals.css" />
+  <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+</head>
+
+<body>
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content modal-sm">
+        <h2 class="modal-title">Iniciar sesión</h2>
+        <form id="loginForm" class="form-grid">
+          <input id="loginUser" placeholder="Usuario" required class="input"/>
+          <input id="loginPass" type="password" placeholder="Contraseña" required class="input"/>
+          <button class="btn btn-primary">Entrar</button>
+          <button type="button" id="loginCancel" class="btn btn-secondary">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    
+  <!-- Modal Crear/Editar Usuario -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="userModalTitle">Crear Usuario</h2>
+        <button class="modal-close" id="closeUserModal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="userForm" class="form-grid">
+        <input type="hidden" id="userId" />
+        
+        <div class="form-group">
+          <label class="form-label">Usuario *</label>
+          <input id="userUsername" type="text" required class="input" placeholder="Ej: jperez" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Contraseña *</label>
+          <input id="userPassword" type="password" class="input" placeholder="Mínimo 6 caracteres" />
+          <small class="form-hint">Dejar en blanco para mantener la actual (al editar)</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input id="userEmail" type="email" required class="input" placeholder="usuario@ejemplo.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input id="userTelefono" type="text" class="input" placeholder="0999999999" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Rol *</label>
+          <select id="userRol" required class="input">
+            <option value="">Seleccione un rol...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Estado *</label>
+          <select id="userEstado" required class="input">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelUserForm">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="save"></i>
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+        </svg>
+        <span>VetSystem</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="sidebar-nav-item">
+        <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/clients" class="sidebar-nav-item">
+        <i data-lucide="users" class="sidebar-nav-icon"></i>
+        <span>Clientes</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+      
+      <a href="/usuarios" class="sidebar-nav-item active">
+        <i data-lucide="user-cog" class="sidebar-nav-icon"></i>
+        <span>Usuarios</span>
+      </a>
+      
+      <a href="/roles" class="sidebar-nav-item">
+        <i data-lucide="shield" class="sidebar-nav-icon"></i>
+        <span>Roles</span>
+      </a>
+      
+      <a href="/permisos" class="sidebar-nav-item">
+        <i data-lucide="key" class="sidebar-nav-icon"></i>
+        <span>Permisos</span>
+      </a>
+      
+      <a href="/reportes" class="sidebar-nav-item">
+        <i data-lucide="file-text" class="sidebar-nav-icon"></i>
+        <span>Reportes</span>
+      </a>
+
+      <div style="margin-top:auto;border-top:1px solid var(--gray-200);padding-top:8px"></div>
+      
+      <a href="#" class="sidebar-nav-item" id="sidebarAuthItem">
+        <i data-lucide="log-in" class="sidebar-nav-icon"></i>
+        <span>Iniciar sesión</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Header -->
+  <header class="header">
+    <button class="header-menu-btn" id="mobileMenuBtn">
+      <i data-lucide="menu"></i>
+    </button>
+    
+    <div class="header-search">
+      <i data-lucide="search" class="header-search-icon"></i>
+      <input type="text" class="header-search-input" placeholder="Buscar usuarios..." id="searchInput"/>
+    </div>
+    
+    <div class="header-actions">
+      <button class="header-icon-btn" id="notificationsBtn">
+        <i data-lucide="bell"></i>
+        <span class="header-badge">3</span>
+      </button>
+      
+      <div class="header-user-btn" id="userMenuBtn">
+        <div class="header-avatar">AD</div>
+        <span>Admin</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+    <main>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Gestión de Usuarios</h1>
+          <p class="page-subtitle">Administra los usuarios del sistema</p>
+        </div>
+        <button class="btn btn-primary" id="createUserBtn">
+          <i data-lucide="user-plus"></i>
+          Nuevo Usuario
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Lista de Usuarios</h2>
+          <div class="card-actions">
+            <button class="btn btn-secondary btn-sm" id="refreshBtn">
+              <i data-lucide="refresh-cw"></i>
+              Actualizar
+            </button>
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Último Acceso</th>
+                <th class="table-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr>
+                <td colspan="7" class="text-center">
+                  <div class="loading">
+                    <i data-lucide="loader"></i>
+                    Cargando...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/src/js/usuarios.js"></script>
+</body>
+</html>

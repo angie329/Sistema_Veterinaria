@@ -16,9 +16,11 @@ const verifyJWT = (req, res, next) => {
   }
 };
 
-autReportesRouter.get("/aut/report/usuarios-por-rol", verifyJWT, async (_req, res) => {
+autReportesRouter.get("/aut/report/usuarios-por-rol", verifyJWT, async (req, res) => {
   try {
-    const rows = await query(`
+    const { rolId, estado } = req.query;
+    
+    let sql = `
       SELECT r.aut_nombre_rol AS rol,
              u.aut_nombre_usuario AS usuario,
              u.aut_email AS email,
@@ -26,10 +28,27 @@ autReportesRouter.get("/aut/report/usuarios-por-rol", verifyJWT, async (_req, re
              u.aut_ultimo_acceso AS ultimo_acceso
         FROM aut_usuario u
         JOIN aut_rol r ON r.id_aut_rol = u.id_aut_rol_fk
-       ORDER BY r.aut_nombre_rol, u.aut_nombre_usuario
-    `);
+       WHERE 1=1
+    `;
+    
+    const params = [];
+    
+    if (rolId) {
+      sql += ` AND u.id_aut_rol_fk = ?`;
+      params.push(rolId);
+    }
+    
+    if (estado) {
+      sql += ` AND u.aut_estado = ?`;
+      params.push(estado);
+    }
+    
+    sql += ` ORDER BY r.aut_nombre_rol, u.aut_nombre_usuario`;
+    
+    const rows = await query(sql, params);
     res.json(rows);
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: "error generando reporte" });
   }
 });
