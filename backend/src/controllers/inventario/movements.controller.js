@@ -1,0 +1,237 @@
+import { query } from "../../config/database.js";
+
+// obtiene todos los movimientos con paginacion y busqueda
+export const getMovements = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const searchTerm = req.query.search || "";
+
+        const offset = (page - 1) * limit;
+        const searchPattern = `%${searchTerm}%`;
+
+        // cuenta el total de movimientos que coinciden con la busqueda
+        const countResult = await query(
+            `SELECT COUNT(*) as total 
+             FROM Inv_Movimiento m
+             JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
+             WHERE a.Inv_Nombre LIKE ? AND m.Inv_EsActivo = 1`,
+            [searchPattern]
+        );
+        const totalMovements = countResult[0].total;
+        const totalPages = Math.ceil(totalMovements / limit);
+
+        // obtiene los movimientos de la pagina actual
+        const movements = await query(
+            `SELECT 
+                m.id_Inv_Movimiento,
+                DATE_FORMAT(m.Inv_Fecha, '%Y-%m-%d %H:%i:%s') as Inv_Fecha,
+                a.Inv_Nombre AS ProductoNombre,
+                m.Inv_TipoMovimiento AS TipoMovimiento,
+                m.Inv_Cantidad
+             FROM Inv_Movimiento m
+             JOIN Inv_Articulo a ON m.id_Inv_ArticuloFk = a.id_Inv_Articulo
+             WHERE a.Inv_Nombre LIKE ? AND m.Inv_EsActivo = 1
+             ORDER BY m.Inv_Fecha DESC
+            LIMIT ${limit} OFFSET ${offset}`,
+            [searchPattern]);
+
+        res.json({
+            movements,
+            totalPages,
+            currentPage: page,
+        });
+    } catch (error) {
+        console.error("Error fetching movements:", error);
+        res.status(500).json({
+            message: "Error al obtener los movimientos",
+            error: error.message,
+        });
+    }
+};
+
+// obtiene un movimiento por su id y las opciones para el formulario
+export const getMovementById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // obtiene datos del movimiento
+        const movementSql = `
+            SELECT 
+                id_Inv_Movimiento as id,
+                DATE_FORMAT(Inv_Fecha, '%Y-%m-%d %H:%i:%s') as fecha,
+                id_Inv_ArticuloFk as producto,
+                Inv_TipoMovimiento as tipo,
+                Inv_Cantidad as cantidad,
+                Inv_EsActivo as esActivo
+            FROM Inv_Movimiento 
+            WHERE id_Inv_Movimiento = ?`;
+        const [movement] = await query(movementSql, [id]);
+
+        if (!movement) {
+            return res.status(404).json({ message: "Movimiento no encontrado" });
+        }
+
+        // obtiene lista de productos activos para el dropdown del formulario
+        const products = await query(
+            `SELECT id_Inv_Articulo as id, Inv_Nombre as name 
+             FROM Inv_Articulo 
+             WHERE Inv_EsActivo = 1 
+             ORDER BY Inv_Nombre`
+        );
+
+        // lista de tipos de movimiento segun enum
+        const movementTypes = [
+            { id: 'Ingreso', name: 'Ingreso' },
+            { id: 'Salida', name: 'Salida' }
+        ];
+
+        res.json({
+            movement,
+            options: {
+                products,
+                movementTypes
+            }
+        });
+
+    } catch (error) {
+        console.error(`Error fetching movement with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al obtener el movimiento", error: error.message });
+    }
+};
+
+// obtiene las opciones para los formularios de movimientos
+export const getMovementOptions = async (req, res) => {
+    try {
+        const products = await query(
+            "SELECT id_Inv_Articulo as id, Inv_Nombre as name FROM Inv_Articulo WHERE Inv_EsActivo = 1 ORDER BY Inv_Nombre"
+        );
+
+        const movementTypes = [
+            { id: 'Ingreso', name: 'Ingreso' },
+            { id: 'Salida', name: 'Salida' }
+        ];
+
+        res.json({
+            products,
+            movementTypes
+        });
+    } catch (error) {
+        console.error("Error fetching movement options:", error);
+        res.status(500).json({
+            message: "Error al obtener las opciones para movimientos",
+            error: error.message,
+        });
+    }
+};
+
+// crea un nuevo movimiento
+export const createMovement = async (req, res) => {
+    try {
+        const { producto, tipo, cantidad } = req.body;
+
+        if (!producto || !tipo || !cantidad) {
+            return res.status(400).json({ message: "Faltan campos obligatorios." });
+        }
+
+        // si el movimiento es de tipo 'salida', verificar el stock
+        if (tipo === 'Salida') {
+            const [product] = await query("SELECT Inv_StockActual FROM Inv_Articulo WHERE id_Inv_Articulo = ?", [producto]);
+
+            if (!product) {
+                return res.status(404).json({ message: "El producto especificado no existe." });
+            }
+
+            const requestedQuantity = parseInt(cantidad, 10);
+            if (isNaN(requestedQuantity) || requestedQuantity <= 0) {
+                return res.status(400).json({ message: "La cantidad debe ser un número positivo." });
+            }
+
+            if (product.Inv_StockActual < requestedQuantity) {
+                return res.status(400).json({
+                    message: `Stock insuficiente para el producto. Stock actual: ${product.Inv_StockActual}`
+                });
+            }
+        }
+
+        const sql = `
+            INSERT INTO Inv_Movimiento 
+            (Inv_Fecha, id_Inv_ArticuloFk, Inv_TipoMovimiento, Inv_Cantidad, Gen_modulo_origenFk, Inv_EsActivo) 
+            VALUES (NOW(), ?, ?, ?, 7, 1)`;
+        const result = await query(sql, [producto, tipo, cantidad]);
+
+        // actualiza el stock del articulo segun el tipo de movimiento
+        if (tipo === 'Ingreso') {
+            const updateStockSql = `UPDATE Inv_Articulo SET Inv_StockActual = Inv_StockActual + ? WHERE id_Inv_Articulo = ?`;
+            await query(updateStockSql, [cantidad, producto]);
+        } else if (tipo === 'Salida') {
+            const updateStockSql = `UPDATE Inv_Articulo SET Inv_StockActual = Inv_StockActual - ? WHERE id_Inv_Articulo = ?`;
+            await query(updateStockSql, [cantidad, producto]);
+        }
+        res.status(201).json({
+            message: "Movimiento creado exitosamente",
+            movementId: result.insertId
+        });
+
+    } catch (error) {
+        console.error("Error creating movement:", error);
+        res.status(500).json({ message: "Error al crear el movimiento", error: error.message });
+    }
+};
+
+// actualiza un movimiento existente
+export const updateMovement = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { fecha, producto, tipo, cantidad } = req.body;
+
+
+
+        if (!fecha || !producto || !tipo || !cantidad) {
+            return res.status(400).json({ message: "Faltan campos obligatorios." });
+        }
+
+        // aqui falta la logica para reajustar el stock
+
+        const sql = `
+            UPDATE Inv_Movimiento SET
+                Inv_Fecha = ?, 
+                id_Inv_ArticuloFk = ?, 
+                Inv_TipoMovimiento = ?, 
+                Inv_Cantidad = ?
+            WHERE id_Inv_Movimiento = ?`;
+        await query(sql, [fecha, producto, tipo, cantidad, id]);
+
+        res.json({ message: "Movimiento actualizado exitosamente" });
+    } catch (error) {
+        console.error(`Error updating movement with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al actualizar el movimiento", error: error.message });
+    }
+};
+
+// cambia el estado de un movimiento (activo/inactivo)
+export const toggleMovementStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [movement] = await query("SELECT Inv_EsActivo FROM Inv_Movimiento WHERE id_Inv_Movimiento = ?", [id]);
+
+        if (!movement) {
+            return res.status(404).json({ message: "Movimiento no encontrado." });
+        }
+
+        const newStatus = !movement.Inv_EsActivo;
+
+        // aqui falta la logica para reajustar el stock si se desactiva/reactiva un movimiento
+
+        const sql = "UPDATE Inv_Movimiento SET Inv_EsActivo = ? WHERE id_Inv_Movimiento = ?";
+        await query(sql, [newStatus, id]);
+
+        const action = newStatus ? "reactivado" : "desactivado";
+        res.json({ message: `Movimiento ${action} exitosamente.` });
+
+    } catch (error) {
+        console.error(`Error toggling status for movement with id ${req.params.id}:`, error);
+        res.status(500).json({ message: "Error al cambiar el estado del movimiento", error: error.message });
+    }
+};

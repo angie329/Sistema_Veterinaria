@@ -1,5 +1,21 @@
 import express from "express";
+<<<<<<< HEAD
+import { dashboardRouter } from "./dashboard.js";
+import { productsRouter } from './inventario/products.routes.js';
+import { movementsRouter } from './inventario/movements.routes.js';
+import { incomesRouter } from './inventario/incomes.routes.js';
+import { salidasRouter } from './inventario/salidas.routes.js';
+import { invExportsRouter } from "./inventario/invExports.routes.js";
+import { estadoGeneralRouter } from "./estado-general.js";
+import { provinciaRouter } from "./provincia.js";
+import { ciudadRouter } from "./ciudad.js";
+import { tipoDocumentoRouter } from "./tipo-documento.js";
+import { generoSexoRouter } from "./genero-sexo.js";
+import { operadoraRouter } from "./operadora.js";
+import { estadoCivilRouter } from "./estado-civil.js";
+=======
 
+>>>>>>> 1c49789d2d96b35ab151b559ff9b250f278ecf93
 import { ivaRouter } from "./iva.js";
 import { ciudadRouter } from "./ciudad.js";
 import { dashboardRouter } from "./dashboard.js";

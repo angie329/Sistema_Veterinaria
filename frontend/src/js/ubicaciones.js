@@ -169,37 +169,34 @@ async function loadTableData(tableKey) {
         </thead>
         <tbody>
           ${data
-            .map(
-              (row) => `
+        .map(
+          (row) => `
             <tr>
               ${config.mainFields
-                .map(
-                  (field) =>
-                    `<td>${
-                      row[field] !== null && row[field] !== undefined
-                        ? String(row[field])
-                        : ""
-                    }</td>`
-                )
-                .join("")}
+              .map(
+                (field) =>
+                  `<td>${row[field] !== null && row[field] !== undefined
+                    ? String(row[field])
+                    : ""
+                  }</td>`
+              )
+              .join("")}
               <td>
                 <div class="table-actions">
-                  <button class="btn-edit" onclick="editRecord('${tableKey}', '${
-                row[config.idField]
-              }')" title="Editar">
+                  <button class="btn-edit" onclick="editRecord('${tableKey}', '${row[config.idField]
+            }')" title="Editar">
                     <i data-lucide="edit"></i>
                   </button>
-                  <button class="btn-delete" onclick="deleteRecord('${tableKey}', '${
-                row[config.idField]
-              }')" title="Eliminar">
+                  <button class="btn-delete" onclick="deleteRecord('${tableKey}', '${row[config.idField]
+            }')" title="Eliminar">
                     <i data-lucide="trash2"></i>
                   </button>
                 </div>
               </td>
             </tr>
           `
-            )
-            .join("")}
+        )
+        .join("")}
         </tbody>
       </table>
     `;
@@ -218,13 +215,12 @@ function openModal(tableKey) {
   const form = document.getElementById(`form-${tableKey}`);
 
   if (title) {
-    title.textContent = `Nuevo ${
-      tableKey === "estado-general"
+    title.textContent = `Nuevo ${tableKey === "estado-general"
         ? "Estado General"
         : tableKey === "provincia"
-        ? "Provincia"
-        : "Ciudad"
-    }`;
+          ? "Provincia"
+          : "Ciudad"
+      }`;
   }
 
   if (form) {
@@ -253,13 +249,12 @@ async function editRecord(tableKey, id) {
     const form = document.getElementById(`form-${tableKey}`);
 
     if (title) {
-      title.textContent = `Editar ${
-        tableKey === "estado-general"
+      title.textContent = `Editar ${tableKey === "estado-general"
           ? "Estado General"
           : tableKey === "provincia"
-          ? "Provincia"
-          : "Ciudad"
-      }`;
+            ? "Provincia"
+            : "Ciudad"
+        }`;
     }
 
     if (form) {
@@ -338,9 +333,8 @@ async function handleSubmit(event, tableKey) {
 
   try {
     const editingId = editingIds[tableKey];
-    const API_URL = `${envConfig.BACKEND_URL}/v1/${config.tableName}${
-      editingId ? `/${editingId}` : ""
-    }`;
+    const API_URL = `${envConfig.BACKEND_URL}/v1/${config.tableName}${editingId ? `/${editingId}` : ""
+      }`;
     const method = editingId ? "PUT" : "POST";
 
     const response = await fetch(API_URL, {
@@ -454,8 +448,7 @@ async function exportData(apiUrl, entityName, type, options = {}) {
       case "pdf": {
         const doc = new jsPDF();
         doc.text(
-          `Reporte de ${
-            entityName.charAt(0).toUpperCase() + entityName.slice(1)
+          `Reporte de ${entityName.charAt(0).toUpperCase() + entityName.slice(1)
           }`,
           14,
           15

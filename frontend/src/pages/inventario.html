@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes - VetSystem</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/inventario.css">
+    <link rel="icon" href="/paw-print.svg" type="image/svg+xml" />
+</head>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path
+                        d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"
+                        fill="currentColor" />
+                </svg>
+                <span>VetSystem</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/" class="sidebar-nav-item" data-module="dashboard">
+                <i data-lucide="layout-dashboard" class="sidebar-nav-icon"></i>
+                <span>Panel</span>
+            </a>
+
+            <a href="/clients" class="sidebar-nav-item" data-module="clients">
+                <i data-lucide="users" class="sidebar-nav-icon"></i>
+                <span>Clientes</span>
+            </a>
+
+            <a href="/pets" class="sidebar-nav-item" data-module="pets">
+                <i data-lucide="dog" class="sidebar-nav-icon"></i>
+                <span>Mascotas</span>
+            </a>
+
+            <a href="/veterinarios" class="sidebar-nav-item" data-module="veterinarians">
+                <i data-lucide="stethoscope" class="sidebar-nav-icon"></i>
+                <span>Veterinarios</span>
+            </a>
+
+            <a href="#" class="sidebar-nav-item" data-module="appointments">
+                <i data-lucide="calendar" class="sidebar-nav-icon"></i>
+                <span>Citas</span>
+            </a>
+
+            <a href="/inventario" class="sidebar-nav-item" data-module="inventory">
+                <i data-lucide="package" class="sidebar-nav-icon"></i>
+                <span>Inventario</span>
+            </a>
+
+            <a href="#" class="sidebar-nav-item" data-module="billing">
+                <i data-lucide="receipt" class="sidebar-nav-icon"></i>
+                <span>Facturación</span>
+            </a>
+
+            <a href="/configuracion" class="sidebar-nav-item" data-module="settings">
+                <i data-lucide="settings" class="sidebar-nav-icon"></i>
+                <span>Configuración</span>
+            </a>
+        </nav>
+    </aside>
+
+    <header class="header">
+        <button class="header-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="header-search">
+            <i data-lucide="search" class="header-search-icon"></i>
+            <input type="text" class="header-search-input" placeholder="Buscar clientes, mascotas, medicamentos..."
+                id="globalSearch" />
+        </div>
+
+        <div class="header-actions">
+            <button class="header-icon-btn" id="notificationsBtn">
+                <i data-lucide="bell"></i>
+                <span class="header-badge">3</span>
+            </button>
+
+            <div class="header-user-btn" id="userMenuBtn">
+                <div class="header-avatar">AD</div>
+                <span>Admin</span>
+                <i data-lucide="chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="main-container">
+
+
+            <!-- Content Area -->
+            <main id="mainContent">
+
+
+                <!-- Tabs Navigation -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="productos">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 2h12v12H2V2z" stroke="currentColor" stroke-width="2" fill="none" />
+                        </svg>
+                        Productos
+                    </button>
+                    <button class="tab-btn" data-tab="movimientos">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-arrow-left-right-icon lucide-arrow-left-right">
+                            <path d="M8 3 4 7l4 4" />
+                            <path d="M4 7h16" />
+                            <path d="m16 21 4-4-4-4" />
+                            <path d="M20 17H4" />
+                        </svg>
+                        Movimientos
+                    </button>
+                    <button class="tab-btn" data-tab="ingresos">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2v12M4 6l4-4 4 4" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Ingresos
+                    </button>
+                    <button class="tab-btn" data-tab="salidas">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2v12M4 10l4 4 4-4" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Salidas
+                    </button>
+
+                </div>
+
+                <!-- Tab Content: Productos -->
+                <div class="tab-content active" id="productos">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3 class="card-title">Lista de Productos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="productSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre...">
+                                    <button class="btn btn-sm btn-secondary" id="productSearchBtn">Buscar</button>
+                                </div>
+                            </div>
+                            <div style="display: inline-block; margin-left:3px;">
+                                <button class="btn btn-primary" id="addProductBtn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Agregar Producto
+                                </button>
+                                <button class="btn btn-primary" id="exportProductBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-file-up-icon lucide-file-up">
+                                        <path
+                                            d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                                        <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                        <path d="M12 12v6" />
+                                        <path d="m15 15-3-3-3 3" />
+                                    </svg>
+                                    Exportar
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Artículo</th>
+                                            <th>Nombre</th>
+                                            <th>Tipo de Artículo</th>
+                                            <th>Unidad de Medida</th>
+                                            <th>Cantidad por Unidad</th>
+                                            <th>IVA</th>
+                                            <th>Precio Unitario</th>
+                                            <th>Stock Actual</th>
+                                            <th>Categoría</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsTableBody">
+                                        <!-- Products will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="paginacion" id="productsPagination">
+                                <!-- Los controles de paginación se insertarán aquí -->
+                                <button class="paginacion-boton" id="previous"> Anterior </button>
+                                <div id="paginacion-indexes" style="display: flex; gap: 1px;">
+                                    <!-- Insertar numeros aqui -->
+                                </div>
+                                <input type="text" inputmode="numeric" id="pageInput" class="paginacion-boton indice"
+                                    placeholder="..." style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="next"> Siguiente </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Ingresos -->
+                <div class="tab-content" id="ingresos">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3 class="card-title">Registro de Ingresos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="incomeSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="incomeSearchBtn">Buscar</button>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" id="addIncomeBtn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Registrar Ingreso
+                                </button>
+                                <button class="btn btn-primary" id="exportIncomeBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-file-up-icon lucide-file-up">
+                                        <path
+                                            d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                                        <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                        <path d="M12 12v6" />
+                                        <path d="m15 15-3-3-3 3" />
+                                    </svg>
+                                    Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incomeTableBody">
+                                        <!-- Income entries will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="paginacion" id="incomesPagination">
+                                <!-- Los controles de paginación se insertarán aquí -->
+                                <button class="paginacion-boton" id="incomesPrev"> Anterior </button>
+                                <div id="incomesPaginacionIndexes" style="display: flex; gap: 1px;">
+                                    <!-- Insertar numeros aqui -->
+                                </div>
+                                <input type="text" inputmode="numeric" id="incomesPageInput"
+                                    class="paginacion-boton indice" placeholder="..."
+                                    style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="incomesNext"> Siguiente </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Salidas -->
+                <div class="tab-content" id="salidas">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3 class="card-title">Registro de Salidas</h3>
+                                <div class="search-group">
+                                    <input type="text" id="outputSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="outputSearchBtn">Buscar</button>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" id="addOutputBtn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Registrar Salida
+                                </button>
+                                <button class="btn btn-primary" id="exportOutputBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-file-up-icon lucide-file-up">
+                                        <path
+                                            d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                                        <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                        <path d="M12 12v6" />
+                                        <path d="m15 15-3-3-3 3" />
+                                    </svg>
+                                    Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="outputTableBody">
+                                        <!-- Output entries will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="paginacion" id="outputsPagination">
+                                <!-- Los controles de paginación se insertarán aquí -->
+                                <button class="paginacion-boton" id="outputsPrev"> Anterior </button>
+                                <div id="outputsPaginacionIndexes" style="display: flex; gap: 1px;"></div>
+                                <input type="text" inputmode="numeric" id="outputsPageInput"
+                                    class="paginacion-boton indice" placeholder="..."
+                                    style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="outputsNext"> Siguiente </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Movimientos -->
+                <div class="tab-content" id="movimientos">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3 class="card-title">Historial de Movimientos</h3>
+                                <div class="search-group">
+                                    <input type="text" id="movementSearchInput" class="search-input"
+                                        placeholder="Buscar por nombre de producto...">
+                                    <button class="btn btn-sm btn-secondary" id="movementSearchBtn">Buscar</button>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" id="addMovementBtn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Registrar Movimiento
+                                </button>
+                                <button class="btn btn-primary" id="exportMovementBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-file-up-icon lucide-file-up">
+                                        <path
+                                            d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                                        <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                        <path d="M12 12v6" />
+                                        <path d="m15 15-3-3-3 3" />
+                                    </svg>
+                                    Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Producto</th>
+                                            <th>Tipo</th>
+                                            <th>Cantidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="movementsTableBody">
+                                        <!-- Movement entries will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="paginacion" id="movementsPagination">
+                                <button class="paginacion-boton" id="movementsPrev"> Anterior </button>
+                                <div id="movementsPaginacionIndexes" style="display: flex; gap: 1px;"></div>
+                                <input type="text" inputmode="numeric" id="movementsPageInput"
+                                    class="paginacion-boton indice" placeholder="..."
+                                    style="width: 60px; text-align: center;" />
+                                <button class="paginacion-boton" id="movementsNext"> Siguiente </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script type="module" src="/src/js/inventario/main.js"></script>
+
+        <!-- Modal para Agregar/Editar Producto -->
+        <div class="modal-overlay" id="productModalOverlay" style="display: none;">
+            <div class="modal" id="productModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">Agregar Nuevo Producto</h3>
+                    <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm" class="form-grid">
+                        <!-- Campo oculto para guardar el ID del producto al editar -->
+                        <input type="hidden" id="productId" name="productId">
+                        <!-- Fila 1 -->
+                        <div class="form-group span-2">
+                            <label for="productName">Nombre del Producto</label>
+                            <input type="text" id="productName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Categoría</label>
+                            <input type="text" id="productCategory" name="categoria">
+                        </div>
+
+                        <!-- Fila 2 -->
+                        <div class="form-group">
+                            <label for="productType">Tipo de Artículo</label>
+                            <select id="productType" name="tipoArticulo" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productUnit">Unidad de Medida</label>
+                            <select id="productUnit" name="unidadMedida" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productQuantity">Cantidad por Unidad</label>
+                            <input type="number" id="productQuantity" name="cantidad" value="1" min="0">
+                        </div>
+
+                        <!-- Fila 3 -->
+                        <div class="form-group">
+                            <label for="productIva">IVA</label>
+                            <select id="productIva" name="iva" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Precio Unitario</label>
+                            <input type="number" id="productPrice" name="precio" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock">Stock Inicial</label>
+                            <input type="number" id="productStock" name="stock" value="0" min="0">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelModalBtn">Cancelar</button>
+                    <button type="submit" form="productForm" class="btn btn-primary">Guardar Producto</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Editar Movimiento -->
+        <div class="modal-overlay" id="movementModalOverlay" style="display: none;">
+            <div class="modal" id="movementModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="movementModalTitle">Editar Movimiento</h3>
+                    <button class="modal-close-btn" id="closeMovementModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="movementForm" class="form-grid">
+                        <input type="hidden" id="movementId" name="movementId">
+
+                        <div class="form-group span-2">
+                            <label for="movementProduct">Producto</label>
+                            <select id="movementProduct" name="producto" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="movementType">Tipo de Movimiento</label>
+                            <select id="movementType" name="tipo" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="movementQuantity">Cantidad</label>
+                            <input type="number" id="movementQuantity" name="cantidad" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelMovementModalBtn">Cancelar</button>
+                    <button type="submit" form="movementForm" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Agregar/Editar ingreso -->
+
+        <div class="modal-overlay" id="incomeModalOverlay" style="display: none;">
+            <div class="modal" id="incomeModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="incomeModalTitle">Registrar Ingreso</h3>
+                    <button class="modal-close-btn" id="closeIncomeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="incomeForm" class="form-grid">
+                        <input type="hidden" id="incomeId" name="incomeId">
+
+                        <div class="form-group span-2">
+                            <label for="incomeProduct">Producto</label>
+                            <select id="incomeProduct" name="producto" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="incomeQuantity">Cantidad</label>
+                            <input type="number" id="incomeQuantity" name="cantidad" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelIncomeModalBtn">Cancelar</button>
+                    <button type="submit" form="incomeForm" class="btn btn-primary">Guardar Ingreso</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Agregar/Editar salida -->
+        <div class="modal-overlay" id="outputModalOverlay" style="display: none;">
+            <div class="modal" id="outputModal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="outputModalTitle">Registrar Salida</h3>
+                    <button class="modal-close-btn" id="closeOutputModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="outputForm" class="form-grid">
+                        <input type="hidden" id="outputId" name="outputId">
+
+                        <div class="form-group span-2">
+                            <label for="outputProduct">Producto</label>
+                            <select id="outputProduct" name="producto" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="outputQuantity">Cantidad</label>
+                            <input type="number" id="outputQuantity" name="cantidad" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelOutputModalBtn">Cancelar</button>
+                    <button type="submit" form="outputForm" class="btn btn-primary">Guardar Salida</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Opciones de Exportación -->
+        <div class="modal-overlay" id="exportModalOverlay" style="display: none;">
+            <div class="modal" id="exportModal" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exportModalTitle">Exportar Datos</h3>
+                    <button class="modal-close-btn" id="closeExportModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Selecciona el formato en el que deseas exportar los datos:</p>
+                    <div class="export-options-grid">
+                        <button class="btn btn-export" data-format="pdf">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M10 15.5c.2.8.8 1.5 1.5 1.5.7 0 1.3-.7 1.5-1.5"></path>
+                                <path d="M12 14v-4"></path>
+                                <path d="M10 12h4"></path>
+                                <path d="M10 18h1"></path>
+                                <path d="M13 18h1"></path>
+                            </svg>
+                            PDF
+                        </button>
+                        <button class="btn btn-export" data-format="excel">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="m15 13-3 3-3-3"></path>
+                                <path d="M12 16V9"></path>
+                            </svg>
+                            Excel
+                        </button>
+                        <button class="btn btn-export" data-format="csv">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path
+                                    d="M12 12.5a2.5 2.5 0 0 0-2.5 2.5v0a2.5 2.5 0 0 0 2.5 2.5h0a2.5 2.5 0 0 0 2.5-2.5v0a2.5 2.5 0 0 0-2.5-2.5Z">
+                                </path>
+                                <path d="M15 10.5a2.5 2.5 0 0 0-5 0v0"></path>
+                            </svg>
+                            CSV
+                        </button>
+                        <button class="btn btn-export" data-format="json">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1"></path>
+                                <path d="M14 12a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1"></path>
+                            </svg>
+                            JSON
+                        </button>
+                        <button class="btn btn-export" data-format="txt">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" x2="8" y1="13" y2="13"></line>
+                                <line x1="16" x2="8" y1="17" y2="17"></line>
+                                <line x1="10" x2="8" y1="9" y2="9"></line>
+                            </svg>
+                            TXT
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelExportModalBtn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
