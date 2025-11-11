@@ -51,14 +51,17 @@ const iconConfig = {
   },
 };
 
+let editingProveedorId = null;
+
+// Resalta el elemento activo en el sidebar
 function highlightActive() {
   const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
     const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath || (currentPath === "/index.html" && href === "/")
-    );
+    const isActive =
+      href === currentPath || (currentPath === "/index.html" && href === "/");
+    a.classList.toggle("sidebar-nav-item-active", isActive);
   });
 }
 
@@ -106,6 +109,7 @@ function formatDate() {
   return today.toLocaleDateString("es-ES", options);
 }
 
+<<<<<<< HEAD
 function renderMetrics(data) {
   const metricsGrid = document.getElementById("metricsGrid");
   if (!metricsGrid) return;
@@ -187,6 +191,8 @@ function renderAppointments(data) {
   createIcons(iconConfig);
 }
 
+=======
+>>>>>>> 1c49789d2d96b35ab151b559ff9b250f278ecf93
 async function loadDashboard() {
   try {
     const API_URL = `${config.BACKEND_URL}/v1/dashboard`;
@@ -226,9 +232,6 @@ async function loadDashboard() {
     }
   }
 }
-
-// Proveedores CRUD
-let editingProveedorId = null;
 
 async function loadProveedores() {
   const container = document.getElementById("table-proveedores");
@@ -408,7 +411,6 @@ async function handleProveedorSubmit(event) {
   }
 }
 
-/* ========== FUNCIONES DE EXPORTACIÓN ========== */
 function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -544,7 +546,6 @@ async function exportData(apiUrl, entityName, type, options = {}) {
   }
 }
 
-// Función genérica para inicializar exportación de entidades
 function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   const btnCSV = document.getElementById(`btnExport${entityName}CSV`);
   const btnJSON = document.getElementById(`btnExport${entityName}JSON`);
@@ -576,7 +577,6 @@ function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   }
 }
 
-// Exportación de Proveedores
 function initProveedoresExport() {
   const API_URL = `${config.BACKEND_URL}/v1/proveedores`;
   const pdfOptions = {
@@ -601,10 +601,88 @@ function initProveedoresExport() {
   initEntityExport("Proveedores", API_URL, pdfOptions);
 }
 
-window.openProveedorModal = openProveedorModal;
-window.editProveedor = editProveedor;
-window.deleteProveedor = deleteProveedor;
-window.handleProveedorSubmit = handleProveedorSubmit;
+// Renderiza las métricas del dashboard
+function renderMetrics(data) {
+  const metricsGrid = document.getElementById("metricsGrid");
+  if (!metricsGrid) return;
+
+  const metrics = [
+    {
+      title: "Total Clientes",
+      value: data.metrics.totalClients,
+      icon: "users",
+      iconClass: "icon-primary",
+    },
+    {
+      title: "Total Mascotas",
+      value: data.metrics.totalPets,
+      icon: "dog",
+      iconClass: "icon-secondary",
+    },
+    {
+      title: "Veterinarios Activos",
+      value: data.metrics.activeVeterinarians,
+      icon: "stethoscope",
+      iconClass: "icon-primary",
+    },
+    {
+      title: "Citas Pendientes",
+      value: data.metrics.pendingAppointments,
+      icon: "clock",
+      iconClass: "icon-warning",
+    },
+  ];
+
+  metricsGrid.innerHTML = metrics
+    .map(
+      (metric) => `
+    <div class="metric-card">
+      <div class="metric-card-header">
+        <h3 class="metric-card-title">${metric.title}</h3>
+        <div class="metric-card-icon ${metric.iconClass}">
+          <i data-lucide="${metric.icon}"></i>
+        </div>
+      </div>
+      <p class="metric-card-value">${metric.value}</p>
+    </div>
+  `
+    )
+    .join("");
+}
+
+function renderAppointments(data) {
+  const appointmentsList = document.getElementById("appointmentsList");
+  if (!appointmentsList) return;
+
+  if (!data.upcomingAppointments || data.upcomingAppointments.length === 0) {
+    appointmentsList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i data-lucide="calendar-x"></i>
+        </div>
+        <p class="empty-state-message">No hay citas programadas para hoy</p>
+      </div>
+    `;
+    createIcons(iconConfig);
+    return;
+  }
+
+  appointmentsList.innerHTML = data.upcomingAppointments
+    .map(
+      (appointment) => `
+    <li class="appointment-item">
+      <div class="appointment-time">${appointment.time || "—"}</div>
+      <div class="appointment-details">
+        <div class="appointment-reason">${
+          appointment.reason || "Sin motivo"
+        }</div>
+      </div>
+    </li>
+  `
+    )
+    .join("");
+  createIcons(iconConfig);
+}
 
 function initDashboard() {
   highlightActive();
@@ -612,6 +690,12 @@ function initDashboard() {
   loadDashboard();
   loadProveedores();
   initProveedoresExport();
+  createIcons(iconConfig);
 }
+
+window.openProveedorModal = openProveedorModal;
+window.editProveedor = editProveedor;
+window.deleteProveedor = deleteProveedor;
+window.handleProveedorSubmit = handleProveedorSubmit;
 
 document.addEventListener("DOMContentLoaded", initDashboard);

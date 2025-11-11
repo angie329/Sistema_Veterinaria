@@ -10,9 +10,7 @@ export const getDashboardMetrics = async () => {
     query(
       `SELECT COUNT(id_Clientes) AS totalClients FROM clientes WHERE Cli_Estado = 1`
     ),
-    query(
-      `SELECT COUNT(mas_id_mascota) AS totalPets FROM mas_mascota WHERE mas_estado = 'A'`
-    ),
+    query(`SELECT COUNT(mas_id_mascota) AS totalPets FROM mas_mascota`),
     query(
       `SELECT COUNT(id_Veterinario) AS activeVeterinarians FROM vet_veterinarios WHERE Vet_Estado = 'Activo'`
     ),

@@ -4,22 +4,6 @@ import { createIcons, icons } from "lucide";
 
 import { config } from "@/config/env.js";
 
-/* ==========================================================
-   FUNCIONES DE INTERFAZ GENERAL (MENÚ, ICONOS, ESTILOS)
-========================================================== */
-
-// Resalta en el sidebar la sección activa según la ruta actual
-function highlightActive() {
-  const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
-    const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath || (currentPath === "/pets.html" && href === "/pets")
-    );
-  });
-}
-
 const iconConfig = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
@@ -44,7 +28,20 @@ const iconConfig = {
   },
 };
 
-// Controla el menú lateral en dispositivos móviles
+// Resalta el elemento activo en el sidebar
+function highlightActive() {
+  const currentPath = window.location.pathname;
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
+    const href = a.getAttribute("href");
+    const isActive =
+      href === currentPath ||
+      (currentPath === "/pets.html" && href === "/pets");
+    a.classList.toggle("sidebar-nav-item-active", isActive);
+  });
+}
+
+// Inicializa el menú móvil del sidebar
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const sidebar = document.getElementById("sidebar");
@@ -79,10 +76,7 @@ function initMobileMenu() {
   });
 }
 
-/* ==========================================================
-   MODAL DE REGISTRO DE MASCOTAS
-========================================================== */
-
+// Inicializa el modal de registro de mascotas
 function initModalMascota() {
   const modal = document.getElementById("modalRegistrarMascota");
   const btnAgregar = document.getElementById("btnAgregarMascota");
@@ -107,10 +101,7 @@ function initModalMascota() {
   form.addEventListener("submit", manejarEnvioFormularioMascota);
 }
 
-/* ==========================================================
-   TABLA DE MASCOTAS (CARGA, EVENTOS, FILAS)
-========================================================== */
-
+// Carga la lista de mascotas desde la API
 async function cargarMascotas() {
   const tablaBody = document.querySelector(".pets-table tbody");
   const totalPets = document.querySelector(
@@ -232,11 +223,7 @@ async function mostrarObservaciones(idMascota) {
   }
 }
 
-/* ==========================================================
-   EVENTOS DE BOTONES (EDITAR / ELIMINAR)
-========================================================== */
-
-// Agrega los eventos de edición y eliminación
+// Agrega los eventos de edición y eliminación a los botones
 function agregarEventosBotones() {
   document
     .querySelectorAll(".btn-edit")
@@ -256,10 +243,6 @@ function calcularEdad(fechaNacimiento) {
   if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
   return edad + " año" + (edad !== 1 ? "s" : "");
 }
-
-/* ==========================================================
-   CARGA Y GESTIÓN DE SELECTORES DINÁMICOS
-========================================================== */
 
 // Realiza una petición genérica para obtener datos de un endpoint
 async function fetchData(endpoint) {
@@ -301,11 +284,7 @@ async function recargarSelector(
 // Variable global que indica si se está editando una mascota existente
 let modoEdicionMascota = null;
 
-/* ==========================================================
-   FUNCIÓN PRINCIPAL DE ENVÍO DE FORMULARIO (POST/PUT)
-   Maneja el registro o actualización de una mascota mediante
-   el envío de datos al servidor en formato JSON.
-========================================================== */
+// Maneja el registro o actualización de una mascota
 async function manejarEnvioFormularioMascota(e) {
   e.preventDefault();
 
@@ -388,11 +367,7 @@ async function manejarEnvioFormularioMascota(e) {
   }
 }
 
-/* ==========================================================
-   FUNCIÓN DE EDICIÓN DE MASCOTA
-   Obtiene los datos de una mascota específica y los muestra
-   en el formulario para su edición.
-========================================================== */
+// Obtiene los datos de una mascota y los muestra en el formulario para editar
 async function manejarEditarMascota(event) {
   const idMascota = event.currentTarget.dataset.id;
   if (!idMascota) return;
@@ -478,11 +453,7 @@ async function manejarEditarMascota(event) {
   }
 }
 
-/* ==========================================================
-   FUNCIÓN DE ELIMINACIÓN DE MASCOTA
-   Muestra un cuadro de confirmación y, de aceptarse,
-   elimina la mascota seleccionada del sistema.
-========================================================== */
+// Muestra confirmación y elimina la mascota seleccionada
 function manejarEliminarMascota(event) {
   event.stopPropagation(); // evita que se dispare el click en la fila
   const idMascota = event.currentTarget.dataset.id;
@@ -525,11 +496,7 @@ function manejarEliminarMascota(event) {
   });
 }
 
-/* ==========================================================
-   INICIALIZACIÓN DE SELECTORES EN EL MODAL
-   Configura y carga los selectores de clasificación, tipo,
-   raza y género de manera dinámica.
-========================================================== */
+// Configura y carga los selectores dinámicos del formulario
 function inicializarSelectoresDinamicos() {
   const selectGenero = document.getElementById("generoMascota");
   const selectClasificacion = document.getElementById("clasificacionAnimal");
@@ -576,11 +543,7 @@ function inicializarSelectoresDinamicos() {
   });
 }
 
-/* ==========================================================
-   MODAL PARA AGREGAR NUEVAS OPCIONES
-   Permite registrar nuevas clasificaciones, tipos o razas
-   directamente desde el formulario principal.
-========================================================== */
+// Inicializa el modal para agregar nuevas opciones (clasificaciones, tipos, razas)
 function inicializarBotonesAgregar() {
   const modal = document.getElementById("modalAgregarOpcion");
   const form = document.getElementById("formAgregarOpcion");
@@ -674,10 +637,7 @@ function inicializarBotonesAgregar() {
   });
 }
 
-/* ==========================================================
-   FUNCIÓN PARA REGISTRAR NUEVAS CLASIFICACIONES, TIPOS O RAZAS
-   Envía los datos correspondientes al backend mediante una solicitud POST.
-========================================================== */
+// Registra nuevas clasificaciones, tipos o razas en el backend
 async function agregarElemento(endpoint, data) {
   try {
     const res = await fetch(`${config.BACKEND_URL}/v1/pets/${endpoint}`, {
@@ -692,11 +652,7 @@ async function agregarElemento(endpoint, data) {
   }
 }
 
-/* ==========================================================
-   MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
-   Crea dinámicamente el modal utilizado para confirmar
-   la eliminación de una mascota.
-========================================================== */
+// Crea dinámicamente el modal de confirmación de eliminación
 function crearModalEliminar() {
   if (document.getElementById("modalEliminarMascota")) return; // evita duplicados
 
@@ -726,7 +682,7 @@ function crearModalEliminar() {
   btnCancelar.addEventListener("click", () => modal.close());
 }
 
-// Genera un reporte PDF con la información de las mascotas obtenidas desde el backend
+// Genera un reporte PDF con la información de las mascotas
 async function generarReportePDF() {
   try {
     const response = await fetch(`${config.BACKEND_URL}/v1/pets`);
@@ -811,11 +767,7 @@ function initBtnReporte() {
   if (btnPDF) btnPDF.addEventListener("click", generarReportePDF);
 }
 
-/* ==========================================================
-   FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
-   Configura los elementos y funcionalidades iniciales
-   de la sección de mascotas.
-========================================================== */
+// Inicializa todos los componentes de la página de mascotas
 async function initPets() {
   highlightActive();
   initMobileMenu();

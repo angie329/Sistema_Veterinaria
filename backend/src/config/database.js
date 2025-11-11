@@ -12,7 +12,6 @@ export const getPool = () => {
       user: config.DB.user,
       password: config.DB.password,
       database: config.DB.database,
-      ssl: config.DB.ssl,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,

@@ -82,14 +82,15 @@ let editingIds = {
   operadora: null,
 };
 
+// Resalta el elemento activo en el sidebar
 function highlightActive() {
   const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
     const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath || (currentPath === "/index.html" && href === "/")
-    );
+    const isActive =
+      href === currentPath || (currentPath === "/index.html" && href === "/");
+    a.classList.toggle("sidebar-nav-item-active", isActive);
   });
 }
 
@@ -339,7 +340,6 @@ async function handleSubmit(event, tableKey) {
     }
   }
 
-  // Add default fields
   data.Gen_modulo_origen = 1;
   data.Gen_id_estado_general = 1;
 
@@ -384,7 +384,6 @@ async function handleSubmit(event, tableKey) {
   }
 }
 
-/* ========== FUNCIONES DE EXPORTACIÓN ========== */
 function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -521,7 +520,6 @@ async function exportData(apiUrl, entityName, type, options = {}) {
   }
 }
 
-// Función genérica para inicializar exportación de entidades
 function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   const btnCSV = document.getElementById(`btnExport${entityName}CSV`);
   const btnJSON = document.getElementById(`btnExport${entityName}JSON`);
@@ -553,11 +551,9 @@ function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   }
 }
 
-// Inicializar exportación para todas las entidades de configuración
 function initConfiguracionExports() {
   const baseUrl = envConfig.BACKEND_URL;
 
-  // IVA
   initEntityExport("IVA", `${baseUrl}/v1/iva`, {
     pdfHeaders: ["ID", "Nombre", "Porcentaje", "Fecha Inicio", "Fecha Fin"],
     pdfRowMapper: (row) => [
@@ -569,7 +565,6 @@ function initConfiguracionExports() {
     ],
   });
 
-  // Unidad Medida
   initEntityExport("UnidadMedida", `${baseUrl}/v1/unidad-medida`, {
     pdfHeaders: ["ID", "Código", "Nombre", "Tipo Unidad"],
     pdfRowMapper: (row) => [
@@ -580,7 +575,6 @@ function initConfiguracionExports() {
     ],
   });
 
-  // Método Pago
   initEntityExport("MetodoPago", `${baseUrl}/v1/metodo-pago`, {
     pdfHeaders: ["ID", "Nombre", "Descripción"],
     pdfRowMapper: (row) => [
@@ -590,17 +584,11 @@ function initConfiguracionExports() {
     ],
   });
 
-  // Operadora
   initEntityExport("Operadora", `${baseUrl}/v1/operadora`, {
     pdfHeaders: ["ID", "Nombre"],
     pdfRowMapper: (row) => [row.Gen_id_operadora, row.Gen_nombre || ""],
   });
 }
-
-window.editRecord = editRecord;
-window.deleteRecord = deleteRecord;
-window.handleSubmit = handleSubmit;
-window.openModal = openModal;
 
 function initDashboard() {
   highlightActive();
@@ -610,5 +598,10 @@ function initDashboard() {
   initConfiguracionExports();
   createIcons(iconConfig);
 }
+
+window.editRecord = editRecord;
+window.deleteRecord = deleteRecord;
+window.handleSubmit = handleSubmit;
+window.openModal = openModal;
 
 document.addEventListener("DOMContentLoaded", initDashboard);

@@ -63,14 +63,15 @@ let editingIds = {
   "tipo-documento": null,
 };
 
+// Resalta el elemento activo en el sidebar
 function highlightActive() {
   const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
     const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
-      href === currentPath || (currentPath === "/index.html" && href === "/")
-    );
+    const isActive =
+      href === currentPath || (currentPath === "/index.html" && href === "/");
+    a.classList.toggle("sidebar-nav-item-active", isActive);
   });
 }
 
@@ -313,7 +314,6 @@ async function handleSubmit(event, tableKey) {
     }
   }
 
-  // Add default fields
   data.Gen_modulo_origen = 1;
   data.Gen_id_estado_general = 1;
 
@@ -347,7 +347,6 @@ async function handleSubmit(event, tableKey) {
   }
 }
 
-/* ========== FUNCIONES DE EXPORTACIÓN ========== */
 function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -484,7 +483,6 @@ async function exportData(apiUrl, entityName, type, options = {}) {
   }
 }
 
-// Función genérica para inicializar exportación de entidades
 function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   const btnCSV = document.getElementById(`btnExport${entityName}CSV`);
   const btnJSON = document.getElementById(`btnExport${entityName}JSON`);
@@ -516,23 +514,19 @@ function initEntityExport(entityName, apiUrl, pdfOptions = null) {
   }
 }
 
-// Inicializar exportación para todas las entidades de datos personales
 function initDatosPersonalesExports() {
   const baseUrl = envConfig.BACKEND_URL;
 
-  // Género/Sexo
   initEntityExport("GeneroSexo", `${baseUrl}/v1/genero-sexo`, {
     pdfHeaders: ["ID", "Nombre"],
     pdfRowMapper: (row) => [row.Gen_id_genero_sexo, row.Gen_nombre || ""],
   });
 
-  // Estado Civil
   initEntityExport("EstadoCivil", `${baseUrl}/v1/estado-civil`, {
     pdfHeaders: ["ID", "Nombre"],
     pdfRowMapper: (row) => [row.Gen_id_estado_civil, row.Gen_nombre || ""],
   });
 
-  // Tipo Documento
   initEntityExport("TipoDocumento", `${baseUrl}/v1/tipo-documento`, {
     pdfHeaders: ["ID", "Código", "Nombre", "Descripción"],
     pdfRowMapper: (row) => [
@@ -544,11 +538,6 @@ function initDatosPersonalesExports() {
   });
 }
 
-window.editRecord = editRecord;
-window.deleteRecord = deleteRecord;
-window.handleSubmit = handleSubmit;
-window.openModal = openModal;
-
 function initDashboard() {
   highlightActive();
   initMobileMenu();
@@ -557,5 +546,10 @@ function initDashboard() {
   initDatosPersonalesExports();
   createIcons(iconConfig);
 }
+
+window.editRecord = editRecord;
+window.deleteRecord = deleteRecord;
+window.handleSubmit = handleSubmit;
+window.openModal = openModal;
 
 document.addEventListener("DOMContentLoaded", initDashboard);

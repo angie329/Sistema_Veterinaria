@@ -473,7 +473,7 @@
 .btn-primary {
   background: var(--primary);
   color: white;
-  
+
   &:hover {
     background: var(--secondary);
   }

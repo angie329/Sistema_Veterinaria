@@ -2,6 +2,8 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { createIcons, icons } from "lucide";
 
+const API_URL = "http://localhost:3008/v1/api/clientes";
+
 const iconConfig = {
   icons: {
     LayoutDashboard: icons.LayoutDashboard,
@@ -35,18 +37,20 @@ const iconConfig = {
   },
 };
 
+// Resalta el elemento activo en el sidebar según la ruta actual
 function highlightActive() {
   const currentPath = window.location.pathname;
-  document.querySelectorAll(".sidebar-nav-item").forEach((a) => {
+  const navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach((a) => {
     const href = a.getAttribute("href");
-    a.classList.toggle(
-      "sidebar-nav-item-active",
+    const isActive =
       href === currentPath ||
-        (currentPath === "/clients.html" && href === "/clients")
-    );
+      (currentPath === "/clients.html" && href === "/clients");
+    a.classList.toggle("sidebar-nav-item-active", isActive);
   });
 }
 
+// Inicializa el menú móvil del sidebar
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const sidebar = document.getElementById("sidebar");
@@ -80,8 +84,7 @@ function initMobileMenu() {
   });
 }
 
-const API_URL = "http://localhost:3008/v1/api/clientes";
-
+// Carga la lista de clientes desde la API
 async function cargarClientes() {
   try {
     const response = await fetch(API_URL);
@@ -90,12 +93,14 @@ async function cargarClientes() {
     const clientes = await response.json();
     const tbody = document.getElementById("clientes-body");
 
-    if (!tbody) return; // evita errores si no estás en la página de clientes
+    if (!tbody) return;
 
     tbody.innerHTML = "";
 
     clientes.forEach((cliente) => {
       const fila = document.createElement("tr");
+      const fechaRegistro = new Date(cliente.Cli_FechaRegistro);
+      const fechaFormateada = fechaRegistro.toLocaleDateString("es-EC");
       fila.innerHTML = `
         <td>${cliente.id_Clientes}</td>
         <td>${cliente.Cli_Identificacion}</td>
@@ -104,9 +109,7 @@ async function cargarClientes() {
         <td>${cliente.Cli_Telefono}</td>
         <td>${cliente.Cli_Email}</td>
         <td>${cliente.Cli_DireccionDetalle}</td>
-        <td>${new Date(cliente.Cli_FechaRegistro).toLocaleDateString(
-          "es-EC"
-        )}</td>
+        <td>${fechaFormateada}</td>
         <td>
           <div class="table-actions">
             <button class="btn-edit" data-id="${
@@ -127,8 +130,9 @@ async function cargarClientes() {
 
     createIcons(iconConfig);
 
-    // Asignar eventos a los botones después de renderizar
-    document.querySelectorAll(".btn-delete").forEach((btn) => {
+    // Asignar eventos a botones de eliminar
+    const deleteButtons = document.querySelectorAll(".btn-delete");
+    deleteButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const id = e.currentTarget.dataset.id;
@@ -136,7 +140,9 @@ async function cargarClientes() {
       });
     });
 
-    document.querySelectorAll(".btn-edit").forEach((btn) => {
+    // Asignar eventos a botones de editar
+    const editButtons = document.querySelectorAll(".btn-edit");
+    editButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const id = e.currentTarget.dataset.id;
@@ -149,6 +155,7 @@ async function cargarClientes() {
   }
 }
 
+// Crea un nuevo cliente en la base de datos
 async function crearCliente(cliente) {
   const response = await fetch(API_URL, {
     method: "POST",
@@ -159,9 +166,10 @@ async function crearCliente(cliente) {
   return response.json();
 }
 
-// Actualizar cliente (PUT)
+// Actualiza un cliente existente
 async function actualizarCliente(id, cliente) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const url = `${API_URL}/${id}`;
+  const response = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(cliente),
@@ -170,15 +178,17 @@ async function actualizarCliente(id, cliente) {
   return response.json();
 }
 
-// Eliminar cliente (DELETE lógico)
+// Elimina un cliente (eliminación lógica)
 async function eliminarCliente(id) {
   if (!confirm("¿Seguro que deseas eliminar este cliente?")) return;
-  const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  const url = `${API_URL}/${id}`;
+  const response = await fetch(url, { method: "DELETE" });
   if (!response.ok) throw new Error("Error al eliminar cliente");
   alert("Cliente eliminado correctamente");
   cargarClientes();
 }
 
+// Llena el formulario con los datos del cliente para editar
 function llenarFormulario(cliente) {
   document.getElementById("cliente-id").value = cliente.id_Clientes;
   document.getElementById("Cli_Identificacion").value =
@@ -191,40 +201,7 @@ function llenarFormulario(cliente) {
     cliente.Cli_DireccionDetalle;
 }
 
-document
-  .getElementById("cliente-form")
-  .addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const id = document.getElementById("cliente-id").value;
-
-    const nuevoCliente = {
-      Cli_Identificacion: document.getElementById("Cli_Identificacion").value,
-      Cli_Nombres: document.getElementById("Cli_Nombres").value,
-      Cli_Apellidos: document.getElementById("Cli_Apellidos").value,
-      Cli_Telefono: document.getElementById("Cli_Telefono").value,
-      Cli_Email: document.getElementById("Cli_Email").value,
-      Cli_DireccionDetalle: document.getElementById("Cli_DireccionDetalle")
-        .value,
-    };
-
-    try {
-      if (id) {
-        await actualizarCliente(id, nuevoCliente);
-        alert("Cliente actualizado correctamente");
-      } else {
-        await crearCliente(nuevoCliente);
-        alert("Cliente agregado correctamente");
-      }
-      e.target.reset();
-      document.getElementById("cliente-id").value = "";
-      cargarClientes();
-    } catch (error) {
-      alert("Error al guardar cliente");
-      console.error(error);
-    }
-  });
-
-/* ========== FUNCIONES DE EXPORTACIÓN ========== */
+// Descarga un archivo desde un blob
 function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -236,15 +213,18 @@ function downloadFile(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
+// Formatea una fecha para exportación
 function formatDateExport(dateString) {
   if (!dateString) return "";
   try {
-    return new Date(dateString).toLocaleString("es-EC");
+    const date = new Date(dateString);
+    return date.toLocaleString("es-EC");
   } catch {
     return String(dateString);
   }
 }
 
+// Exporta los clientes en el formato especificado (json o pdf)
 async function exportClientes(type) {
   try {
     const response = await fetch(API_URL);
@@ -261,12 +241,11 @@ async function exportClientes(type) {
 
     switch (type) {
       case "json": {
-        downloadFile(
-          new Blob([JSON.stringify(clientes, null, 2)], {
-            type: "application/json",
-          }),
-          `${fileName}.json`
-        );
+        const jsonContent = JSON.stringify(clientes, null, 2);
+        const blob = new Blob([jsonContent], {
+          type: "application/json",
+        });
+        downloadFile(blob, `${fileName}.json`);
         break;
       }
 
@@ -285,18 +264,21 @@ async function exportClientes(type) {
           "Fecha Registro",
         ];
 
-        const body = clientes.map((cliente) => [
-          cliente.id_Clientes || "",
-          cliente.Cli_Identificacion || "",
-          cliente.Cli_Nombres || "",
-          cliente.Cli_Apellidos || "",
-          cliente.Cli_Telefono || "",
-          cliente.Cli_Email || "",
-          cliente.Cli_DireccionDetalle || "",
-          cliente.Cli_FechaRegistro
+        const body = clientes.map((cliente) => {
+          const fechaRegistro = cliente.Cli_FechaRegistro
             ? formatDateExport(cliente.Cli_FechaRegistro)
-            : "",
-        ]);
+            : "";
+          return [
+            cliente.id_Clientes || "",
+            cliente.Cli_Identificacion || "",
+            cliente.Cli_Nombres || "",
+            cliente.Cli_Apellidos || "",
+            cliente.Cli_Telefono || "",
+            cliente.Cli_Email || "",
+            cliente.Cli_DireccionDetalle || "",
+            fechaRegistro,
+          ];
+        });
 
         autoTable(doc, {
           startY: 20,
@@ -319,6 +301,7 @@ async function exportClientes(type) {
   }
 }
 
+// Inicializa los botones de exportación
 function initClientesExport() {
   const btnJSON = document.getElementById("btnExportClientesJSON");
   const btnPDF = document.getElementById("btnExportClientesPDF");
@@ -332,6 +315,39 @@ function initClientesExport() {
   }
 }
 
+// Event listener del formulario de cliente
+const clienteForm = document.getElementById("cliente-form");
+clienteForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("cliente-id").value;
+
+  const nuevoCliente = {
+    Cli_Identificacion: document.getElementById("Cli_Identificacion").value,
+    Cli_Nombres: document.getElementById("Cli_Nombres").value,
+    Cli_Apellidos: document.getElementById("Cli_Apellidos").value,
+    Cli_Telefono: document.getElementById("Cli_Telefono").value,
+    Cli_Email: document.getElementById("Cli_Email").value,
+    Cli_DireccionDetalle: document.getElementById("Cli_DireccionDetalle").value,
+  };
+
+  try {
+    if (id) {
+      await actualizarCliente(id, nuevoCliente);
+      alert("Cliente actualizado correctamente");
+    } else {
+      await crearCliente(nuevoCliente);
+      alert("Cliente agregado correctamente");
+    }
+    e.target.reset();
+    document.getElementById("cliente-id").value = "";
+    cargarClientes();
+  } catch (error) {
+    alert("Error al guardar cliente");
+    console.error(error);
+  }
+});
+
+// Inicializa todos los componentes de la página
 async function initDashboard() {
   highlightActive();
   initMobileMenu();
@@ -340,5 +356,4 @@ async function initDashboard() {
   createIcons(iconConfig);
 }
 
-// Ejecutar automáticamente cuando se cargue la página
 document.addEventListener("DOMContentLoaded", initDashboard);
